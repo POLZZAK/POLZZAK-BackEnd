@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65a5aa0b-76a1-42f2-a0a4-9bef0f65a3bb" name="변경" comment="" />
+    <list default="true" id="65a5aa0b-76a1-42f2-a0a4-9bef0f65a3bb" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/polzzak/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/polzzak/.gitignore" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -87,7 +89,7 @@
       <option name="presentableId" value="Default" />
       <updated>1682068537433</updated>
       <workItem from="1682068538572" duration="4000" />
-      <workItem from="1682068545575" duration="4042000" />
+      <workItem from="1682068545575" duration="4915000" />
     </task>
     <servers />
   </component>
