@@ -41,12 +41,19 @@ jobs:
         cd ./src/main/resources
         touch ./application.yml
         echo "spring:" >> ./application.yml
+        echo "  jpa:" >> ./application.yml
+        echo "    database: mysql" >> ./application.yml
+        echo "    database-platform: org.hibernate.dialect.MySQL8Dialect" >> ./application.yml
         echo "  datasource:" >> ./application.yml
         echo "    url: ${{ secrets.DB_URL_DEV }}" >> ./application.yml
         echo "    username: ${{ secrets.DB_USERNAME_DEV }}" >> ./application.yml
         echo "    password: ${{ secrets.DB_PASSWORD_DEV }}" >> ./application.yml
         echo "    driver-class-name: ${{ secrets.DB_DRIVER_CLASS_NAME_DEV }}" >> ./application.yml
-        shell: bash
+#        echo "    url: jdbc:mysql://dev-db.csjr0037o5ke.ap-northeast-2.rds.amazonaws.com:3306/test?serverTimezone=Asia/Seoul" >> ./application.yml
+#        echo "    username: admin" >> ./application.yml
+#        echo "    password: polzzak11*" >> ./application.yml
+#        echo "    driver-class-name: com.mysql.cj.jdbc.Driver" >> ./application.yml
+#        shell: bash
         
     ## [PROD] create application.yml
 #    - name: make application.yml
@@ -64,7 +71,7 @@ jobs:
         
     ## gradle build
     - name: Build with Gradle
-      run: ./gradlew build    
+      run: ./gradlew clean build
 ## 테스트 코드 스킵 코드 -x test -x ktlintCheck -x ktlintTestSourceSetCheck -x ktlintMainSourceSetCheck -x ktlintKotlinScriptCheck
 
     ## docker build & push to production
@@ -109,12 +116,12 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: 22
-        #key: ${{ secrets.PRIVATE_KEY }}
         script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{ secrets.DOCKER_REPO }}/polzzak-dev
-            docker-compose up -d
+            docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO }}/polzzak-dev
             docker image prune -f
+#            docker-compose up -d
 
   ## time
 #  current-time:
