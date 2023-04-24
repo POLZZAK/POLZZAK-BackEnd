@@ -9,6 +9,6 @@ public class TestController {
 
     @GetMapping("/a")
     public ResponseEntity<String> test() {
-        return ResponseEntity.ok("HIHI Hello");
+        return ResponseEntity.ok("HIHI Hello HIHI new Deploy from cicd");
     }
 }
