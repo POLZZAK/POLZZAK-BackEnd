@@ -4,7 +4,7 @@ name: Polzzak CI/CD
 on:
   push:
     branches:
-      - master
+#      - master
       - develop
 
 permissions:
@@ -39,22 +39,13 @@ jobs:
       if: contains(github.ref, 'develop')
       run: |
         cd ./src/main/resources
-        touch ./application.yml
-        echo "spring:" >> ./application.yml
-        echo "  jpa:" >> ./application.yml
-        echo "    database: mysql" >> ./application.yml
-        echo "    database-platform: org.hibernate.dialect.MySQL8Dialect" >> ./application.yml
-        echo "  datasource:" >> ./application.yml
-        echo "    url: ${{ secrets.DB_URL_DEV }}" >> ./application.yml
-        echo "    username: ${{ secrets.DB_USERNAME_DEV }}" >> ./application.yml
-        echo "    password: ${{ secrets.DB_PASSWORD_DEV }}" >> ./application.yml
-        echo "    driver-class-name: ${{ secrets.DB_DRIVER_CLASS_NAME_DEV }}" >> ./application.yml
-#        echo "    url: jdbc:mysql://dev-db.csjr0037o5ke.ap-northeast-2.rds.amazonaws.com:3306/test?serverTimezone=Asia/Seoul" >> ./application.yml
-#        echo "    username: admin" >> ./application.yml
-#        echo "    password: polzzak11*" >> ./application.yml
-#        echo "    driver-class-name: com.mysql.cj.jdbc.Driver" >> ./application.yml
-#        shell: bash
-        
+        echo "spring:" >> ./secret.yml
+        echo "  datasource:" >> ./secret.yml
+        echo "    url: ${{ secrets.DB_URL_DEV }}" >> ./secret.yml
+        echo "    username: ${{ secrets.DB_USERNAME_DEV }}" >> ./secret.yml
+        echo "    password: ${{ secrets.DB_PASSWORD_DEV }}" >> ./secret.yml
+        echo "    driver-class-name: ${{ secrets.DB_DRIVER_CLASS_NAME_DEV }}" >> ./secret.yml
+
     ## [PROD] create application.yml
 #    - name: make application.yml
 #      if: contains(github.ref, 'master')

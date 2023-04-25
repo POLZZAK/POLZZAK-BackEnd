@@ -1,0 +1,7 @@
+spring:
+  config:
+    import:
+      - classpath:/secret.yml
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect

@@ -238,6 +238,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-/src/main/resources/application.yml
+/src/main/resources/secret.yml
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,java,intellij
