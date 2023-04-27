@@ -20,12 +20,20 @@ ext {
 	snippetsDir = file('build/generated-snippets')
 }
 
+task createDirectoryForDocs() {
+	doLast {
+		file("/src/docs/asciidoc").mkdirs()
+		file("/src/main/resources/static/docs").mkdirs()
+	}
+}
+
 test {
 	outputs.dir snippetsDir
 	useJUnitPlatform()
 }
 
 asciidoctor {
+	dependsOn createDirectoryForDocs
 	dependsOn test
 	configurations 'asciidoctorExtensions'
 	inputs.dir snippetsDir
