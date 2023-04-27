@@ -241,9 +241,9 @@ $RECYCLE.BIN/
 /src/main/resources/secret.yml
 
 # Rest Docs
-BOOT-INF
-src/main/resources/static/docs
-build/generated-snippets
+/BOOT-INF
+/src/main/resources/static/docs
+/build/generated-snippets
 
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,java,intellij
