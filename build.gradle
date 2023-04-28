@@ -45,9 +45,15 @@ task copyDocument(type: Copy) {
     from file("build/docs/asciidoc")
     into file("src/main/resources/static/docs")
 }
+task copyDocument2(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/jjh")
+}
 
 build {
     dependsOn copyDocument
+    dependsOn copyDocument2
     doLast {
         println "JJH FILES2"
         // 파일 목록 출력
