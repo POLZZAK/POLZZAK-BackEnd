@@ -49,9 +49,9 @@ task copyDocument(type: Copy) {
 build {
     dependsOn copyDocument
     doLast {
-        println "JJH FILES"
+        println "JJH FILES2"
         // 파일 목록 출력
-        def files = fileTree(dir: 'src/main/resources/static/docs').files
+        def files = fileTree(dir: 'src/main/resources/static').files
         println "Files in directory: $files"
 
         println "\n\n\n\n\n\nJJH DOCS"
