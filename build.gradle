@@ -45,35 +45,9 @@ task copyDocument(type: Copy) {
     from file("build/docs/asciidoc")
     into file("src/main/resources/static/docs")
 }
-task copyDocument2(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/jjh")
-}
 
 build {
     dependsOn copyDocument
-    dependsOn copyDocument2
-    doLast {
-        println "JJH FILES2"
-        // 파일 목록 출력
-        def files = fileTree(dir: 'src/main/resources/static').files
-        println "Files in directory: $files"
-
-        println "\n\n\n\n\n\nJJH DOCS"
-        // 파일 내용 출력
-        files.each { file ->
-            println "Content of file ${file.name}:"
-            println file.text
-        }
-    }
-}
-
-bootJar {
-    dependsOn asciidoctor
-    from("${asciidoctor.outputDir}/html5") {
-        into 'static/docs'
-    }
 }
 
 repositories {
