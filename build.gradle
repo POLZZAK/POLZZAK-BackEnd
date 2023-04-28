@@ -48,6 +48,19 @@ task copyDocument(type: Copy) {
 
 build {
     dependsOn copyDocument
+    doLast {
+        println "JJH FILES"
+        // 파일 목록 출력
+        def files = fileTree(dir: 'src/main/resources/static/docs').files
+        println "Files in directory: $files"
+
+        println "\n\n\n\n\n\nJJH DOCS"
+        // 파일 내용 출력
+        files.each { file ->
+            println "Content of file ${file.name}:"
+            println file.text
+        }
+    }
 }
 
 bootJar {
