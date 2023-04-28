@@ -45,6 +45,7 @@ public class TestController {
 
     private void createFileList(File directory, String prefix, List<String> fileList) {
         File[] files = directory.listFiles(); // 디렉토리 내 파일 목록 조회
+        System.out.println(files.length);
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) { // 디렉토리일 경우
@@ -53,6 +54,7 @@ public class TestController {
                 } else { // 파일일 경우
                     String fileName = file.getName();
                     String filePath = file.getAbsolutePath(); // 파일의 절대 경로 조회
+                    System.out.println(filePath);
                     fileList.add(prefix  + " (" + filePath + ")");
                 }
             }
