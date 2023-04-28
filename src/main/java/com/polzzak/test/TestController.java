@@ -22,7 +22,7 @@ public class TestController {
 
     @GetMapping("/{path}/rest")
     public ResponseEntity<Map<String, Object>> rest(@PathVariable String path, @RequestParam int param) {
-        Map<String, Object> data = Map.of("path", path, "param", param);
+        Map<String, Object> data = Map.of("path", path, "param", param,"dir", new File(".").getAbsolutePath());
         return ResponseEntity.ok(data);
     }
 
