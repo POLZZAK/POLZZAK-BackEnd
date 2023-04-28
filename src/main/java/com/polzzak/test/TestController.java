@@ -27,8 +27,8 @@ public class TestController {
     }
 
     @GetMapping("/static/files")
-    public ResponseEntity<?> getStaticFiles() {
-        String rootPath = "."; // 실행 디렉토리를 루트 디렉토리로 설정
+    public ResponseEntity<?> getStaticFiles(@RequestParam String path) {
+        String rootPath = path; // 실행 디렉토리를 루트 디렉토리로 설정
         File rootDirectory = new File(rootPath);
         List<String> fileList = new ArrayList<>();
 
