@@ -27,7 +27,7 @@ public class TestController {
     }
 
     @GetMapping("/static/files")
-    public ResponseEntity<?> getStaticFiles() {    String rootPath = "src/main"; // 루트 경로
+    public ResponseEntity<?> getStaticFiles() {    String rootPath = "src"; // 루트 경로
         File rootDirectory = new File(rootPath); // 루트 디렉토리 객체 생성
         List<String> fileList = new ArrayList<>();
 
@@ -45,7 +45,6 @@ public class TestController {
 
     private void createFileList(File directory, String prefix, List<String> fileList) {
         File[] files = directory.listFiles(); // 디렉토리 내 파일 목록 조회
-        System.out.println(files.length);
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) { // 디렉토리일 경우
