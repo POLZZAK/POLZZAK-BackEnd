@@ -45,6 +45,7 @@ class TestControllerTest {
                                 queryParameters(parameterWithName("param").description("param")),
                                 responseFields( // response 필드 정보 입력
                                         fieldWithPath("path").description("path"),
+                                        fieldWithPath("dir").description("dir"),
                                         fieldWithPath("param").description("param")
                                 )
                         )
