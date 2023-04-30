@@ -6,9 +6,38 @@
 :toclevels: 2
 :sectlinks:
 
+[[Overview]]
+= *Overview*
+
+[[overview-http-status-codes]]
+=== HTTP status codes
+
+|===
+| ResponseCode | Message
+
+| `200 OK`
+| Success
+
+| `201 CREATED`
+| Success Created
+
+| `400 BAD_REQUEST`
+| Bad request / Request is invalid
+
+| `401 UNAUTHORIZED`
+| Token is invalid / Unauthenticated Access
+
+| `403 FORBIDDEN`
+| Permission is invalid
+
+| `405 METHOD_NOT_ALLOWED`
+| Http Method is invalid
+|===
+
 [[Example-API]]
 == Example API
 
 [[Example]]
 === Example
+
 operation::example-get[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']

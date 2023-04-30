@@ -1,0 +1,15 @@
+package com.polzzak.support.test;
+
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@DataJpaTest
+@TestEnvironment
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RepositoryTest {
+}
