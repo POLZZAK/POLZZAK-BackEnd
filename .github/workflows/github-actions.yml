@@ -39,12 +39,7 @@ jobs:
       if: contains(github.ref, 'develop')
       run: |
         cd ./src/main/resources
-        echo "spring:" >> ./secret.yml
-        echo "  datasource:" >> ./secret.yml
-        echo "    url: ${{ secrets.DB_URL_DEV }}" >> ./secret.yml
-        echo "    username: ${{ secrets.DB_USERNAME_DEV }}" >> ./secret.yml
-        echo "    password: ${{ secrets.DB_PASSWORD_DEV }}" >> ./secret.yml
-        echo "    driver-class-name: ${{ secrets.DB_DRIVER_CLASS_NAME_DEV }}" >> ./secret.yml
+        echo "${{ secrets.SECRET_SETTINGS }}" >> ./secret.yml
 
     ## [PROD] create application.yml
 #    - name: make application.yml
