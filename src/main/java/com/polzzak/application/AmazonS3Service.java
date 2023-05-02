@@ -24,13 +24,13 @@ public class AmazonS3Service implements StorageService {
     }
 
     @Override
-    public void uploadFile(final MultipartFile image, final String fileKey) {
+    public void uploadFile(final MultipartFile file, final String fileKey) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(image.getSize());
-        objectMetadata.setContentType(image.getContentType());
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setContentType(file.getContentType());
 
         try {
-            s3Client.putObject(amazonS3Properties.getBucketName(), fileKey, image.getInputStream(), objectMetadata);
+            s3Client.putObject(amazonS3Properties.getBucketName(), fileKey, file.getInputStream(), objectMetadata);
         } catch (IOException | SdkClientException e) {
             throw new PolzzakException(ErrorCode.FILE_UPLOAD_FAIL);
         }

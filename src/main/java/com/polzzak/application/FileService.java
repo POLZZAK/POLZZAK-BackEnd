@@ -36,15 +36,15 @@ public class FileService {
     }
 
     private String createServerFileName(final String originalFileName) {
-        return UUID.randomUUID() + "." + getExt(originalFileName);
+        return UUID.randomUUID() + "." + getExtension(originalFileName);
     }
 
-    private String getExt(final String originalFileName) {
+    private String getExtension(final String originalFileName) {
         return originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
     }
 
     private String getFileKey(final String serverFileName, final FileType fileType) {
-        if (fileType == fileType.PROFILE) {
+        if (fileType == fileType.PROFILE_IMAGE) {
             return folderProperties.getProfileFolderName() + serverFileName;
         }
 

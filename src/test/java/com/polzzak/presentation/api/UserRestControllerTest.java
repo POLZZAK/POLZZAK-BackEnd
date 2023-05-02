@@ -293,7 +293,7 @@ class UserRestControllerTest extends ControllerTestHelper {
         String nickname = TEST_NICKNAME;
 
         // when
-        doNothing().when(userAuthenticationService).validNickname(nickname);
+        doNothing().when(userAuthenticationService).validateNickname(nickname);
 
         // then
         mockMvc.perform(
@@ -315,7 +315,7 @@ class UserRestControllerTest extends ControllerTestHelper {
         String nickname = TEST_NICKNAME;
 
         // when
-        doThrow(new IllegalArgumentException("이미 존재하는 사용자입니다")).when(userAuthenticationService).validNickname(nickname);
+        doThrow(new IllegalArgumentException("이미 존재하는 사용자입니다")).when(userAuthenticationService).validateNickname(nickname);
 
         // then
         mockMvc.perform(

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum FileType {
-    PROFILE("프로필");
+    PROFILE_IMAGE("프로필");
 
     private final String description;
 }

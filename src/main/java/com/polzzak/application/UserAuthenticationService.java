@@ -62,11 +62,11 @@ public class UserAuthenticationService {
 
     @Transactional
     public UserDto register(final RegisterRequest registerRequest, final MultipartFile profile) {
-        validNickname(registerRequest.nickname());
+        validateNickname(registerRequest.nickname());
 
         String fileKey = null;
         if (profile != null) {
-            fileKey = fileService.uploadFile(profile, FileType.PROFILE);
+            fileKey = fileService.uploadFile(profile, FileType.PROFILE_IMAGE);
         }
 
         User saveUser = userRepository.save(createUser(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey)));
@@ -81,7 +81,7 @@ public class UserAuthenticationService {
         return jwtTokenProvider.createRefreshToken(username);
     }
 
-    public void validNickname(final String nickname) {
+    public void validateNickname(final String nickname) {
         if (!userRepository.existsByNickname(nickname).isEmpty()) {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다");
         }
@@ -117,7 +117,7 @@ public class UserAuthenticationService {
         return webClient
             .get()
             .uri(uri)
-            .header(HttpHeaders.AUTHORIZATION, bearerToken(token))
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(token))
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
@@ -130,7 +130,7 @@ public class UserAuthenticationService {
             .block();
     }
 
-    private String bearerToken(String token) {
+    private String getBearerToken(String token) {
         return "Bearer " + token;
     }
 

@@ -56,7 +56,7 @@ public class UserRestController {
 
     @GetMapping("/validate/nickname")
     public ResponseEntity validateNickname(final @RequestParam("value") String nickname) {
-        userAuthenticationService.validNickname(nickname);
+        userAuthenticationService.validateNickname(nickname);
         return ResponseEntity.noContent().build();
     }
 
