@@ -1,6 +1,6 @@
 package com.polzzak.user.model;
 
-public record AccessTokenResponse(
+public record TokenResponse(
     String accessToken
 ) {
 }

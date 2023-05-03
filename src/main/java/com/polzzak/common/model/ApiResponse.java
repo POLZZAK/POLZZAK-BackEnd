@@ -15,23 +15,23 @@ public record ApiResponse<T>(
         return new ApiResponse(code, messages, null);
     }
 
-    public static ApiResponse error(final ResultCode resultCode) {
-        return new ApiResponse(resultCode.getCode(), List.of(resultCode.getMessage()), null);
+    public static ApiResponse error(final ErrorCode errorCode) {
+        return new ApiResponse(errorCode.getCode(), List.of(errorCode.getMessage()), null);
     }
 
-    public static <T> ApiResponse<T> error(final ResultCode resultCode, final T data) {
-        return new ApiResponse(resultCode.getCode(), List.of(resultCode.getMessage()), data);
+    public static <T> ApiResponse<T> error(final ErrorCode errorCode, final T data) {
+        return new ApiResponse(errorCode.getCode(), List.of(errorCode.getMessage()), data);
     }
 
     public static <T> ApiResponse<T> ok() {
-        return new ApiResponse(ResultCode.OK.getCode(), List.of(ResultCode.OK.getMessage()), null);
+        return new ApiResponse(ErrorCode.OK.getCode(), List.of(ErrorCode.OK.getMessage()), null);
     }
 
     public static <T> ApiResponse<T> ok(final T data) {
-        return new ApiResponse(ResultCode.OK.getCode(), List.of(ResultCode.OK.getMessage()), data);
+        return new ApiResponse(ErrorCode.OK.getCode(), List.of(ErrorCode.OK.getMessage()), data);
     }
 
     public static ApiResponse created() {
-        return new ApiResponse(ResultCode.CREATED.getCode(), List.of(ResultCode.CREATED.getMessage()), null);
+        return new ApiResponse(ErrorCode.CREATED.getCode(), List.of(ErrorCode.CREATED.getMessage()), null);
     }
 }

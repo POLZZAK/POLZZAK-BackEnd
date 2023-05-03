@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 @RequiredArgsConstructor
-public enum ResultCode {
+public enum ErrorCode {
     OK(HttpStatus.OK, 200, "OK"),
     CREATED(HttpStatus.CREATED, 201, "CREATED"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 401, "인증되지 않은 요청입니다"),

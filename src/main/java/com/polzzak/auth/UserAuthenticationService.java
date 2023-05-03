@@ -2,15 +2,12 @@ package com.polzzak.auth;
 
 import com.polzzak.auth.model.*;
 import com.polzzak.file.FileService;
-import com.polzzak.common.model.ResultCode;
+import com.polzzak.common.model.ErrorCode;
 import com.polzzak.common.model.PolzzakException;
 import com.polzzak.member.model.Member;
-import com.polzzak.user.UserService;
 import com.polzzak.user.model.*;
 import com.polzzak.user.UserRepository;
 import com.polzzak.file.model.FileType;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -23,8 +20,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 
-import static com.polzzak.auth.model.Headers.REFRESH_TOKEN_HEADER;
-
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -33,7 +28,6 @@ public class UserAuthenticationService {
 
     private final WebClient webClient;
     private final FileService fileService;
-    private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoOAuthProperties kakaoOAuthProperties;
     private final GoogleOAuthProperties googleOAuthProperties;
@@ -41,13 +35,11 @@ public class UserAuthenticationService {
     private final String DEFAULT_PROFILE_KEY = "profile/default_profile.png";
 
     public UserAuthenticationService(final UserRepository userRepository, final WebClient webClient,
-                                     final FileService fileService, final UserService userService,
-                                     final JwtTokenProvider jwtTokenProvider, final KakaoOAuthProperties kakaoOAuthProperties,
-                                     final GoogleOAuthProperties googleOAuthProperties) {
+                                     final FileService fileService, final JwtTokenProvider jwtTokenProvider,
+                                     final KakaoOAuthProperties kakaoOAuthProperties, final GoogleOAuthProperties googleOAuthProperties) {
         this.userRepository = userRepository;
         this.webClient = webClient;
         this.fileService = fileService;
-        this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.kakaoOAuthProperties = kakaoOAuthProperties;
         this.googleOAuthProperties = googleOAuthProperties;
@@ -94,20 +86,6 @@ public class UserAuthenticationService {
         }
     }
 
-    public void login(final String username, final SocialType socialType) {
-
-    }
-
-    public AccessTokenResponse getAccessTokenResponse(String username) {
-        return new AccessTokenResponse(generateAccessTokenByUsername(username));
-    }
-
-    public Cookie addRefreshCookie(final String payload) {
-        Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_HEADER, generateRefreshTokenByUsername(payload));
-        refreshTokenCookie.setHttpOnly(true);
-        return refreshTokenCookie;
-    }
-
     private OauthAccessTokenDto getOAuthAccessToken(final String uri, final MultiValueMap<String, String> params) {
         return webClient.post()
             .uri(uri)
@@ -117,7 +95,7 @@ public class UserAuthenticationService {
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
                 clientResponse -> clientResponse.bodyToMono(String.class).map((data) -> {
                     log.error("[OAuth Exception] {}", data);
-                    return new PolzzakException(ResultCode.OAUTH_AUTHENTICATION_FAIL);
+                    return new PolzzakException(ErrorCode.OAUTH_AUTHENTICATION_FAIL);
                 })
             )
             .bodyToMono(OauthAccessTokenDto.class)
@@ -144,7 +122,7 @@ public class UserAuthenticationService {
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
                 clientResponse -> clientResponse.bodyToMono(String.class).map(data -> {
                     log.error("[OAuth Exception] {}", data);
-                    return new PolzzakException(ResultCode.OAUTH_AUTHENTICATION_FAIL);
+                    return new PolzzakException(ErrorCode.OAUTH_AUTHENTICATION_FAIL);
                 })
             )
             .bodyToMono(responseClass)

@@ -4,14 +4,14 @@ import lombok.Getter;
 
 @Getter
 public class PolzzakException extends RuntimeException {
-    private ResultCode resultCode;
+    private ErrorCode errorCode;
 
-    public PolzzakException(final ResultCode resultCode) {
-        this.resultCode = resultCode;
+    public PolzzakException(final ErrorCode errorCode) {
+        this.errorCode = errorCode;
     }
 
     @Override
     public String getMessage() {
-        return this.resultCode.getMessage();
+        return this.errorCode.getMessage();
     }
 }

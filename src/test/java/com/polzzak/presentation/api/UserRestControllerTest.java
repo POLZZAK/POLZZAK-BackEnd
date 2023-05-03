@@ -3,7 +3,7 @@ package com.polzzak.presentation.api;
 import com.polzzak.common.model.PolzzakException;
 import com.polzzak.auth.UserAuthenticationService;
 import com.polzzak.user.UserService;
-import com.polzzak.common.model.ResultCode;
+import com.polzzak.common.model.ErrorCode;
 import com.polzzak.user.model.LoginRequest;
 import com.polzzak.user.model.RegisterRequest;
 import com.polzzak.user.model.UserDto;
@@ -124,7 +124,7 @@ class UserRestControllerTest extends ControllerTestHelper {
         LoginRequest loginRequest = new LoginRequest(authenticationCode, redirectUri);
 
         // when
-        when(userAuthenticationService.getKakaoUserInfo(loginRequest)).thenThrow(new PolzzakException(ResultCode.OAUTH_AUTHENTICATION_FAIL));
+        when(userAuthenticationService.getKakaoUserInfo(loginRequest)).thenThrow(new PolzzakException(ErrorCode.OAUTH_AUTHENTICATION_FAIL));
 
         // then
         mockMvc.perform(
