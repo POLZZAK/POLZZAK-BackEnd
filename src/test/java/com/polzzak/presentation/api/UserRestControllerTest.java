@@ -1,15 +1,16 @@
 package com.polzzak.presentation.api;
 
-import com.polzzak.application.PolzzakException;
-import com.polzzak.application.UserAuthenticationService;
-import com.polzzak.application.UserService;
-import com.polzzak.application.dto.ErrorCode;
-import com.polzzak.application.dto.LoginRequest;
-import com.polzzak.application.dto.RegisterRequest;
-import com.polzzak.application.dto.UserDto;
-import com.polzzak.domain.user.MemberType;
-import com.polzzak.domain.user.SocialType;
+import com.polzzak.common.model.PolzzakException;
+import com.polzzak.auth.UserAuthenticationService;
+import com.polzzak.user.UserService;
+import com.polzzak.common.model.ErrorCode;
+import com.polzzak.user.model.LoginRequest;
+import com.polzzak.user.model.RegisterRequest;
+import com.polzzak.user.model.UserDto;
+import com.polzzak.member.model.MemberType;
+import com.polzzak.user.model.SocialType;
 import com.polzzak.support.test.ControllerTestHelper;
+import com.polzzak.user.UserRestController;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +20,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import static com.polzzak.support.TokenFixtures.*;
 import static com.polzzak.support.UserFixtures.*;
-import static com.polzzak.support.constant.Headers.REFRESH_TOKEN_HEADER;
+import static com.polzzak.auth.model.Headers.REFRESH_TOKEN_HEADER;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;

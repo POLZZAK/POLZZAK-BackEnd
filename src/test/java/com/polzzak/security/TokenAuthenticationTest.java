@@ -1,8 +1,8 @@
 package com.polzzak.security;
 
-import com.polzzak.application.UserAuthenticationService;
-import com.polzzak.application.UserService;
-import com.polzzak.presentation.api.UserRestController;
+import com.polzzak.auth.UserAuthenticationService;
+import com.polzzak.user.UserService;
+import com.polzzak.user.UserRestController;
 import com.polzzak.support.test.ControllerTestHelper;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 
 import static com.polzzak.support.TokenFixtures.*;
-import static com.polzzak.support.constant.Headers.REFRESH_TOKEN_HEADER;
+import static com.polzzak.auth.model.Headers.REFRESH_TOKEN_HEADER;
 import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;

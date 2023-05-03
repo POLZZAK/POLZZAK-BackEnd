@@ -1,6 +1,6 @@
 package com.polzzak.config;
 
-import com.polzzak.security.LoginUsernameResolver;
+import com.polzzak.common.resolver.LoginUsernameResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

@@ -2,7 +2,7 @@ package com.polzzak.support;
 
 import jakarta.servlet.http.Cookie;
 
-import static com.polzzak.support.constant.Headers.REFRESH_TOKEN_HEADER;
+import static com.polzzak.auth.model.Headers.REFRESH_TOKEN_HEADER;
 
 public class TokenFixtures {
     public static final String ACCESS_TOKEN = "accessToken";
