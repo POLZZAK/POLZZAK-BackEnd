@@ -1,7 +1,7 @@
 package com.polzzak.common.handler;
 
 import com.polzzak.common.model.PolzzakException;
-import com.polzzak.common.model.ErrorCode;
+import com.polzzak.common.model.ResultCode;
 import com.polzzak.common.model.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
@@ -33,8 +33,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             .collect(Collectors.toList());
 
         return ResponseEntity
-            .status(ErrorCode.REQUEST_RESOURCE_NOT_VALID.getHttpStatus())
-            .body(ApiResponse.error(ErrorCode.REQUEST_RESOURCE_NOT_VALID.getCode(), errorMessages));
+            .status(ResultCode.REQUEST_RESOURCE_NOT_VALID.getHttpStatus())
+            .body(ApiResponse.error(ResultCode.REQUEST_RESOURCE_NOT_VALID.getCode(), errorMessages));
     }
 
     @ExceptionHandler(PolzzakException.class)
@@ -42,8 +42,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("[PolzzakException] ", e);
 
         return ResponseEntity
-            .status(e.getErrorCode().getHttpStatus())
-            .body(ApiResponse.error(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
+            .status(e.getResultCode().getHttpStatus())
+            .body(ApiResponse.error(e.getResultCode().getCode(), e.getResultCode().getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

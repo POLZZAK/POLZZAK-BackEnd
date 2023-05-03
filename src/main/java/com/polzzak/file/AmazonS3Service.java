@@ -5,7 +5,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.polzzak.common.model.ErrorCode;
+import com.polzzak.common.model.ResultCode;
 import com.polzzak.auth.model.AmazonS3Properties;
 import com.polzzak.common.model.PolzzakException;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class AmazonS3Service implements StorageService {
         try {
             s3Client.putObject(amazonS3Properties.getBucketName(), fileKey, file.getInputStream(), objectMetadata);
         } catch (IOException | SdkClientException e) {
-            throw new PolzzakException(ErrorCode.FILE_UPLOAD_FAIL);
+            throw new PolzzakException(ResultCode.FILE_UPLOAD_FAIL);
         }
     }
 
@@ -47,7 +47,7 @@ public class AmazonS3Service implements StorageService {
         try {
             return s3Client.generatePresignedUrl(presignedUrlRequest).toString();
         } catch (SdkClientException e) {
-            throw new PolzzakException(ErrorCode.FIND_FILE_FAIL);
+            throw new PolzzakException(ResultCode.FIND_FILE_FAIL);
         }
     }
 
@@ -56,7 +56,7 @@ public class AmazonS3Service implements StorageService {
         try {
             s3Client.deleteObject(amazonS3Properties.getBucketName(), fileKey);
         } catch (SdkClientException e) {
-            throw new PolzzakException(ErrorCode.DELETE_FILE_FAIL);
+            throw new PolzzakException(ResultCode.DELETE_FILE_FAIL);
         }
     }
 }

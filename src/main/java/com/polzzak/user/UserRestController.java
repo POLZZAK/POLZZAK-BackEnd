@@ -3,7 +3,7 @@ package com.polzzak.user;
 import com.polzzak.auth.UserAuthenticationService;
 import com.polzzak.user.model.LoginRequest;
 import com.polzzak.common.model.ApiResponse;
-import com.polzzak.common.model.ErrorCode;
+import com.polzzak.common.model.ResultCode;
 import com.polzzak.user.model.LoginUsername;
 import com.polzzak.user.model.*;
 import jakarta.servlet.http.Cookie;
@@ -28,21 +28,25 @@ public class UserRestController {
     }
 
     @PostMapping("/login/kakao")
-    public ResponseEntity<ApiResponse> loginKakao(
+    public ResponseEntity<ApiResponse<AccessTokenResponse>> loginKakao(
         final @RequestBody @Valid LoginRequest loginRequest,
         final HttpServletResponse httpServletResponse
     ) {
         String username = userAuthenticationService.getKakaoUserInfo(loginRequest);
-        return login(username, SocialType.KAKAO, httpServletResponse);
+        userService.validateUser(username, SocialType.KAKAO);
+        httpServletResponse.addCookie(userAuthenticationService.addRefreshCookie(username));
+        return ResponseEntity.ok(ApiResponse.ok(userAuthenticationService.getAccessTokenResponse(username)));
     }
 
     @PostMapping("/login/google")
-    public ResponseEntity<ApiResponse> loginGoogle(
+    public ResponseEntity<ApiResponse<AccessTokenResponse>> loginGoogle(
         final @RequestBody @Valid LoginRequest loginRequest,
         final HttpServletResponse httpServletResponse
     ) {
-        String username = userAuthenticationService.getGoogleUserInfo(loginRequest);
-        return login(username, SocialType.GOOGLE, httpServletResponse);
+        String username = userAuthenticationService.getKakaoUserInfo(loginRequest);
+        userService.validateUser(username, SocialType.GOOGLE);
+        httpServletResponse.addCookie(userAuthenticationService.addRefreshCookie(username));
+        return ResponseEntity.ok(ApiResponse.ok(userAuthenticationService.getAccessTokenResponse(username)));
     }
 
     @PostMapping("/register")
@@ -52,7 +56,9 @@ public class UserRestController {
         final HttpServletResponse httpServletResponse
     ) {
         UserDto userDto = userAuthenticationService.register(registerRequest, profile);
-        return getTokenResponseEntity(httpServletResponse, userDto.username());
+        String username = userDto.username();
+        httpServletResponse.addCookie(userAuthenticationService.addRefreshCookie(username));
+        return ResponseEntity.ok(ApiResponse.ok(userAuthenticationService.getAccessTokenResponse(username)));
     }
 
     @GetMapping("/validate/nickname")
@@ -66,25 +72,4 @@ public class UserRestController {
         return ResponseEntity.ok(ApiResponse.ok(UserResponse.from(userService.getUserInfo(username))));
     }
 
-    private ResponseEntity<ApiResponse> login(final String username, final SocialType socialType, final HttpServletResponse response) {
-        try {
-            UserDto findUser = userService.getUserInfo(username);
-            return getTokenResponseEntity(response, findUser.username());
-        } catch (IllegalArgumentException e) {
-            LoginResponse loginResponse = new LoginResponse(username, socialType);
-            return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.REQUIRED_REGISTER, loginResponse));
-        }
-    }
-
-    private ResponseEntity<ApiResponse> getTokenResponseEntity(final HttpServletResponse response, final String username) {
-        addRefreshCookie(response, username);
-        TokenResponse tokenResponse = new TokenResponse(userAuthenticationService.generateAccessTokenByUsername(username));
-        return ResponseEntity.ok(ApiResponse.ok(tokenResponse));
-    }
-
-    private void addRefreshCookie(final HttpServletResponse response, final String payload) {
-        Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_HEADER, userAuthenticationService.generateRefreshTokenByUsername(payload));
-        refreshTokenCookie.setHttpOnly(true);
-        response.addCookie(refreshTokenCookie);
-    }
 }

@@ -1,6 +1,10 @@
 package com.polzzak.user;
 
+import com.polzzak.common.model.PolzzakException;
+import com.polzzak.common.model.ResultCode;
 import com.polzzak.file.FileService;
+import com.polzzak.user.model.LoginResponse;
+import com.polzzak.user.model.SocialType;
 import com.polzzak.user.model.UserDto;
 import com.polzzak.user.model.User;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,15 @@ public class UserService {
     public UserDto getUserInfo(final String username) {
         User findUser = findByUsername(username);
         return UserDto.from(findUser, fileService.getSignedUrl(findUser.getMember().getProfileKey()));
+    }
+
+    public void validateUser(final String username, final SocialType socialType) {
+        try {
+            User findUser = findByUsername(username);
+        } catch (Exception e) {
+            LoginResponse loginResponse = new LoginResponse(username, socialType);
+            throw new PolzzakException(ResultCode.REQUIRED_REGISTER);
+        }
     }
 
     private User findByUsername(final String username) {
