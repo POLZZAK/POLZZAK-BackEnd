@@ -1,4 +1,4 @@
-= REST Docs
+= Polzzak API DOCS
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs // 문서에 표기되는 코드들의 하이라이팅을 highlightjs를 사용
@@ -10,7 +10,7 @@
 = *Overview*
 
 [[overview-http-status-codes]]
-=== HTTP status codes
+== *1. HTTP status codes*
 
 |===
 | ResponseCode | Message
@@ -30,14 +30,94 @@
 | `403 FORBIDDEN`
 | Permission is invalid
 
-| `405 METHOD_NOT_ALLOWED`
-| Http Method is invalid
+| `410 REQUEST_RESOURCE_NOT_VALID`
+| Request resource is invalid
+
+| `411 OAUTH_AUTHENTICATION_FAIL`
+| Social Login failed
+
+| `412 REQUIRED_REGISTER`
+| Register is required
+
+| `431 ACCESS_TOKEN_INVALID`
+| AccessToken is invalid
+
+| `432 REFRESH_TOKEN_INVALID`
+| RefreshToken is invalid
+
+| `433 TOKEN_REISSUE_SUCCESS`
+| Success token reissue
+
+| `450 FILE_UPLOAD_FAIL`
+| Failed to upload file
+
+| `451 FIND_FILE_FAIL`
+| Failed to locate file
+
+| `451 DELETE_FILE_FAIL`
+| Failed to delete file
 |===
 
-[[Example-API]]
-== Example API
+[[Token-인증]]
+== *2. Token 인증*
 
-[[Example]]
-=== Example
+=== *1. AccessToken 유효하지 않을 경우*
 
-operation::example-get[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+operation::token-authentication-test/access-token-invalid[snippets='http-request,request-headers,http-response,response-fields']
+
+=== *2. AccessToken 만료, RefreshToken 유효*
+
+operation::token-authentication-test/access-token-expired-refresh-token-valid[snippets='http-request,request-headers,request-cookies,http-response,response-fields,response-cookies']
+
+=== *3. AccessToken 만료, RefreshToken 유효하지 않을 경우*
+
+operation::token-authentication-test/access-token-expired-refresh-token-invalid[snippets='http-request,request-headers,request-cookies,http-response,response-fields']
+---
+
+[[User-API]]
+= *User API*
+
+[[로그인-API]]
+== *1. 로그인 API*
+
+=== *1-1* 성공
+
+operation::user-rest-controller-test/user-login-success[snippets='http-request,request-fields,http-response,response-fields']
+
+=== *1-2* 실패 - 회원가입 필요
+
+operation::user-rest-controller-test/user-login-fail-register[snippets='http-request,request-fields,http-response,response-fields']
+
+=== *1-3* 실패 - 소셜 로그인 실패
+
+operation::user-rest-controller-test/user-login-fail-invalid[snippets='http-request,request-fields,http-response,response-fields']
+
+== *2. 회원가입 API*
+
+=== *2-1* 성공 - 프로필 X
+
+operation::user-rest-controller-test/user-register-success-empty-profile[snippets='http-request,request-parts,http-response,response-fields']
+
+=== *2-2* 성공 - 프로필 O
+
+operation::user-rest-controller-test/user-register-success-profile[snippets='http-request,request-parts,http-response,response-fields']
+
+=== *2-3* 실패 - 닉네임 중복
+
+operation::user-rest-controller-test/user-register-fail[snippets='http-request,request-parts,http-response,response-fields']
+
+== *3. 닉네임 중복 확인 API*
+
+=== *3-1* 성공 - 중복 X
+
+operation::user-rest-controller-test/user-valid-nickname-success[snippets='http-request,query-parameters,http-response']
+
+=== *3-2* 실패 - 중복 O
+
+operation::user-rest-controller-test/user-valid-nickname-duplication[snippets='http-request,query-parameters,http-response,response-fields']
+
+== *4. 사용자 정보 조회 API*
+
+=== *4-1* 성공
+
+operation::user-rest-controller-test/user-get-info-success[snippets='http-request,request-headers,http-response,response-fields']
