@@ -6,7 +6,6 @@ on:
     branches:
 #      - master
       - develop
-      - feature/test_secret
 
 permissions:
   contents: read
@@ -36,13 +35,13 @@ jobs:
 ##          ${{ runner.os }}-gradle-
 
     ## [DEV] create application.yml
-    - name: make application.yml
-      if: contains(github.ref, 'develop') || contains(github.ref, 'feature/test_secret')
+    - name: make secret.yml
+      if: contains(github.ref, 'develop')
       run: |
         cd ./src/main/resources
-        echo "${{ secrets.SECRET_SETTINGS }}" >> ./secret.yml        
+        echo "${{ secrets.SECRET_SETTINGS }}" | base64 -d >> ./secret.yml        
         
-        ## [PROD] create application.yml
+#         [PROD] create application.yml
 #    - name: make application.yml
 #      if: contains(github.ref, 'master')
 #      run: |
@@ -71,7 +70,7 @@ jobs:
 
     ## docker build & push to develop
     - name: Docker build & push to dev
-      if: contains(github.ref, 'develop') || contains(github.ref, 'feature/test_secret')
+      if: contains(github.ref, 'develop')
       run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -f Dockerfile-dev -t ${{ secrets.DOCKER_REPO }}/polzzak-dev .
@@ -97,7 +96,7 @@ jobs:
     - name: Deploy to dev
       uses: appleboy/ssh-action@master
       id: deploy-dev
-      if: contains(github.ref, 'develop') || contains(github.ref, 'feature/test_secret')
+      if: contains(github.ref, 'develop')
       with:
         host: ${{ secrets.HOST_DEV }}
         username: ${{ secrets.USERNAME }}
