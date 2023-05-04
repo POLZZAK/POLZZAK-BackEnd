@@ -11,8 +11,8 @@ public record UserDto(
 	SocialType socialType,
 	String profileUrl
 ) {
-	public static UserDto from(final User user, final SocialType socialType, final String profileUrl) {
+	public static UserDto from(final User user, final String profileUrl) {
 		return new UserDto(user.getUsername(), user.getMember().getNickname(), user.getMember().getMemberType(),
-			socialType, profileUrl);
+			user.getSocialType(), profileUrl);
 	}
 }

@@ -39,9 +39,6 @@ class AuthRestControllerTest extends ControllerTestHelper {
 		String authenticationCode = "authenticationCode";
 		LoginRequest loginRequest = new LoginRequest(authenticationCode, redirectUri);
 		String username = TEST_USERNAME;
-		String nickname = TEST_NICKNAME;
-		String profileUrl = TEST_PROFILE_URL;
-		UserDto userDto = new UserDto(username, nickname, MemberType.ETC, SocialType.KAKAO, profileUrl);
 		String social = "kakao";
 
 		// when

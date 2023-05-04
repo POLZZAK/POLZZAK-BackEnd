@@ -22,8 +22,7 @@ public class UserService {
 
 	public UserDto getUserInfo(final String username) {
 		User findUser = findByUsername(username);
-		return UserDto.from(findUser, findUser.getSocialType(),
-			fileClient.getSignedUrl(findUser.getMember().getProfileKey()));
+		return UserDto.from(findUser, fileClient.getSignedUrl(findUser.getMember().getProfileKey()));
 	}
 
 	private User findByUsername(final String username) {
