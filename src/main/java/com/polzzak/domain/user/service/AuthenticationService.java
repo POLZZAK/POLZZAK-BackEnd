@@ -23,18 +23,18 @@ import com.polzzak.domain.user.properties.GoogleOAuthProperties;
 import com.polzzak.domain.user.properties.KakaoOAuthProperties;
 import com.polzzak.domain.user.properties.OAuthProperties;
 import com.polzzak.domain.user.repository.UserRepository;
-import com.polzzak.global.auth.TokenProvider;
 import com.polzzak.global.common.FileType;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.exception.PolzzakException;
 import com.polzzak.global.infra.file.FileClient;
+import com.polzzak.global.security.TokenProvider;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-public class UserAuthenticationService {
+public class AuthenticationService {
 	private final UserRepository userRepository;
 
 	private final WebClient webClient;
@@ -45,7 +45,7 @@ public class UserAuthenticationService {
 
 	private final String DEFAULT_PROFILE_KEY = "profile/default_profile.png";
 
-	public UserAuthenticationService(final UserRepository userRepository, final WebClient webClient,
+	public AuthenticationService(final UserRepository userRepository, final WebClient webClient,
 		final FileClient fileClient, final TokenProvider tokenProvider,
 		final KakaoOAuthProperties kakaoOAuthProperties, final GoogleOAuthProperties googleOAuthProperties) {
 		this.userRepository = userRepository;

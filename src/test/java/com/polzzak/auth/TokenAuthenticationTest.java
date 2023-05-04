@@ -15,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 
 import com.polzzak.domain.user.controller.UserRestController;
-import com.polzzak.domain.user.service.UserAuthenticationService;
+import com.polzzak.domain.user.service.AuthenticationService;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.test.ControllerTestHelper;
 
@@ -28,7 +28,7 @@ public class TokenAuthenticationTest extends ControllerTestHelper {
 	UserService userService;
 
 	@MockBean
-	UserAuthenticationService userAuthenticationService;
+	AuthenticationService authenticationService;
 
 	@Test
 	void 엑세스_토큰_유효_하지_않음() throws Exception {

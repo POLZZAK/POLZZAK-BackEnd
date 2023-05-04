@@ -1,4 +1,4 @@
-package com.polzzak.global.auth.properties;
+package com.polzzak.global.security.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

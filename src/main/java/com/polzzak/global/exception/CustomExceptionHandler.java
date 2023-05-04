@@ -17,8 +17,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.WebUtils;
 
-import com.polzzak.global.auth.TokenProvider;
 import com.polzzak.global.common.ApiResponse;
+import com.polzzak.global.security.TokenProvider;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

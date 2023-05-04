@@ -27,11 +27,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.polzzak.global.auth.LoginUsername;
-import com.polzzak.global.auth.LoginUsernameResolver;
-import com.polzzak.global.auth.TokenProvider;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.exception.JwtException;
+import com.polzzak.global.security.LoginUsername;
+import com.polzzak.global.security.LoginUsernameResolver;
+import com.polzzak.global.security.TokenProvider;
 
 @TestEnvironment
 @AutoConfigureRestDocs

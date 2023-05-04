@@ -1,4 +1,4 @@
-package com.polzzak.global.auth;
+package com.polzzak.global.security;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -10,9 +10,9 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import com.polzzak.global.auth.properties.JwtProperties;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.exception.JwtException;
+import com.polzzak.global.security.properties.JwtProperties;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

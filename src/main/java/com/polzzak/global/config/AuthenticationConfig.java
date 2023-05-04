@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.polzzak.global.auth.LoginUsernameResolver;
+import com.polzzak.global.security.LoginUsernameResolver;
 
 @Configuration
 public class AuthenticationConfig implements WebMvcConfigurer {

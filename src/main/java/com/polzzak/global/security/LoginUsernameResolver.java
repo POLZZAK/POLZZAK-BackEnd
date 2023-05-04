@@ -1,4 +1,4 @@
-package com.polzzak.global.auth;
+package com.polzzak.global.security;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

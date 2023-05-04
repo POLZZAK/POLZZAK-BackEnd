@@ -1,4 +1,4 @@
-package com.polzzak.global.auth;
+package com.polzzak.global.security;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
