@@ -18,7 +18,6 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.polzzak.domain.user.dto.LoginRequest;
 import com.polzzak.domain.user.dto.RegisterRequest;
-import com.polzzak.domain.user.dto.UserDto;
 import com.polzzak.domain.user.entity.MemberType;
 import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.service.AuthenticationService;
@@ -155,8 +154,6 @@ class AuthRestControllerTest extends ControllerTestHelper {
 		String requestString = objectToString(registerRequest);
 		MockMultipartFile requestPart =
 			new MockMultipartFile("registerRequest", "registerRequest", "application/json", requestString.getBytes());
-		String defaultProfileUrl = TEST_DEFAULT_PROFILE_URL;
-		UserDto userDto = new UserDto(username, nickname, MemberType.ETC, SocialType.KAKAO, defaultProfileUrl);
 
 		// when
 		when(authenticationService.register(registerRequest, null)).thenReturn(username);
@@ -173,15 +170,9 @@ class AuthRestControllerTest extends ControllerTestHelper {
 			.andDo(
 				document(
 					"{class-name}/user-register-success-empty-profile",
-					requestParts(
-						partWithName("registerRequest").description(
-							"사용자 정보 (json)\n" +
-								"username: 소셜 사용자 정보\n" +
-								"memberType: 사용자 타입\n" +
-								"socialType: 소셜 타입\n" +
-								"nickname: 닉네임\n"
-						)
-					),
+					requestParts(partWithName("registerRequest").description(
+						"사용자 정보 (json)\n" + "username: 소셜 사용자 정보\n" + "memberType: 사용자 타입\n" + "socialType: 소셜 타입\n"
+							+ "nickname: 닉네임\n")),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
@@ -201,8 +192,6 @@ class AuthRestControllerTest extends ControllerTestHelper {
 		MockMultipartFile requestPart =
 			new MockMultipartFile("registerRequest", "registerRequest", "application/json", requestString.getBytes());
 		MockMultipartFile profile = TEST_PROFILE;
-		String profileUrl = TEST_PROFILE_URL;
-		UserDto userDto = new UserDto(username, nickname, MemberType.ETC, SocialType.KAKAO, profileUrl);
 
 		// when
 		when(authenticationService.register(registerRequest, profile)).thenReturn(username);
@@ -222,11 +211,8 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					"{class-name}/user-register-success-profile",
 					requestParts(
 						partWithName("registerRequest").description(
-							"사용자 정보 (json)\n" +
-								"username: 소셜 사용자 정보\n" +
-								"memberType: 사용자 타입\n" +
-								"socialType: 소셜 타입\n" +
-								"nickname: 닉네임\n"
+							"사용자 정보 (json)\n" + "username: 소셜 사용자 정보\n" + "memberType: 사용자 타입\n" + "socialType: 소셜 타입\n"
+								+ "nickname: 닉네임\n"
 						),
 						partWithName("profile").description("사용자 프로필")
 					),
@@ -249,8 +235,6 @@ class AuthRestControllerTest extends ControllerTestHelper {
 		MockMultipartFile requestPart =
 			new MockMultipartFile("registerRequest", "registerRequest", "application/json", requestString.getBytes());
 		MockMultipartFile profile = TEST_PROFILE;
-		String profileUrl = TEST_PROFILE_URL;
-		UserDto userDto = new UserDto(username, nickname, MemberType.ETC, SocialType.KAKAO, profileUrl);
 
 		// when
 		when(authenticationService.register(registerRequest, profile)).thenThrow(
@@ -269,11 +253,8 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					"{class-name}/user-register-fail",
 					requestParts(
 						partWithName("registerRequest").description(
-							"사용자 정보 (json)\n" +
-								"username: 소셜 사용자 정보\n" +
-								"memberType: 사용자 타입\n" +
-								"socialType: 소셜 타입\n" +
-								"nickname: 중복된 닉네임\n"
+							"사용자 정보 (json)\n" + "username: 소셜 사용자 정보\n" + "memberType: 사용자 타입\n" + "socialType: 소셜 타입\n"
+								+ "nickname: 중복된 닉네임\n"
 						),
 						partWithName("profile").description("사용자 프로필")
 					),
