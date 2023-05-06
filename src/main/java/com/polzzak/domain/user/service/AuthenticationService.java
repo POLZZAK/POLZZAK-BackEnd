@@ -43,7 +43,7 @@ public class AuthenticationService {
 	private final KakaoOAuthProperties kakaoOAuthProperties;
 	private final GoogleOAuthProperties googleOAuthProperties;
 
-	private final String DEFAULT_PROFILE_KEY = "profile/default_profile.png";
+	private final String defaultProfileKey = "profile/default_profile.png";
 
 	public AuthenticationService(final UserRepository userRepository, final WebClient webClient,
 		final FileClient fileClient, final TokenProvider tokenProvider,
@@ -165,7 +165,7 @@ public class AuthenticationService {
 		Member member = Member.createMember()
 			.nickname(registerRequest.nickname())
 			.memberType(registerRequest.memberType())
-			.profileKey(profileKey.orElse(DEFAULT_PROFILE_KEY))
+			.profileKey(profileKey.orElse(defaultProfileKey))
 			.build();
 
 		return User.createUser()

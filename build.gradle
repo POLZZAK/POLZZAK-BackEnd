@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.0.6'
     id 'io.spring.dependency-management' version '1.1.0'
     id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'checkstyle'
 }
 
 group = 'com.polzzak'
@@ -51,6 +52,16 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
 }
+
+checkstyle {
+    maxWarnings = 0
+    configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "${rootDir}/config/naver-checkstyle-suppressions.xml"]
+    toolVersion = "10.9.3"
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
 
 jar {
     enabled = false

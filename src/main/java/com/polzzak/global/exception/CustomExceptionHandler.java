@@ -50,12 +50,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(PolzzakException.class)
-	public ResponseEntity<ApiResponse> polzzakException(final PolzzakException e) {
-		log.error("[PolzzakException] ", e);
+	public ResponseEntity<ApiResponse> polzzakException(final PolzzakException ex) {
+		log.error("[PolzzakException] ", ex);
 
 		return ResponseEntity
-			.status(e.getErrorCode().getHttpStatus())
-			.body(ApiResponse.error(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
+			.status(ex.getErrorCode().getHttpStatus())
+			.body(ApiResponse.error(ex.getErrorCode().getCode(), ex.getErrorCode().getMessage()));
 	}
 
 	@ExceptionHandler(JwtException.class)
@@ -85,30 +85,30 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ApiResponse> illegalArgumentException(final IllegalArgumentException e) {
-		log.error("[IllegalArgumentException] ", e);
+	public ResponseEntity<ApiResponse> illegalArgumentException(final IllegalArgumentException ex) {
+		log.error("[IllegalArgumentException] ", ex);
 
 		return ResponseEntity
 			.badRequest()
-			.body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+			.body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(InvalidContentTypeException.class)
-	public ResponseEntity<ApiResponse> invalidContentTypeException(final InvalidContentTypeException e) {
-		log.error("[InvalidContentTypeException] ", e);
+	public ResponseEntity<ApiResponse> invalidContentTypeException(final InvalidContentTypeException ex) {
+		log.error("[InvalidContentTypeException] ", ex);
 
 		return ResponseEntity
 			.badRequest()
-			.body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+			.body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ApiResponse> runtimeException(final RuntimeException e) {
-		log.error("[RuntimeException] ", e);
+	public ResponseEntity<ApiResponse> runtimeException(final RuntimeException ex) {
+		log.error("[RuntimeException] ", ex);
 
 		return ResponseEntity
 			.internalServerError()
-			.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+			.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()));
 	}
 
 	private void addRefreshCookie(final HttpServletResponse httpServletResponse, final String payload) {
