@@ -57,7 +57,7 @@ checkstyle {
     maxWarnings = 0
     configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
     configProperties = ["suppressionFile": "${rootDir}/config/naver-checkstyle-suppressions.xml"]
-    toolVersion = "8.42"
+    toolVersion = "10.9.3"
 }
 
 compileJava.options.encoding = 'UTF-8'
