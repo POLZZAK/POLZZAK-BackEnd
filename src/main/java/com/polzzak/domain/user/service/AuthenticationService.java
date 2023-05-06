@@ -96,7 +96,7 @@ public class AuthenticationService {
 	}
 
 	public void validateUserByUsername(String username) {
-		if (!userRepository.existsByUsername(username).isEmpty()) {
+		if (userRepository.existsByUsername(username).isEmpty()) {
 			throw new IllegalArgumentException("존재하지 않는 사용자입니다");
 		}
 	}
