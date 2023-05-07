@@ -76,10 +76,10 @@ public abstract class ControllerTestHelper {
 
 			return TEST_USERNAME;
 		});
-
 		when(tokenProvider.getSubject(REFRESH_TOKEN)).thenReturn(TEST_USERNAME);
 		when(tokenProvider.isValidToken(REFRESH_TOKEN)).thenReturn(true);
 		when(tokenProvider.isValidToken(INVALID_REFRESH_TOKEN)).thenReturn(false);
+		when(tokenProvider.createAccessToken(TEST_USERNAME)).thenReturn(ACCESS_TOKEN);
 	}
 
 	protected String objectToString(final Object data) {

@@ -2,6 +2,8 @@ package com.polzzak.domain.user.controller;
 
 import static com.polzzak.global.common.HeadersConstant.*;
 
+import java.util.Locale;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,9 +55,11 @@ public class AuthRestController {
 
 			AccessTokenResponse accessTokenResponse = new AccessTokenResponse(
 				authenticationService.generateAccessTokenByUsername(username));
+
 			return ResponseEntity.ok(ApiResponse.ok(accessTokenResponse));
 		} catch (IllegalArgumentException e) {
-			LoginResponse loginResponse = new LoginResponse(username, SocialType.KAKAO);
+			LoginResponse loginResponse = new LoginResponse(username,
+				SocialType.valueOf(social.toUpperCase(Locale.ROOT)));
 			return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.REQUIRED_REGISTER, loginResponse));
 		}
 	}
