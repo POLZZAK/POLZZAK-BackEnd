@@ -1,10 +1,13 @@
 package com.polzzak.domain.user.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.polzzak.domain.user.dto.UserDto;
-import com.polzzak.domain.user.entity.User;
+import com.polzzak.domain.user.dto.MemberDto;
+import com.polzzak.domain.user.entity.Member;
+import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.domain.user.repository.UserRepository;
 import com.polzzak.global.infra.file.FileClient;
 
@@ -13,20 +16,47 @@ import com.polzzak.global.infra.file.FileClient;
 public class UserService {
 
 	private final UserRepository userRepository;
+
+	private final MemberRepository memberRepository;
+
 	private final FileClient fileClient;
 
-	public UserService(final UserRepository userRepository, final FileClient fileClient) {
+	public UserService(final UserRepository userRepository, final MemberRepository memberRepository,
+		final FileClient fileClient) {
 		this.userRepository = userRepository;
+		this.memberRepository = memberRepository;
 		this.fileClient = fileClient;
 	}
 
-	public UserDto getUserInfo(final String username) {
-		User findUser = findByUsername(username);
-		return UserDto.from(findUser, fileClient.getSignedUrl(findUser.getMember().getProfileKey()));
+	public MemberDto getMemberInfo(final String username) {
+		Member findMember = findMemberByUsername(username);
+		return MemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
 	}
 
-	private User findByUsername(final String username) {
+	public List<MemberDto> getMemberByNickname(final String username, final String nickname) {
+		Member findMember = findMemberByUsername(username);
+
+		return memberRepository.searchByNickname(nickname)
+			.stream()
+			.filter(searchedMember -> !findMember.getNickname().equals(searchedMember.getNickname()))
+			.map(searchedMember -> MemberDto.from(searchedMember,
+				fileClient.getSignedUrl(searchedMember.getProfileKey())))
+			.toList();
+	}
+
+	public Member findMemberByUsername(final String username) {
 		return userRepository.findByUsername(username)
+			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"))
+			.getMember();
+	}
+
+	public Member findMemberByMemberId(final Long memberId) {
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+	}
+
+	public Member findMemberByNickname(final String nickname) {
+		return memberRepository.findByNickname(nickname)
 			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
 	}
 }
