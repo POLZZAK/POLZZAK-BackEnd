@@ -1,4 +1,4 @@
-package com.polzzak.domain.user.entity;
+package com.polzzak.domain.family.entity;
 
 import com.polzzak.domain.model.BaseEntity;
 
@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FamilyMap extends BaseEntity {
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	private Long guardianId;
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	private Long kidId;
 
 	@Builder(builderMethodName = "createFamilyMap")
