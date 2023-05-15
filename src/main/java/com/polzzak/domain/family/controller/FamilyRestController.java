@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.family.dto.FamilyMapRequest;
 import com.polzzak.domain.family.dto.FamilyMemberListResponse;
-import com.polzzak.domain.family.dto.SearchedMemberListResponse;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.security.LoginUsername;
@@ -36,8 +35,7 @@ public class FamilyRestController {
 		final @LoginUsername String username,
 		final @RequestParam("nickname") String nickname
 	) {
-		return ResponseEntity.ok(ApiResponse.ok(
-			SearchedMemberListResponse.from(familyMapService.getSearchedMemberByNickname(username, nickname))));
+		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getSearchedMemberByNickname(username, nickname)));
 	}
 
 	@PostMapping

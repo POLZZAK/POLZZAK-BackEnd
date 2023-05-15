@@ -1,6 +1,6 @@
 package com.polzzak.domain.user.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,15 +33,13 @@ public class UserService {
 		return MemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
 	}
 
-	public List<MemberDto> getMemberByNickname(final String username, final String nickname) {
+	public Optional<MemberDto> getMemberByNickname(final String username, final String nickname) {
 		Member findMember = findMemberByUsername(username);
 
 		return memberRepository.searchByNickname(nickname)
-			.stream()
 			.filter(searchedMember -> !findMember.getNickname().equals(searchedMember.getNickname()))
 			.map(searchedMember -> MemberDto.from(searchedMember,
-				fileClient.getSignedUrl(searchedMember.getProfileKey())))
-			.toList();
+				fileClient.getSignedUrl(searchedMember.getProfileKey())));
 	}
 
 	public Member findMemberByUsername(final String username) {

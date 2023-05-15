@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FamilyTempMap extends BaseEntity {
+public class FamilyRequest extends BaseEntity {
 	@Column(nullable = false, updatable = false)
 	private Long senderId;
 
@@ -20,7 +20,7 @@ public class FamilyTempMap extends BaseEntity {
 	private Long receiverId;
 
 	@Builder(builderMethodName = "createFamilyTempMap")
-	public FamilyTempMap(final Long senderId, final Long receiverId) {
+	public FamilyRequest(final Long senderId, final Long receiverId) {
 		this.senderId = senderId;
 		this.receiverId = receiverId;
 	}

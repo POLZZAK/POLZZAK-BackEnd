@@ -40,10 +40,9 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 		String username = TEST_USERNAME;
 		SearchedMemberDto memberDto = new SearchedMemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.ETC,
 			TEST_PROFILE_URL, FamilyStatus.NONE);
-		List<SearchedMemberDto> memberDtos = List.of(memberDto);
 
 		// when
-		when(familyMapService.getSearchedMemberByNickname(username, nickname)).thenReturn(memberDtos);
+		when(familyMapService.getSearchedMemberByNickname(username, nickname)).thenReturn(memberDto);
 
 		// then
 		mockMvc.perform(
@@ -64,12 +63,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data.members").description("검색 결과 사용자 목록"),
-						fieldWithPath("data.members[0].memberId").description("사용자 ID"),
-						fieldWithPath("data.members[0].nickname").description("닉네임"),
-						fieldWithPath("data.members[0].memberType").description("사용자 타입"),
-						fieldWithPath("data.members[0].profileUrl").description("프로필 Url"),
-						fieldWithPath("data.members[0].familyStatus").description(
+						fieldWithPath("data.memberId").description("사용자 ID"),
+						fieldWithPath("data.nickname").description("닉네임"),
+						fieldWithPath("data.memberType").description("사용자 타입"),
+						fieldWithPath("data.profileUrl").description("프로필 Url"),
+						fieldWithPath("data.familyStatus").description(
 							"연동 상태 (NONE(NONE), RECEIVED(나에게 요청 보낸 사람), SENT(내가 요청 보낸 사람), APPROVE(승인)")
 					)
 				)

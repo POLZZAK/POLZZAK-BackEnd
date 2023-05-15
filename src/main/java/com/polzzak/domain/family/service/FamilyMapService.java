@@ -12,9 +12,9 @@ import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.dto.FamilyStatus;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.entity.FamilyMap;
-import com.polzzak.domain.family.entity.FamilyTempMap;
+import com.polzzak.domain.family.entity.FamilyRequest;
 import com.polzzak.domain.family.repository.FamilyMapRepository;
-import com.polzzak.domain.family.repository.FamilyTempMapRepository;
+import com.polzzak.domain.family.repository.FamilyRequestRepository;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.entity.MemberType;
 import com.polzzak.domain.user.service.UserService;
@@ -24,21 +24,21 @@ import com.polzzak.global.infra.file.FileClient;
 @Transactional(readOnly = true)
 public class FamilyMapService {
 	private final FamilyMapRepository familyMapRepository;
-	private final FamilyTempMapRepository familyTempMapRepository;
+	private final FamilyRequestRepository familyRequestRepository;
 
 	private final FileClient fileClient;
 	private final UserService userService;
 
 	public FamilyMapService(final FamilyMapRepository familyMapRepository,
-		final FamilyTempMapRepository familyTempMapRepository, final FileClient fileClient,
+		final FamilyRequestRepository familyRequestRepository, final FileClient fileClient,
 		final UserService userService) {
 		this.familyMapRepository = familyMapRepository;
-		this.familyTempMapRepository = familyTempMapRepository;
+		this.familyRequestRepository = familyRequestRepository;
 		this.fileClient = fileClient;
 		this.userService = userService;
 	}
 
-	public List<SearchedMemberDto> getSearchedMemberByNickname(final String username, final String nickname) {
+	public SearchedMemberDto getSearchedMemberByNickname(final String username, final String nickname) {
 		Member findMember = userService.findMemberByUsername(username);
 
 		Set<String> familiesNicknameSet = getFamilyMemberDtos(findMember).stream()
@@ -54,11 +54,10 @@ public class FamilyMapService {
 			.collect(Collectors.toSet());
 
 		return userService.getMemberByNickname(username, nickname)
-			.stream()
-			.filter(memberDto -> SearchFilter(findMember.getMemberType(), memberDto.memberType()))
+			.filter(memberDto -> isValid(findMember.getMemberType(), memberDto.memberType()))
 			.map(memberDto -> SearchedMemberDto.from(memberDto,
 				getFamilyState(memberDto.nickname(), familiesNicknameSet, sentNicknameSet, receivedNicknameSet)))
-			.toList();
+			.orElse(null);
 	}
 
 	@Transactional
@@ -67,7 +66,7 @@ public class FamilyMapService {
 
 		validateRequest(familyMapRequest, findMember);
 
-		familyTempMapRepository.save(createFamilyTempMap(findMember.getId(), familyMapRequest.targetId()));
+		familyRequestRepository.save(createFamilyTempMap(findMember.getId(), familyMapRequest.targetId()));
 	}
 
 	public List<FamilyMemberDto> getMyFamilies(final String username) {
@@ -88,26 +87,26 @@ public class FamilyMapService {
 	@Transactional
 	public void approveFamilyMap(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
-		familyTempMapRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
+		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
 		familyMapRepository.save(createFamilyMap(findMember, targetId));
 	}
 
 	@Transactional
 	public void rejectFamilyMap(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
-		familyTempMapRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
+		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
 	}
 
 	@Transactional
 	public void cancelFamilyMap(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
-		familyTempMapRepository.deleteBySenderIdAndReceiverId(findMember.getId(), targetId);
+		familyRequestRepository.deleteBySenderIdAndReceiverId(findMember.getId(), targetId);
 	}
 
 	private void validateRequest(final FamilyMapRequest familyMapRequest, final Member findMember) {
-		if (familyTempMapRepository.existsBySenderAndReceiverId(findMember.getId(), familyMapRequest.targetId())
+		if (familyRequestRepository.existsBySenderAndReceiverId(findMember.getId(), familyMapRequest.targetId())
 			.isPresent()
-			|| familyTempMapRepository.existsBySenderAndReceiverId(familyMapRequest.targetId(), findMember.getId())
+			|| familyRequestRepository.existsBySenderAndReceiverId(familyMapRequest.targetId(), findMember.getId())
 			.isPresent()) {
 			throw new IllegalArgumentException("중복된 요청입니다");
 		}
@@ -130,8 +129,8 @@ public class FamilyMapService {
 		return FamilyStatus.NONE;
 	}
 
-	private FamilyTempMap createFamilyTempMap(final Long senderId, final Long targetId) {
-		return FamilyTempMap.createFamilyTempMap()
+	private FamilyRequest createFamilyTempMap(final Long senderId, final Long targetId) {
+		return FamilyRequest.createFamilyTempMap()
 			.senderId(senderId)
 			.receiverId(targetId)
 			.build();
@@ -167,18 +166,18 @@ public class FamilyMapService {
 	}
 
 	private List<FamilyMemberDto> getSentMemberDtos(final long memberId) {
-		List<FamilyTempMap> familyTempMaps = familyTempMapRepository.findAllBySenderId(memberId);
+		List<FamilyRequest> familyRequests = familyRequestRepository.findAllBySenderId(memberId);
 
-		return familyTempMaps.stream()
-			.map(familyTempMap -> getFamilyMemberDto(familyTempMap.getReceiverId()))
+		return familyRequests.stream()
+			.map(familyRequest -> getFamilyMemberDto(familyRequest.getReceiverId()))
 			.toList();
 	}
 
 	private List<FamilyMemberDto> getReceivedMemberDtos(final long memberId) {
-		List<FamilyTempMap> familyTempMaps = familyTempMapRepository.findAllByReceiverId(memberId);
+		List<FamilyRequest> familyRequests = familyRequestRepository.findAllByReceiverId(memberId);
 
-		return familyTempMaps.stream()
-			.map(familyTempMap -> getFamilyMemberDto(familyTempMap.getSenderId()))
+		return familyRequests.stream()
+			.map(familyRequest -> getFamilyMemberDto(familyRequest.getSenderId()))
 			.toList();
 	}
 
@@ -187,7 +186,7 @@ public class FamilyMapService {
 		return FamilyMemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
 	}
 
-	private boolean SearchFilter(final MemberType findMemberType, final MemberType searchedMemberType) {
+	private boolean isValid(final MemberType findMemberType, final MemberType searchedMemberType) {
 		if ((findMemberType == MemberType.KID && searchedMemberType == MemberType.KID)
 			|| (findMemberType != MemberType.KID && searchedMemberType != MemberType.KID)
 		) {
