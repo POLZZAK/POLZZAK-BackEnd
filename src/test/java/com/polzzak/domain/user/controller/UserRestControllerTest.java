@@ -14,9 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 
-import com.polzzak.domain.user.dto.UserDto;
+import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.entity.MemberType;
-import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.test.ControllerTestHelper;
 
@@ -31,11 +30,10 @@ class UserRestControllerTest extends ControllerTestHelper {
 		// given
 		String accessToken = ACCESS_TOKEN;
 		String username = TEST_USERNAME;
-		UserDto userDto = new UserDto(username, TEST_NICKNAME, MemberType.ETC, SocialType.KAKAO,
-			TEST_PROFILE_URL);
+		MemberDto memberDto = new MemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.ETC, TEST_PROFILE_URL);
 
 		// when
-		when(userService.getUserInfo(username)).thenReturn(userDto);
+		when(userService.getMemberInfo(username)).thenReturn(memberDto);
 
 		// then
 		mockMvc.perform(

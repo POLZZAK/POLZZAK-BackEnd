@@ -7,7 +7,7 @@ public record MemberResponse(
 	MemberType memberType,
 	String profileUrl
 ) {
-	public static MemberResponse from(final UserDto userDto) {
-		return new MemberResponse(userDto.nickname(), userDto.memberType(), userDto.profileUrl());
+	public static MemberResponse from(final MemberDto memberDto) {
+		return new MemberResponse(memberDto.nickname(), memberDto.memberType(), memberDto.profileUrl());
 	}
 }

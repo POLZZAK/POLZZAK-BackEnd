@@ -21,7 +21,7 @@ public class UserRestController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<ApiResponse<MemberResponse>> getUserInfo(final @LoginUsername String username) {
-		return ResponseEntity.ok(ApiResponse.ok(MemberResponse.from(userService.getUserInfo(username))));
+	public ResponseEntity<ApiResponse<MemberResponse>> getMemberInfo(final @LoginUsername String username) {
+		return ResponseEntity.ok(ApiResponse.ok(MemberResponse.from(userService.getMemberInfo(username))));
 	}
 }
