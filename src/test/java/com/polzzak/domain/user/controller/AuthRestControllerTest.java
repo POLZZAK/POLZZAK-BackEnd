@@ -34,9 +34,8 @@ class AuthRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 로그인_성공() throws Exception {
 		// given
-		String redirectUri = "redirectUri";
-		String authenticationCode = "authenticationCode";
-		LoginRequest loginRequest = new LoginRequest(authenticationCode, redirectUri);
+		String oAuthAccessToken = "oAuthAccessToken";
+		LoginRequest loginRequest = new LoginRequest(oAuthAccessToken);
 		String username = TEST_USERNAME;
 		String social = "kakao";
 
@@ -58,8 +57,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					"{class-name}/user-login-success",
 					pathParameters(parameterWithName("social").description("소셜 로그인 타입")),
 					requestFields(
-						fieldWithPath("authenticationCode").description("인가 코드"),
-						fieldWithPath("redirectUri").description("redirectUri")
+						fieldWithPath("oAuthAccessToken").description("발급 받은 AccessToken")
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
@@ -73,9 +71,8 @@ class AuthRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 로그인_실패_회원가입_필요() throws Exception {
 		// given
-		String redirectUri = "redirectUri";
-		String authenticationCode = "authenticationCode";
-		LoginRequest loginRequest = new LoginRequest(authenticationCode, redirectUri);
+		String oAuthAccessToken = "oAuthAccessToken";
+		LoginRequest loginRequest = new LoginRequest(oAuthAccessToken);
 		String username = TEST_USERNAME;
 		String social = "kakao";
 
@@ -96,8 +93,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					"{class-name}/user-login-fail-register",
 					pathParameters(parameterWithName("social").description("소셜 로그인 타입")),
 					requestFields(
-						fieldWithPath("authenticationCode").description("인가 코드"),
-						fieldWithPath("redirectUri").description("redirectUri")
+						fieldWithPath("oAuthAccessToken").description("발급 받은 AccessToken")
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
@@ -112,9 +108,8 @@ class AuthRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 로그인_실패_소셜_로그인_실패() throws Exception {
 		// given
-		String redirectUri = "redirectUri";
-		String authenticationCode = "authenticationCode";
-		LoginRequest loginRequest = new LoginRequest(authenticationCode, redirectUri);
+		String oAuthAccessToken = "oAuthAccessToken";
+		LoginRequest loginRequest = new LoginRequest(oAuthAccessToken);
 		String social = "kakao";
 
 		// when
@@ -133,8 +128,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					"{class-name}/user-login-fail-invalid",
 					pathParameters(parameterWithName("social").description("소셜 로그인 타입")),
 					requestFields(
-						fieldWithPath("authenticationCode").description("인가 코드"),
-						fieldWithPath("redirectUri").description("redirectUri")
+						fieldWithPath("oAuthAccessToken").description("발급 받은 AccessToken")
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),

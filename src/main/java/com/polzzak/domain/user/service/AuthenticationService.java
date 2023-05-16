@@ -6,15 +6,11 @@ import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.polzzak.domain.user.dto.LoginRequest;
 import com.polzzak.domain.user.dto.OAuthUserInfoResponse;
-import com.polzzak.domain.user.dto.OauthAccessTokenDto;
 import com.polzzak.domain.user.dto.RegisterRequest;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.entity.SocialType;
@@ -102,38 +98,8 @@ public class AuthenticationService {
 	}
 
 	private String getSocialUserInfo(final LoginRequest loginRequest, final OAuthProperties oAuthProperties) {
-		MultiValueMap<String, String> params = getTokenParams(loginRequest, oAuthProperties.getApiKey(),
-			oAuthProperties.getSecretKey());
-		String accessToken = getOAuthAccessToken(oAuthProperties.getTokenUrl(), params).accessToken();
 		return getUserInfo(OAuthUserInfoResponse.class, oAuthProperties.getUserInfoUrl(),
-			accessToken).id();
-	}
-
-	private OauthAccessTokenDto getOAuthAccessToken(final String uri, final MultiValueMap<String, String> params) {
-		return webClient.post()
-			.uri(uri)
-			.body(BodyInserters.fromFormData(params))
-			.retrieve()
-			.onStatus(
-				httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-				clientResponse -> clientResponse.bodyToMono(String.class).map((data) -> {
-					log.error("[OAuth Exception] {}", data);
-					return new PolzzakException(ErrorCode.OAUTH_AUTHENTICATION_FAIL);
-				})
-			)
-			.bodyToMono(OauthAccessTokenDto.class)
-			.block();
-	}
-
-	private MultiValueMap<String, String> getTokenParams(final LoginRequest loginRequest, final String apiKey,
-		final String secretKey) {
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("grant_type", "authorization_code");
-		params.add("client_id", apiKey);
-		params.add("redirect_uri", loginRequest.redirectUri());
-		params.add("code", loginRequest.authenticationCode());
-		params.add("client_secret", secretKey);
-		return params;
+			loginRequest.oAuthAccessToken()).id();
 	}
 
 	private <R> R getUserInfo(Class<R> responseClass, String uri, String token) {
