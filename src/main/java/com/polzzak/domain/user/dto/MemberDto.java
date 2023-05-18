@@ -12,4 +12,8 @@ public record MemberDto(
 	public static MemberDto from(final Member member, final String profileUrl) {
 		return new MemberDto(member.getId(), member.getNickname(), member.getMemberType(), profileUrl);
 	}
+
+	public boolean isKid() {
+		return memberType == MemberType.KID;
+	}
 }

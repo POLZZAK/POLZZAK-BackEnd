@@ -74,6 +74,11 @@ public class FamilyMapService {
 		return getFamilyMemberDtos(findMember);
 	}
 
+	public List<FamilyMemberDto> getMyFamilies(final long memberId) {
+		Member findMember = userService.findMemberByMemberId(memberId);
+		return getFamilyMemberDtos(findMember);
+	}
+
 	public List<FamilyMemberDto> getMySentList(final String username) {
 		long memberId = userService.findMemberByUsername(username).getId();
 		return getSentMemberDtos(memberId);

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -17,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("select u.id from User u where u.username = :username")
 	Optional<Long> existsByUsername(@Param("username") String username);
+
+	@Query("select u from User u where u.member.id = :memberId")
+	Optional<User> findByMemberId(@Param("memberId") long memberId);
 }
