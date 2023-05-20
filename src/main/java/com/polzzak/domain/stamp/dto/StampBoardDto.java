@@ -7,7 +7,7 @@ import com.polzzak.domain.mission.dto.MissionCompleteDto;
 import com.polzzak.domain.mission.dto.MissionDto;
 import com.polzzak.domain.stamp.entity.StampBoard;
 
-public record StampBoardDto(String name, String status, int currentStampCount, int goalStampCount,
+public record StampBoardDto(long stampBoardId, String name, String status, int currentStampCount, int goalStampCount,
 							String reward, List<MissionDto> missions, List<StampDto> stamps,
 							List<MissionCompleteDto> missionCompleteList, LocalDateTime completedDate,
 							LocalDateTime rewardDate, LocalDateTime createdDate) {
@@ -23,9 +23,10 @@ public record StampBoardDto(String name, String status, int currentStampCount, i
 			.map(MissionCompleteDto::from)
 			.toList();
 
-		return new StampBoardDto(stampBoard.getName(), StampBoard.Status.getLowerCase(stampBoard.getStatus()),
-			stampBoard.getCurrentStampCount(), stampBoard.getGoalStampCount(), stampBoard.getReward(), missionDtoList,
-			stampDtoList, missionCompleteDtoList, stampBoard.getCompletedDate(), stampBoard.getRewardDate(),
+		return new StampBoardDto(stampBoard.getId(), stampBoard.getName(),
+			StampBoard.Status.getLowerCase(stampBoard.getStatus()), stampBoard.getCurrentStampCount(),
+			stampBoard.getGoalStampCount(), stampBoard.getReward(), missionDtoList, stampDtoList,
+			missionCompleteDtoList, stampBoard.getCompletedDate(), stampBoard.getRewardDate(),
 			stampBoard.getCreatedDate());
 	}
 }

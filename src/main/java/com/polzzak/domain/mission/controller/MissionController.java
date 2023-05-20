@@ -1,5 +1,6 @@
 package com.polzzak.domain.mission.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +32,7 @@ public class MissionController {
 	private final StampBoardService stampBoardService;
 
 	@PostMapping("/complete")
-	public ResponseEntity<ApiResponse<Void>> createMissionComplete(
+	public ResponseEntity<?> createMissionComplete(
 		@LoginUsername String username, @RequestBody @Valid MissionCompleteCreateRequest missionCompleteCreateRequest
 	) {
 		MemberDto member = userService.getMemberInfo(username);
@@ -42,7 +43,6 @@ public class MissionController {
 		Mission mission = missionService.getMission(missionCompleteCreateRequest.missionId());
 
 		missionService.createMissionComplete(stampBoard, mission, missionCompleteCreateRequest.guardianId(), member);
-		return ResponseEntity.ok(ApiResponse.ok());
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
-
 }

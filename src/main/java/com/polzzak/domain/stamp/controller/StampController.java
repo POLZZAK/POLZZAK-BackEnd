@@ -2,6 +2,7 @@ package com.polzzak.domain.stamp.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import com.polzzak.domain.stamp.dto.StampBoardDto;
 import com.polzzak.domain.stamp.dto.StampBoardUpdateRequest;
 import com.polzzak.domain.stamp.dto.StampCreateRequest;
 import com.polzzak.domain.stamp.dto.StampDto;
+import com.polzzak.domain.stamp.entity.StampBoard;
 import com.polzzak.domain.stamp.service.StampBoardService;
 import com.polzzak.domain.stamp.service.StampService;
 import com.polzzak.domain.user.dto.MemberDto;
@@ -40,8 +42,9 @@ public class StampController {
 	private final UserService userService;
 	private final StampService stampService;
 
+	//StampBoard
 	@PostMapping("/stamp-board")
-	public ResponseEntity<ApiResponse<Void>> createStampBoard(
+	public ResponseEntity<?> createStampBoard(
 		@LoginUsername String username, @RequestBody @Valid StampBoardCreateRequest stampBoardCreateRequest
 	) {
 		MemberDto member = userService.getMemberInfo(username);
@@ -50,42 +53,55 @@ public class StampController {
 		}
 
 		stampBoardService.createStampBoard(member, stampBoardCreateRequest);
-		return ResponseEntity.ok(ApiResponse.ok());
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
 	@GetMapping("/stamp-boards")
-	public ResponseEntity<ApiResponse<List<FamilyStampBoardSummary>>> getStampBoard(
-		@LoginUsername String username, @RequestParam(required = false) Long filterMemberId,
+	public ResponseEntity<ApiResponse<List<FamilyStampBoardSummary>>> getStampBoards(
+		@LoginUsername String username, @RequestParam(required = false) Long partnerMemberId,
 		@RequestParam boolean isInProgress
 	) {
 		MemberDto member = userService.getMemberInfo(username);
 		return ResponseEntity.ok(
-			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(member, filterMemberId, isInProgress)));
+			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(member, partnerMemberId, isInProgress)));
 	}
 
-	@GetMapping("/stamp-board/{stamp_board_id}")
+	@GetMapping("/stamp-board/{stampBoardId}")
 	public ResponseEntity<ApiResponse<StampBoardDto>> getStampBoard(@LoginUsername String username,
-		@PathVariable("stamp_board_id") long stampBoardId) {
+		@PathVariable long stampBoardId) {
 		MemberDto member = userService.getMemberInfo(username);
 		return ResponseEntity.ok(ApiResponse.ok(stampBoardService.getStampBoardDto(member, stampBoardId)));
 	}
 
-	@PutMapping("/stamp-board/{stamp_board_id}")
-	public ResponseEntity<ApiResponse<Void>> updateStampBoard(@LoginUsername String username,
-		@PathVariable("stamp_board_id") long stampBoardId,
+	@DeleteMapping("/stamp-board/{stampBoardId}")
+	public ResponseEntity<Void> deleteStampBoard(@LoginUsername String username,
+		@PathVariable long stampBoardId) {
+		MemberDto member = userService.getMemberInfo(username);
+		if (member.isKid()) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+
+		stampBoardService.deleteStampBoard(member, stampBoardId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PutMapping("/stamp-board/{stampBoardId}")
+	public ResponseEntity<ApiResponse<StampBoardDto>> updateStampBoard(@LoginUsername String username,
+		@PathVariable long stampBoardId,
 		@RequestBody @Valid StampBoardUpdateRequest stampBoardUpdateRequest) {
 		MemberDto member = userService.getMemberInfo(username);
 		if (member.isKid()) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 
-		stampBoardService.updateStampBoard(member, stampBoardId, stampBoardUpdateRequest);
-		return ResponseEntity.ok(ApiResponse.ok());
+		StampBoardDto stampBoard = stampBoardService.updateStampBoard(member, stampBoardId, stampBoardUpdateRequest);
+		return ResponseEntity.ok(ApiResponse.ok(stampBoard));
 	}
 
-	@PostMapping("/stamp-board/{stamp_board_id}/stamp")
-	public ResponseEntity<ApiResponse<Void>> createStamp(
-		@LoginUsername String username, @PathVariable("stamp_board_id") long stampBoardId,
+	//Stamp
+	@PostMapping("/stamp-board/{stampBoardId}/stamp")
+	public ResponseEntity<?> createStamp(
+		@LoginUsername String username, @PathVariable long stampBoardId,
 		@RequestBody @Valid StampCreateRequest stampCreateRequest
 	) {
 		MemberDto member = userService.getMemberInfo(username);
@@ -94,26 +110,14 @@ public class StampController {
 		}
 
 		stampService.createStamp(member, stampBoardId, stampCreateRequest);
-		return ResponseEntity.ok(ApiResponse.ok());
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
-	@GetMapping("/stamp-board/{stamp_board_id}/{stamp_id}")
+	@GetMapping("/stamp-board/{stampBoardId}/{stampId}")
 	public ResponseEntity<ApiResponse<StampDto>> getStamp(
-		@PathVariable("stamp_board_id") long stampBoardId,
-		@PathVariable("stamp_id") long stampId
+		@PathVariable long stampBoardId,
+		@PathVariable long stampId
 	) {
 		return ResponseEntity.ok(ApiResponse.ok(stampService.getStampDto(stampBoardId, stampId)));
-	}
-
-	@DeleteMapping("/stamp-board/{stamp_board_id}")
-	public ResponseEntity<ApiResponse<Void>> deleteStampBoard(@LoginUsername String username,
-		@PathVariable("stamp_board_id") long stampBoardId) {
-		MemberDto member = userService.getMemberInfo(username);
-		if (member.isKid()) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
-
-		stampBoardService.deleteStampBoard(member, stampBoardId);
-		return ResponseEntity.ok(ApiResponse.ok());
 	}
 }

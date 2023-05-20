@@ -56,10 +56,10 @@ public class StampBoardService {
 		return StampBoardDto.from(stampBoard);
 	}
 
-	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(MemberDto member, Long filterMemberId,
-		boolean isInProgress) {
+	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(MemberDto member, Long partnerMemberId,
+		Boolean isInProgress) {
 		List<FamilyMemberDto> families = familyMapService.getMyFamilies(member.memberId());
-		List<FamilyMemberDto> filteredFamilies = getFilteredFamilies(families, filterMemberId);
+		List<FamilyMemberDto> filteredFamilies = getFilteredFamilies(families, partnerMemberId);
 
 		return filteredFamilies.stream()
 			.map(family -> {
@@ -75,7 +75,8 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void updateStampBoard(MemberDto member, long stampBoardId, StampBoardUpdateRequest stampBoardUpdateRequest) {
+	public StampBoardDto updateStampBoard(MemberDto member, long stampBoardId,
+		StampBoardUpdateRequest stampBoardUpdateRequest) {
 		StampBoard stampBoard = getStampBoard(stampBoardId);
 		if (stampBoard.isNotOwner(member.memberId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
@@ -92,6 +93,8 @@ public class StampBoardService {
 		}
 
 		missionService.updateMissions(stampBoard, stampBoard.getMissions(), stampBoardUpdateRequest.missions());
+
+		return StampBoardDto.from(stampBoard);
 	}
 
 	private List<StampBoard> getStampBoards(long guardianId, long kidId) {
@@ -113,12 +116,12 @@ public class StampBoardService {
 			.anyMatch(family -> family.memberId() == kidId);
 	}
 
-	private List<FamilyMemberDto> getFilteredFamilies(List<FamilyMemberDto> families, Long filterMemberId) {
-		if (filterMemberId == null) {
+	private List<FamilyMemberDto> getFilteredFamilies(List<FamilyMemberDto> families, Long partnerMemberId) {
+		if (partnerMemberId == null) {
 			return families;
 		} else {
 			return families.stream()
-				.filter(family -> family.memberId() == filterMemberId)
+				.filter(family -> family.memberId() == partnerMemberId)
 				.toList();
 		}
 	}
