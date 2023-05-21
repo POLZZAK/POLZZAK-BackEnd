@@ -14,4 +14,7 @@ public interface FamilyMapRepository extends JpaRepository<FamilyMap, Long> {
 
 	@Query("select fm from FamilyMap fm where fm.guardianId = :guardianId")
 	List<FamilyMap> getFamilyMapsByGuardianId(@Param("guardianId") final Long guardianId);
+
+	@Query("select count(fm) from FamilyMap fm where fm.guardianId = :guardianId and fm.kidId = :kidId")
+	boolean existsByGuardianIdAndKidId(Long guardianId, Long kidId);
 }

@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/mission")
+@RequestMapping("/api/v1/missions")
 public class MissionController {
 
 	private final MissionService missionService;
@@ -40,9 +40,8 @@ public class MissionController {
 		if (!member.isKid() || stampBoard.isNotOwner(member.memberId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
-		Mission mission = missionService.getMission(missionCompleteCreateRequest.missionId());
 
-		missionService.createMissionComplete(stampBoard, mission, missionCompleteCreateRequest.guardianId(), member);
+		missionService.createMissionComplete(stampBoard, missionCompleteCreateRequest, member);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 }

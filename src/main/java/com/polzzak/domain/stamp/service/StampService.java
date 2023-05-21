@@ -1,12 +1,12 @@
 package com.polzzak.domain.stamp.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.polzzak.domain.mission.entity.Mission;
 import com.polzzak.domain.mission.service.MissionService;
 import com.polzzak.domain.stamp.dto.StampCreateRequest;
 import com.polzzak.domain.stamp.dto.StampDto;
@@ -31,22 +31,16 @@ public class StampService {
 	@Transactional
 	public void createStamp(MemberDto member, long stampBoardId, StampCreateRequest stampCreateRequest) {
 		StampBoard stampBoard = stampBoardService.getStampBoard(stampBoardId);
-		if (stampBoard.isNotOwner(member.memberId())) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
-		if (stampBoard.isCompleted()) {
-			throw new IllegalArgumentException("이미 도장을 다 모았습니다.");
-		}
+		validateForCreateStamp(stampBoard, member);
+		int stampCount = getValidStampCountForAdd(stampBoard, stampCreateRequest.count());
 
-		int remainingStampCount = stampBoard.getGoalStampCount() - stampBoard.getCurrentStampCount();
-		int requestStampCount = stampCreateRequest.count();
-		int stampCount = Math.min(requestStampCount, remainingStampCount);
 		List<Stamp> stamps = new ArrayList<>(stampCount);
 
+		Mission mission = missionService.getMission(stampCreateRequest.missionId());
 		for (int i = 0; i < stampCount; i++) {
 			stamps.add(Stamp.createMission()
-				.stampBoard(stampBoardService.getStampBoard(stampBoardId))
-				.mission(missionService.getMission(stampCreateRequest.missionId()))
+				.stampBoard(stampBoard)
+				.mission(mission)
 				.stampDesignId(stampCreateRequest.stampDesignId())
 				.build());
 		}
@@ -54,8 +48,7 @@ public class StampService {
 
 		stampBoard.setCurrentStampCount(stampBoard.getCurrentStampCount() + stampCount);
 		if (stampBoard.isCompleted()) {
-			stampBoard.setStatus(StampBoard.Status.COMPLETED);
-			stampBoard.setCompletedDate(LocalDateTime.now());
+			stampBoard.complete();
 		}
 	}
 
@@ -65,5 +58,19 @@ public class StampService {
 			throw new IllegalArgumentException("유효하지 않은 도장입니다.");
 		}
 		return StampDto.from(stampRepository.getReferenceById(stampId));
+	}
+
+	private void validateForCreateStamp(StampBoard stampBoard, MemberDto member) {
+		if (stampBoard.isNotOwner(member.memberId())) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+		if (stampBoard.isCompleted()) {
+			throw new IllegalArgumentException("이미 도장을 다 모았습니다.");
+		}
+	}
+
+	private int getValidStampCountForAdd(StampBoard stampBoard, int requestStampCount) {
+		int remainingStampCount = stampBoard.getGoalStampCount() - stampBoard.getCurrentStampCount();
+		return Math.min(requestStampCount, remainingStampCount);
 	}
 }

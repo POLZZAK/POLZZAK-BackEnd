@@ -108,6 +108,10 @@ public class FamilyMapService {
 		familyRequestRepository.deleteBySenderIdAndReceiverId(findMember.getId(), targetId);
 	}
 
+	public boolean isFamily(long guardianId, long kidId) {
+		return familyMapRepository.existsByGuardianIdAndKidId(guardianId, kidId);
+	}
+
 	private void validateRequest(final FamilyMapRequest familyMapRequest, final Member findMember) {
 		if (familyRequestRepository.existsBySenderAndReceiverId(findMember.getId(), familyMapRequest.targetId())
 			.isPresent()

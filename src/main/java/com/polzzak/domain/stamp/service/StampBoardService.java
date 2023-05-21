@@ -1,6 +1,5 @@
 package com.polzzak.domain.stamp.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class StampBoardService {
 
 	@Transactional
 	public void createStampBoard(MemberDto guardian, StampBoardCreateRequest stampBoardCreateRequest) {
-		if (!isFamily(guardian, stampBoardCreateRequest.kidId())) {
+		if (!familyMapService.isFamily(guardian.memberId(), stampBoardCreateRequest.kidId())) {
 			throw new IllegalArgumentException("가족이 아닙니다.");
 		}
 		StampBoard stampBoard = stampBoardRepository.save(StampBoard.createStampBoard()
@@ -59,7 +58,7 @@ public class StampBoardService {
 	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(MemberDto member, Long partnerMemberId,
 		Boolean isInProgress) {
 		List<FamilyMemberDto> families = familyMapService.getMyFamilies(member.memberId());
-		List<FamilyMemberDto> filteredFamilies = getFilteredFamilies(families, partnerMemberId);
+		List<FamilyMemberDto> filteredFamilies = getFilteredFamiliesByPartnerId(families, partnerMemberId);
 
 		return filteredFamilies.stream()
 			.map(family -> {
@@ -78,12 +77,7 @@ public class StampBoardService {
 	public StampBoardDto updateStampBoard(MemberDto member, long stampBoardId,
 		StampBoardUpdateRequest stampBoardUpdateRequest) {
 		StampBoard stampBoard = getStampBoard(stampBoardId);
-		if (stampBoard.isNotOwner(member.memberId())) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
-		if (stampBoard.getCurrentStampCount() == stampBoard.getGoalStampCount()) {
-			throw new IllegalArgumentException("도장을 다 모으면 수정할 수 없습니다.");
-		}
+		validateStampBoardForUpdate(stampBoard, member);
 
 		if (!stampBoard.getName().equals(stampBoardUpdateRequest.name())) {
 			stampBoard.setName(stampBoardUpdateRequest.name());
@@ -97,10 +91,6 @@ public class StampBoardService {
 		return StampBoardDto.from(stampBoard);
 	}
 
-	private List<StampBoard> getStampBoards(long guardianId, long kidId) {
-		return stampBoardRepository.findByGuardianIdAndKidId(guardianId, kidId);
-	}
-
 	@Transactional
 	public void deleteStampBoard(MemberDto user, long stampBoardId) {
 		StampBoard stampBoard = stampBoardRepository.getReferenceById(stampBoardId);
@@ -110,20 +100,17 @@ public class StampBoardService {
 		stampBoardRepository.delete(stampBoard);
 	}
 
-	private boolean isFamily(MemberDto guardian, long kidId) {
-		List<FamilyMemberDto> families = familyMapService.getMyFamilies(guardian.memberId());
-		return families.stream()
-			.anyMatch(family -> family.memberId() == kidId);
+	private List<StampBoard> getStampBoards(long guardianId, long kidId) {
+		return stampBoardRepository.findByGuardianIdAndKidId(guardianId, kidId);
 	}
 
-	private List<FamilyMemberDto> getFilteredFamilies(List<FamilyMemberDto> families, Long partnerMemberId) {
+	private List<FamilyMemberDto> getFilteredFamiliesByPartnerId(List<FamilyMemberDto> families, Long partnerMemberId) {
 		if (partnerMemberId == null) {
 			return families;
-		} else {
-			return families.stream()
-				.filter(family -> family.memberId() == partnerMemberId)
-				.toList();
 		}
+		return families.stream()
+			.filter(family -> family.memberId() == partnerMemberId)
+			.toList();
 	}
 
 	private List<StampBoardSummary> getStampBoardSummaries(MemberDto member, long partnerId, boolean isInProgress) {
@@ -134,19 +121,28 @@ public class StampBoardService {
 			stampBoards = getStampBoards(member.memberId(), partnerId);
 		}
 
-		List<StampBoard> filteredStampBoards = new ArrayList<>();
-		if (isInProgress) {
-			filteredStampBoards.addAll(stampBoards.stream()
-				.filter(stampBoard -> StampBoard.Status.getProgressStatuses().contains(stampBoard.getStatus()))
-				.toList());
-		} else {
-			filteredStampBoards.addAll(stampBoards.stream()
-				.filter(stampBoard -> stampBoard.getStatus() == StampBoard.Status.REWARDED)
-				.toList());
-		}
-
-		return filteredStampBoards.stream()
+		return getFilteredStampBoardsByStatus(stampBoards, isInProgress).stream()
 			.map(StampBoardSummary::from)
 			.toList();
+	}
+
+	private List<StampBoard> getFilteredStampBoardsByStatus(List<StampBoard> stampBoards, boolean isInProgress) {
+		if (isInProgress) {
+			return stampBoards.stream()
+				.filter(stampBoard -> StampBoard.Status.getProgressStatuses().contains(stampBoard.getStatus()))
+				.toList();
+		}
+		return stampBoards.stream()
+			.filter(stampBoard -> stampBoard.getStatus() == StampBoard.Status.REWARDED)
+			.toList();
+	}
+
+	private void validateStampBoardForUpdate(StampBoard stampBoard, MemberDto member) {
+		if (stampBoard.isNotOwner(member.memberId())) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+		if (stampBoard.getCurrentStampCount() == stampBoard.getGoalStampCount()) {
+			throw new IllegalArgumentException("도장을 다 모으면 수정할 수 없습니다.");
+		}
 	}
 }

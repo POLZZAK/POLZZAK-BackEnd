@@ -35,7 +35,7 @@ class MissionControllerTest extends ControllerTestHelper {
 	@MockBean
 	private StampBoardService stampBoardService;
 
-	private static final String BASE_URL = "/api/v1/mission";
+	private static final String BASE_URL = "/api/v1/missions";
 
 	@BeforeEach
 	public void setup() {

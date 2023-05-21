@@ -34,7 +34,7 @@ class StampControllerTest extends ControllerTestHelper {
 	@MockBean
 	private StampService stampService;
 
-	private static final String BASE_URL = "/api/v1/stamp";
+	private static final String BASE_URL = "/api/v1/stamps";
 
 	@BeforeEach
 	public void setup() {
@@ -188,7 +188,7 @@ class StampControllerTest extends ControllerTestHelper {
 		when(stampBoardService.updateStampBoard(any(), anyLong(), any())).thenReturn(STAMP_BOARD_DTO);
 
 		mockMvc.perform(
-				put(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
+				patch(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_BOARD_UPDATE_REQUEST)))

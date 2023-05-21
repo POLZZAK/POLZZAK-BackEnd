@@ -40,7 +40,6 @@ public class StampBoard extends BaseEntity {
 	@Column(nullable = false)
 	private String name;
 
-	@Setter
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
@@ -56,10 +55,8 @@ public class StampBoard extends BaseEntity {
 	@Column(nullable = false)
 	private String reward;
 
-	@Setter
 	private LocalDateTime completedDate;
 
-	@Setter
 	private LocalDateTime rewardDate;
 
 	@Where(clause = "is_active = true")
@@ -92,6 +89,11 @@ public class StampBoard extends BaseEntity {
 
 	public boolean isCompleted() {
 		return currentStampCount == goalStampCount;
+	}
+
+	public void complete() {
+		status = StampBoard.Status.COMPLETED;
+		completedDate = LocalDateTime.now();
 	}
 
 	@RequiredArgsConstructor

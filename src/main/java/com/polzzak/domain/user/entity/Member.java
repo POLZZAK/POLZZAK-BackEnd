@@ -34,4 +34,8 @@ public class Member extends BaseEntity {
 		this.nickname = nickname;
 		this.profileKey = profileKey;
 	}
+
+	public boolean isKid() {
+		return memberType == MemberType.KID;
+	}
 }

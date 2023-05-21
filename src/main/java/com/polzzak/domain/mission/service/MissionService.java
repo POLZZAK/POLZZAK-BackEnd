@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.polzzak.domain.mission.dto.MissionCompleteCreateRequest;
 import com.polzzak.domain.mission.dto.MissionDto;
 import com.polzzak.domain.mission.entity.Mission;
 import com.polzzak.domain.mission.entity.MissionComplete;
@@ -45,11 +46,13 @@ public class MissionService {
 	}
 
 	@Transactional
-	public void createMissionComplete(StampBoard stampBoard, Mission mission, long guardianId, MemberDto kid) {
+	public void createMissionComplete(StampBoard stampBoard, MissionCompleteCreateRequest missionCompleteCreateRequest,
+		MemberDto kid) {
 		if (stampBoard.isCompleted()) {
 			throw new IllegalArgumentException("이미 도장을 다 모았습니다.");
 		}
-		Member guardianEntity = userService.findMemberByMemberId(guardianId);
+		Mission mission = getMission(missionCompleteCreateRequest.missionId());
+		Member guardianEntity = userService.findMemberByMemberId(missionCompleteCreateRequest.guardianId());
 		Member kidEntity = userService.findMemberByMemberId(kid.memberId());
 
 		MissionComplete missionComplete = MissionComplete.createMissionComplete()
