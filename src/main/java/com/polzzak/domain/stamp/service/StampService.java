@@ -46,10 +46,7 @@ public class StampService {
 		}
 		stampRepository.saveAll(stamps);
 
-		stampBoard.setCurrentStampCount(stampBoard.getCurrentStampCount() + stampCount);
-		if (stampBoard.isCompleted()) {
-			stampBoard.complete();
-		}
+		stampBoard.addStampCount(stampCount);
 	}
 
 	public StampDto getStampDto(long stampBoardId, long stampId) {

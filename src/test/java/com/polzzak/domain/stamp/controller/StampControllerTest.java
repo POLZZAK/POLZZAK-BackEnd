@@ -74,13 +74,12 @@ class StampControllerTest extends ControllerTestHelper {
 	@Test
 	@DisplayName("메인 페이지 도장판 목록 조회 테스트")
 	void getStampBoardsTest() throws Exception {
-		//FIXME jjh anyLong() error -> isNull()
-		when(stampBoardService.getFamilyStampBoardSummaries(any(), isNull(), anyBoolean())).thenReturn(
+		when(stampBoardService.getFamilyStampBoardSummaries(any(), isNull(), any())).thenReturn(
 			FAMILY_STAMP_BOARD_SUMMARIES);
 
 		mockMvc.perform(
 				get(BASE_URL + "/stamp-boards")
-					.param("isInProgress", "true")
+					.param("stampBoardGroup", "in_progress")
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
@@ -91,7 +90,7 @@ class StampControllerTest extends ControllerTestHelper {
 				),
 				queryParameters(
 					parameterWithName("memberId").description("조회할 member ID").optional(),
-					parameterWithName("isInProgress").description("진행 중인 도장판 여부(boolean)")
+					parameterWithName("stampBoardGroup").description("진행 중인 도장판 여부(in_progress, ended)")
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),

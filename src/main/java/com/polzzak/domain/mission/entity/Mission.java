@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -27,9 +26,12 @@ public class Mission extends BaseEntity {
 	@Column(nullable = false)
 	private String content;
 
-	@Setter
 	@Column(nullable = false)
 	private boolean isActive;
+
+	public void changeActivate(boolean isActive) {
+		this.isActive = isActive;
+	}
 
 	@Builder(builderMethodName = "createMission")
 	public Mission(StampBoard stampBoard, String content) {

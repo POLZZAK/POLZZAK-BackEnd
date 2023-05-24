@@ -11,6 +11,7 @@ import com.polzzak.domain.mission.service.MissionService;
 import com.polzzak.domain.stamp.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stamp.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stamp.dto.StampBoardDto;
+import com.polzzak.domain.stamp.dto.StampBoardGroup;
 import com.polzzak.domain.stamp.dto.StampBoardSummary;
 import com.polzzak.domain.stamp.dto.StampBoardUpdateRequest;
 import com.polzzak.domain.stamp.entity.StampBoard;
@@ -56,14 +57,14 @@ public class StampBoardService {
 	}
 
 	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(MemberDto member, Long partnerMemberId,
-		Boolean isInProgress) {
+		StampBoardGroup stampBoardGroup) {
 		List<FamilyMemberDto> families = familyMapService.getMyFamilies(member.memberId());
 		List<FamilyMemberDto> filteredFamilies = getFilteredFamiliesByPartnerId(families, partnerMemberId);
 
 		return filteredFamilies.stream()
 			.map(family -> {
 				List<StampBoardSummary> stampBoardSummaries = getStampBoardSummaries(member, family.memberId(),
-					isInProgress);
+					stampBoardGroup);
 				return FamilyStampBoardSummary.from(family, stampBoardSummaries);
 			})
 			.toList();
@@ -80,10 +81,10 @@ public class StampBoardService {
 		validateStampBoardForUpdate(stampBoard, member);
 
 		if (!stampBoard.getName().equals(stampBoardUpdateRequest.name())) {
-			stampBoard.setName(stampBoardUpdateRequest.name());
+			stampBoard.updateName(stampBoardUpdateRequest.name());
 		}
 		if (!stampBoard.getReward().equals(stampBoardUpdateRequest.reward())) {
-			stampBoard.setReward(stampBoardUpdateRequest.reward());
+			stampBoard.updateReward(stampBoardUpdateRequest.reward());
 		}
 
 		missionService.updateMissions(stampBoard, stampBoard.getMissions(), stampBoardUpdateRequest.missions());
@@ -113,7 +114,8 @@ public class StampBoardService {
 			.toList();
 	}
 
-	private List<StampBoardSummary> getStampBoardSummaries(MemberDto member, long partnerId, boolean isInProgress) {
+	private List<StampBoardSummary> getStampBoardSummaries(MemberDto member, long partnerId,
+		StampBoardGroup stampBoardGroup) {
 		List<StampBoard> stampBoards;
 		if (member.isKid()) {
 			stampBoards = getStampBoards(partnerId, member.memberId());
@@ -121,13 +123,14 @@ public class StampBoardService {
 			stampBoards = getStampBoards(member.memberId(), partnerId);
 		}
 
-		return getFilteredStampBoardsByStatus(stampBoards, isInProgress).stream()
+		return getFilteredStampBoardsByGroup(stampBoards, stampBoardGroup).stream()
 			.map(StampBoardSummary::from)
 			.toList();
 	}
 
-	private List<StampBoard> getFilteredStampBoardsByStatus(List<StampBoard> stampBoards, boolean isInProgress) {
-		if (isInProgress) {
+	private List<StampBoard> getFilteredStampBoardsByGroup(List<StampBoard> stampBoards,
+		StampBoardGroup stampBoardGroup) {
+		if (stampBoardGroup == StampBoardGroup.IN_PROGRESS) {
 			return stampBoards.stream()
 				.filter(stampBoard -> StampBoard.Status.getProgressStatuses().contains(stampBoard.getStatus()))
 				.toList();

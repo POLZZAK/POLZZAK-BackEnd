@@ -22,7 +22,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -36,7 +35,6 @@ public class StampBoard extends BaseEntity {
 	@Column(nullable = false)
 	private long kidId;
 
-	@Setter
 	@Column(nullable = false)
 	private String name;
 
@@ -44,14 +42,12 @@ public class StampBoard extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Status status;
 
-	@Setter
 	@Column(nullable = false)
 	private int currentStampCount;
 
 	@Column(nullable = false)
 	private int goalStampCount;
 
-	@Setter
 	@Column(nullable = false)
 	private String reward;
 
@@ -87,11 +83,27 @@ public class StampBoard extends BaseEntity {
 		return kidId != memberId && guardianId != memberId;
 	}
 
+	public void updateName(String name) {
+		this.name = name;
+	}
+
+	public void addStampCount(int stampCount) {
+		this.currentStampCount += stampCount;
+
+		if (isCompleted()) {
+			complete();
+		}
+	}
+
 	public boolean isCompleted() {
 		return currentStampCount == goalStampCount;
 	}
 
-	public void complete() {
+	public void updateReward(String reward) {
+		this.reward = reward;
+	}
+
+	private void complete() {
 		status = StampBoard.Status.COMPLETED;
 		completedDate = LocalDateTime.now();
 	}

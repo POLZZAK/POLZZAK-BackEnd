@@ -28,20 +28,15 @@ import lombok.RequiredArgsConstructor;
 public class MissionController {
 
 	private final MissionService missionService;
-	private final UserService userService;
 	private final StampBoardService stampBoardService;
 
 	@PostMapping("/complete")
-	public ResponseEntity<?> createMissionComplete(
+	public ResponseEntity<ApiResponse<Void>> createMissionComplete(
 		@LoginUsername String username, @RequestBody @Valid MissionCompleteCreateRequest missionCompleteCreateRequest
 	) {
-		MemberDto member = userService.getMemberInfo(username);
 		StampBoard stampBoard = stampBoardService.getStampBoard(missionCompleteCreateRequest.stampBoardId());
-		if (!member.isKid() || stampBoard.isNotOwner(member.memberId())) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
 
-		missionService.createMissionComplete(stampBoard, missionCompleteCreateRequest, member);
+		missionService.createMissionComplete(stampBoard, missionCompleteCreateRequest, username);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 }

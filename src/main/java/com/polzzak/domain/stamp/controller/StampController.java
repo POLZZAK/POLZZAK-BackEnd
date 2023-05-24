@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,17 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.polzzak.domain.stamp.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stamp.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stamp.dto.StampBoardDto;
+import com.polzzak.domain.stamp.dto.StampBoardGroup;
 import com.polzzak.domain.stamp.dto.StampBoardUpdateRequest;
 import com.polzzak.domain.stamp.dto.StampCreateRequest;
 import com.polzzak.domain.stamp.dto.StampDto;
-import com.polzzak.domain.stamp.entity.StampBoard;
 import com.polzzak.domain.stamp.service.StampBoardService;
 import com.polzzak.domain.stamp.service.StampService;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.common.ApiResponse;
-import com.polzzak.global.exception.ErrorCode;
-import com.polzzak.global.exception.PolzzakException;
 import com.polzzak.global.security.LoginUsername;
 
 import jakarta.validation.Valid;
@@ -45,7 +42,7 @@ public class StampController {
 
 	//StampBoard
 	@PostMapping("/stamp-board")
-	public ResponseEntity<?> createStampBoard(
+	public ResponseEntity<ApiResponse<Void>> createStampBoard(
 		@LoginUsername String username, @RequestBody @Valid StampBoardCreateRequest stampBoardCreateRequest
 	) {
 		MemberDto guardian = userService.getGuardianInfo(username);
@@ -56,11 +53,12 @@ public class StampController {
 	@GetMapping("/stamp-boards")
 	public ResponseEntity<ApiResponse<List<FamilyStampBoardSummary>>> getStampBoards(
 		@LoginUsername String username, @RequestParam(required = false) Long partnerMemberId,
-		@RequestParam boolean isInProgress
+		@RequestParam(value = "stampBoardGroup") String stampBoardGroupAsStr
 	) {
 		MemberDto member = userService.getMemberInfo(username);
+		StampBoardGroup stampBoardGroup = StampBoardGroup.getStampBoardGroupByStr(stampBoardGroupAsStr);
 		return ResponseEntity.ok(
-			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(member, partnerMemberId, isInProgress)));
+			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(member, partnerMemberId, stampBoardGroup)));
 	}
 
 	@GetMapping("/stamp-board/{stampBoardId}")

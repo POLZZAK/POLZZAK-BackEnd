@@ -17,6 +17,8 @@ import com.polzzak.domain.stamp.entity.StampBoard;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.service.UserService;
+import com.polzzak.global.exception.ErrorCode;
+import com.polzzak.global.exception.PolzzakException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,10 +49,11 @@ public class MissionService {
 
 	@Transactional
 	public void createMissionComplete(StampBoard stampBoard, MissionCompleteCreateRequest missionCompleteCreateRequest,
-		MemberDto kid) {
-		if (stampBoard.isCompleted()) {
-			throw new IllegalArgumentException("이미 도장을 다 모았습니다.");
-		}
+		String username) {
+		MemberDto kid = userService.getMemberInfo(username);
+
+		validateForCreateMission(kid, stampBoard);
+
 		Mission mission = getMission(missionCompleteCreateRequest.missionId());
 		Member guardianEntity = userService.findMemberByMemberId(missionCompleteCreateRequest.guardianId());
 		Member kidEntity = userService.findMemberByMemberId(kid.memberId());
@@ -79,7 +82,7 @@ public class MissionService {
 
 		//before mission inactivate
 		missionRepository.findByIdIn(inactiveMissionIds)
-			.forEach(mission -> mission.setActive(false));
+			.forEach(mission -> mission.changeActivate(false));
 
 		List<Mission> newMissions = afterMissionDtoList.stream()
 			.filter(missionDto -> missionDto.id() == null)
@@ -90,5 +93,14 @@ public class MissionService {
 			.toList();
 
 		missionRepository.saveAll(newMissions);
+	}
+
+	private void validateForCreateMission(MemberDto member, StampBoard stampBoard) {
+		if (!member.isKid() || stampBoard.isNotOwner(member.memberId())) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+		if (stampBoard.isCompleted()) {
+			throw new IllegalArgumentException("이미 도장을 다 모았습니다.");
+		}
 	}
 }
