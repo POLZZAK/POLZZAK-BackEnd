@@ -1,8 +1,8 @@
 package com.polzzak.support;
 
-import com.polzzak.domain.mission.dto.MissionCompleteCreateRequest;
-import com.polzzak.domain.mission.entity.Mission;
-import com.polzzak.domain.stamp.entity.StampBoard;
+import com.polzzak.domain.stampboard.dto.MissionCompleteCreateRequest;
+import com.polzzak.domain.stampboard.entity.Mission;
+import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.entity.MemberType;
 

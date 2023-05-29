@@ -4,15 +4,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.polzzak.domain.family.dto.FamilyMemberDto;
-import com.polzzak.domain.mission.dto.MissionCompleteDto;
-import com.polzzak.domain.mission.dto.MissionDto;
-import com.polzzak.domain.stamp.dto.FamilyStampBoardSummary;
-import com.polzzak.domain.stamp.dto.StampBoardCreateRequest;
-import com.polzzak.domain.stamp.dto.StampBoardDto;
-import com.polzzak.domain.stamp.dto.StampBoardSummary;
-import com.polzzak.domain.stamp.dto.StampBoardUpdateRequest;
-import com.polzzak.domain.stamp.dto.StampCreateRequest;
-import com.polzzak.domain.stamp.dto.StampDto;
+import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
+import com.polzzak.domain.stampboard.dto.MissionCompleteDto;
+import com.polzzak.domain.stampboard.dto.MissionDto;
+import com.polzzak.domain.stampboard.dto.StampBoardCreateRequest;
+import com.polzzak.domain.stampboard.dto.StampBoardDto;
+import com.polzzak.domain.stampboard.dto.StampBoardSummary;
+import com.polzzak.domain.stampboard.dto.StampBoardUpdateRequest;
+import com.polzzak.domain.stampboard.dto.StampCreateRequest;
+import com.polzzak.domain.stampboard.dto.StampDto;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.entity.MemberType;
 

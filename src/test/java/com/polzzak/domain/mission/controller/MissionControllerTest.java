@@ -2,8 +2,7 @@ package com.polzzak.domain.mission.controller;
 
 import static com.polzzak.support.MissionFixtures.*;
 import static com.polzzak.support.TokenFixtures.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
@@ -20,16 +19,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import com.polzzak.domain.mission.service.MissionService;
-import com.polzzak.domain.stamp.service.StampBoardService;
+import com.polzzak.domain.stampboard.controller.MissionController;
+import com.polzzak.domain.stampboard.service.StampBoardService;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.test.ControllerTestHelper;
 
 @WebMvcTest(MissionController.class)
 class MissionControllerTest extends ControllerTestHelper {
 
-	@MockBean
-	private MissionService missionService;
 	@MockBean
 	private UserService userService;
 	@MockBean
@@ -41,8 +38,8 @@ class MissionControllerTest extends ControllerTestHelper {
 	public void setup() {
 		when(userService.getMemberInfo(anyString())).thenReturn(KID);
 		when(stampBoardService.getStampBoard(anyLong())).thenReturn(STAMP_BOARD);
-		when(missionService.getMission(anyLong())).thenReturn(MISSION);
-		doNothing().when(missionService).createMission(any(), any());
+		when(stampBoardService.getMission(anyLong())).thenReturn(MISSION);
+		doNothing().when(stampBoardService).createMission(any(), any());
 	}
 
 	@Test
