@@ -9,6 +9,8 @@ import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.domain.user.repository.UserRepository;
+import com.polzzak.global.exception.ErrorCode;
+import com.polzzak.global.exception.PolzzakException;
 import com.polzzak.global.infra.file.FileClient;
 
 @Service
@@ -30,6 +32,14 @@ public class UserService {
 
 	public MemberDto getMemberInfo(final String username) {
 		Member findMember = findMemberByUsername(username);
+		return MemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
+	}
+
+	public MemberDto getGuardianInfo(final String username) {
+		Member findMember = findMemberByUsername(username);
+		if (findMember.isKid()) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
 		return MemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
 	}
 

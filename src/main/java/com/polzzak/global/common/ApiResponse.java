@@ -35,7 +35,7 @@ public record ApiResponse<T>(
 		return new ApiResponse(HttpStatus.OK.value(), null, data);
 	}
 
-	public static ApiResponse created() {
+	public static ApiResponse<Void> created() {
 		return new ApiResponse(HttpStatus.CREATED.value(), null, null);
 	}
 }

@@ -74,6 +74,11 @@ public class FamilyMapService {
 		return getFamilyMemberDtos(findMember);
 	}
 
+	public List<FamilyMemberDto> getMyFamilies(final long memberId) {
+		Member findMember = userService.findMemberByMemberId(memberId);
+		return getFamilyMemberDtos(findMember);
+	}
+
 	public List<FamilyMemberDto> getMySentList(final String username) {
 		long memberId = userService.findMemberByUsername(username).getId();
 		return getSentMemberDtos(memberId);
@@ -101,6 +106,10 @@ public class FamilyMapService {
 	public void cancelFamilyMap(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
 		familyRequestRepository.deleteBySenderIdAndReceiverId(findMember.getId(), targetId);
+	}
+
+	public boolean isFamily(long guardianId, long kidId) {
+		return familyMapRepository.existsByGuardianIdAndKidId(guardianId, kidId);
 	}
 
 	private void validateRequest(final FamilyMapRequest familyMapRequest, final Member findMember) {
