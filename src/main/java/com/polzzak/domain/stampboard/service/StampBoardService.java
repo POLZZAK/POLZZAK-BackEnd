@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
-import com.polzzak.domain.stampboard.dto.MissionCompleteCreateRequest;
 import com.polzzak.domain.stampboard.dto.MissionDto;
+import com.polzzak.domain.stampboard.dto.MissionRequestCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardDto;
 import com.polzzak.domain.stampboard.dto.StampBoardGroup;
@@ -21,11 +21,11 @@ import com.polzzak.domain.stampboard.dto.StampBoardUpdateRequest;
 import com.polzzak.domain.stampboard.dto.StampCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampDto;
 import com.polzzak.domain.stampboard.entity.Mission;
-import com.polzzak.domain.stampboard.entity.MissionComplete;
+import com.polzzak.domain.stampboard.entity.MissionRequest;
 import com.polzzak.domain.stampboard.entity.Stamp;
 import com.polzzak.domain.stampboard.entity.StampBoard;
-import com.polzzak.domain.stampboard.repository.MissionCompleteRepository;
 import com.polzzak.domain.stampboard.repository.MissionRepository;
+import com.polzzak.domain.stampboard.repository.MissionRequestRepository;
 import com.polzzak.domain.stampboard.repository.StampBoardRepository;
 import com.polzzak.domain.stampboard.repository.StampRepository;
 import com.polzzak.domain.user.dto.MemberDto;
@@ -45,7 +45,7 @@ public class StampBoardService {
 	private final FamilyMapService familyMapService;
 	private final StampBoardRepository stampBoardRepository;
 	private final MissionRepository missionRepository;
-	private final MissionCompleteRepository missionCompleteRepository;
+	private final MissionRequestRepository missionRequestRepository;
 	private final StampRepository stampRepository;
 
 	//StampBoard
@@ -118,9 +118,9 @@ public class StampBoardService {
 		}
 
 		stampBoardRepository.delete(stampBoard);
-		deleteMissions(stampBoard.getMissions());
-		deleteStamps(stampBoard.getStamps());
-		deleteMissionCompletes(stampBoard.getMissionCompletes());
+		deleteMissions(stampBoard.getId());
+		deleteStamps(stampBoard.getId());
+		deletemissionRequests(stampBoard.getId());
 	}
 
 	//Mission
@@ -141,25 +141,24 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void createMissionComplete(MissionCompleteCreateRequest missionCompleteCreateRequest,
-		String username) {
-		StampBoard stampBoard = getStampBoard(missionCompleteCreateRequest.stampBoardId());
-		MemberDto kid = userService.getMemberInfo(username);
+	public void createmissionRequest(MissionRequestCreateRequest missionRequestCreateRequest,
+		MemberDto kid) {
+		StampBoard stampBoard = getStampBoard(missionRequestCreateRequest.stampBoardId());
 
 		validateForCreateMission(kid, stampBoard);
 
-		Mission mission = getMission(missionCompleteCreateRequest.missionId());
-		Member guardianEntity = userService.findMemberByMemberId(missionCompleteCreateRequest.guardianId());
+		Mission mission = getMission(missionRequestCreateRequest.missionId());
+		Member guardianEntity = userService.findMemberByMemberId(missionRequestCreateRequest.guardianId());
 		Member kidEntity = userService.findMemberByMemberId(kid.memberId());
 
-		MissionComplete missionComplete = MissionComplete.createMissionComplete()
+		MissionRequest missionRequest = MissionRequest.createMissionRequest()
 			.stampBoard(stampBoard)
 			.mission(mission)
 			.guardian(guardianEntity)
 			.kid(kidEntity)
 			.build();
 
-		missionCompleteRepository.save(missionComplete);
+		missionRequestRepository.save(missionRequest);
 	}
 
 	@Transactional
@@ -190,17 +189,13 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void deleteMissions(List<Mission> missions) {
-		missionRepository.deleteByIdIn(missions.stream()
-			.map(Mission::getId)
-			.toList());
+	public void deleteMissions(long stampBoardId) {
+		missionRepository.deleteByStampBoardId(stampBoardId);
 	}
 
 	@Transactional
-	public void deleteMissionCompletes(List<MissionComplete> missionCompletes) {
-		missionCompleteRepository.deleteByIdIn(missionCompletes.stream()
-			.map(MissionComplete::getId)
-			.toList());
+	public void deletemissionRequests(long stampBoardId) {
+		missionRequestRepository.deleteByStampBoardId(stampBoardId);
 	}
 
 	//Stamp
@@ -234,10 +229,8 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void deleteStamps(List<Stamp> stamps) {
-		stampRepository.deleteByIdIn(stamps.stream()
-			.map(Stamp::getId)
-			.toList());
+	public void deleteStamps(long stampBoardId) {
+		stampRepository.deleteByStampBoardId(stampBoardId);
 	}
 
 	//StampBoard

@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "mission_complete")
 @EntityListeners(AuditingEntityListener.class)
-public class MissionComplete {
+public class MissionRequest {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,8 +53,8 @@ public class MissionComplete {
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdDate;
 
-	@Builder(builderMethodName = "createMissionComplete")
-	public MissionComplete(StampBoard stampBoard, Mission mission, Member guardian, Member kid) {
+	@Builder(builderMethodName = "createMissionRequest")
+	public MissionRequest(StampBoard stampBoard, Mission mission, Member guardian, Member kid) {
 		this.stampBoard = stampBoard;
 		this.mission = mission;
 		this.guardian = guardian;

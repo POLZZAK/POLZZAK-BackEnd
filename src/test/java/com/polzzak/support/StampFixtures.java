@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
-import com.polzzak.domain.stampboard.dto.MissionCompleteDto;
 import com.polzzak.domain.stampboard.dto.MissionDto;
+import com.polzzak.domain.stampboard.dto.MissionRequestDto;
 import com.polzzak.domain.stampboard.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardDto;
 import com.polzzak.domain.stampboard.dto.StampBoardSummary;
@@ -41,9 +41,9 @@ public class StampFixtures {
 		new StampDto(11, 1, "미션1", LocalDateTime.now()),
 		new StampDto(12, 3, "미션2", LocalDateTime.now())
 	);
-	public static final List<MissionCompleteDto> MISSION_COMPLETE_DTOS = List.of(
-		new MissionCompleteDto(21, "미션3", LocalDateTime.now()),
-		new MissionCompleteDto(22, "미션4", LocalDateTime.now())
+	public static final List<MissionRequestDto> MISSION_COMPLETE_DTOS = List.of(
+		new MissionRequestDto(21, "미션3", LocalDateTime.now()),
+		new MissionRequestDto(22, "미션4", LocalDateTime.now())
 	);
 	public static final StampBoardDto STAMP_BOARD_DTO = new StampBoardDto(33L, "도장판 이름", "progress", 13, 30, "칭찬해주기",
 		MISSION_DTOS, STAMP_DTOS, MISSION_COMPLETE_DTOS, null, null, LocalDateTime.now());

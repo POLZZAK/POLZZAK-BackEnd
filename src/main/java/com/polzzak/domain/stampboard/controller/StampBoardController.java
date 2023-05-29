@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
+import com.polzzak.domain.stampboard.dto.MissionRequestCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardDto;
 import com.polzzak.domain.stampboard.dto.StampBoardGroup;
@@ -33,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/stamps")
-public class StampController {
+public class StampBoardController {
 
 	private final StampBoardService stampBoardService;
 	private final UserService userService;
@@ -100,5 +101,16 @@ public class StampController {
 		@PathVariable long stampId
 	) {
 		return ResponseEntity.ok(ApiResponse.ok(stampBoardService.getStampDto(stampBoardId, stampId)));
+	}
+
+	//Mission
+	@PostMapping("/mission-request")
+	public ResponseEntity<ApiResponse<Void>> createmissionRequest(
+		@LoginUsername String username, @RequestBody @Valid MissionRequestCreateRequest missionRequestCreateRequest
+	) {
+		MemberDto kid = userService.getMemberInfo(username);
+
+		stampBoardService.createmissionRequest(missionRequestCreateRequest, kid);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 }

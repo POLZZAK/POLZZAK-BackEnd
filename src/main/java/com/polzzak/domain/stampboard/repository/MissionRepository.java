@@ -10,5 +10,5 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
 	List<Mission> findByIdIn(List<Long> ids);
 
-	void deleteByIdIn(List<Long> ids);
+	void deleteByStampBoardId(long stampBoardId);
 }

@@ -59,7 +59,7 @@ public class StampBoard extends BaseEntity {
 	@OneToMany(mappedBy = "stampBoard", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Stamp> stamps = new ArrayList<>();
 	@OneToMany(mappedBy = "stampBoard", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final List<MissionComplete> missionCompletes = new ArrayList<>();
+	private final List<MissionRequest> missionRequests = new ArrayList<>();
 
 	@Builder(builderMethodName = "createStampBoard")
 	public StampBoard(long guardianId, long kidId, String name, int goalStampCount, String reward) {

@@ -36,31 +36,9 @@ class MissionControllerTest extends ControllerTestHelper {
 
 	@BeforeEach
 	public void setup() {
-		when(userService.getMemberInfo(anyString())).thenReturn(KID);
-		when(stampBoardService.getStampBoard(anyLong())).thenReturn(STAMP_BOARD);
-		when(stampBoardService.getMission(anyLong())).thenReturn(MISSION);
-		doNothing().when(stampBoardService).createMission(any(), any());
+
 	}
 
-	@Test
-	@DisplayName("미션 완료 요청 생성 테스트")
-	void createStampBoardTest() throws Exception {
-		mockMvc.perform(
-				post(BASE_URL + "/complete")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectToString(MISSION_COMPLETE_CREATE_REQUEST)))
-			.andDo(print())
-			.andExpect(status().isCreated())
-			.andDo(document("mission/complete-create-success",
-				requestHeaders(
-					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
-				),
-				requestFields(
-					fieldWithPath("stampBoardId").description("도장판 ID"),
-					fieldWithPath("missionId").description("미션 ID"),
-					fieldWithPath("guardianId").description("보호자 ID")
-				)));
-	}
+
 
 }

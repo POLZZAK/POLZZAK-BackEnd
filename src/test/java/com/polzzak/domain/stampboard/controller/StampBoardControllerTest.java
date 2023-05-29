@@ -1,5 +1,6 @@
 package com.polzzak.domain.stampboard.controller;
 
+import static com.polzzak.support.MissionFixtures.*;
 import static com.polzzak.support.StampFixtures.*;
 import static com.polzzak.support.TokenFixtures.*;
 import static org.mockito.Mockito.*;
@@ -23,8 +24,8 @@ import com.polzzak.domain.stampboard.service.StampBoardService;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.test.ControllerTestHelper;
 
-@WebMvcTest(StampController.class)
-class StampControllerTest extends ControllerTestHelper {
+@WebMvcTest(StampBoardController.class)
+class StampBoardControllerTest extends ControllerTestHelper {
 
 	@MockBean
 	private StampBoardService stampBoardService;
@@ -106,7 +107,7 @@ class StampControllerTest extends ControllerTestHelper {
 						.optional(),
 					fieldWithPath("data[].stampBoardSummaries[].goalStampCount").description("목표 도장 개수").optional(),
 					fieldWithPath("data[].stampBoardSummaries[].reward").description("보상 쿠폰").optional(),
-					fieldWithPath("data[].stampBoardSummaries[].missionCompleteCount").description("미션 완료 요청 개수")
+					fieldWithPath("data[].stampBoardSummaries[].missionRequestCount").description("미션 완료 요청 개수")
 						.optional(),
 					fieldWithPath("data[].stampBoardSummaries[].status").description("도장판 상태").optional()
 				)));
@@ -148,10 +149,10 @@ class StampControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.stamps[].stampDesignId").description("도장 디자인 ID").optional(),
 					fieldWithPath("data.stamps[].missionContent").description("미션 내용").optional(),
 					fieldWithPath("data.stamps[].createdDate").description("도장 생성 시각").optional(),
-					fieldWithPath("data.missionCompleteList[]").description("미션 완료 목록").optional(),
-					fieldWithPath("data.missionCompleteList[].id").description("미션 완료 ID").optional(),
-					fieldWithPath("data.missionCompleteList[].missionContent").description("미션 내용").optional(),
-					fieldWithPath("data.missionCompleteList[].createdDate").description("미션 완료 시각").optional(),
+					fieldWithPath("data.missionRequestList[]").description("미션 완료 목록").optional(),
+					fieldWithPath("data.missionRequestList[].id").description("미션 완료 ID").optional(),
+					fieldWithPath("data.missionRequestList[].missionContent").description("미션 내용").optional(),
+					fieldWithPath("data.missionRequestList[].createdDate").description("미션 완료 시각").optional(),
 					fieldWithPath("data.completedDate").description("도장 다 모은 시각"),
 					fieldWithPath("data.rewardDate").description("쿠폰 수령 시각"),
 					fieldWithPath("data.createdDate").description("도장판 생성 시각")
@@ -221,10 +222,10 @@ class StampControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.stamps[].stampDesignId").description("도장 디자인 ID").optional(),
 					fieldWithPath("data.stamps[].missionContent").description("미션 내용").optional(),
 					fieldWithPath("data.stamps[].createdDate").description("도장 생성 시각").optional(),
-					fieldWithPath("data.missionCompleteList[]").description("미션 완료 목록").optional(),
-					fieldWithPath("data.missionCompleteList[].id").description("미션 완료 ID").optional(),
-					fieldWithPath("data.missionCompleteList[].missionContent").description("미션 내용").optional(),
-					fieldWithPath("data.missionCompleteList[].createdDate").description("미션 완료 시각").optional(),
+					fieldWithPath("data.missionRequestList[]").description("미션 완료 목록").optional(),
+					fieldWithPath("data.missionRequestList[].id").description("미션 완료 ID").optional(),
+					fieldWithPath("data.missionRequestList[].missionContent").description("미션 내용").optional(),
+					fieldWithPath("data.missionRequestList[].createdDate").description("미션 완료 시각").optional(),
 					fieldWithPath("data.completedDate").description("도장 다 모은 시각"),
 					fieldWithPath("data.rewardDate").description("쿠폰 수령 시각"),
 					fieldWithPath("data.createdDate").description("도장판 생성 시각")
@@ -283,6 +284,32 @@ class StampControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.stampDesignId").description("도장 디자인 ID"),
 					fieldWithPath("data.missionContent").description("미션 내용"),
 					fieldWithPath("data.createdDate").description("생성 시각")
+				)));
+	}
+
+	@Test
+	@DisplayName("미션 완료 요청 생성 테스트")
+	void createMissionRequestTest() throws Exception {
+		when(userService.getMemberInfo(anyString())).thenReturn(KID);
+		when(stampBoardService.getStampBoard(anyLong())).thenReturn(STAMP_BOARD);
+		when(stampBoardService.getMission(anyLong())).thenReturn(MISSION);
+		doNothing().when(stampBoardService).createMission(any(), any());
+
+		mockMvc.perform(
+				post(BASE_URL + "/mission-request")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectToString(MISSION_COMPLETE_CREATE_REQUEST)))
+			.andDo(print())
+			.andExpect(status().isCreated())
+			.andDo(document("mission/request-create-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				requestFields(
+					fieldWithPath("stampBoardId").description("도장판 ID"),
+					fieldWithPath("missionId").description("미션 ID"),
+					fieldWithPath("guardianId").description("보호자 ID")
 				)));
 	}
 }

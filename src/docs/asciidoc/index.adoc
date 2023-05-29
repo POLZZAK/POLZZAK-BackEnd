@@ -263,4 +263,4 @@ operation::stamp/get-success[snippets='http-request,request-headers,path-paramet
 == *미션 완료 요청 생성 API*
 
 
-operation::mission/complete-create-success[snippets='http-request,request-headers,request-fields,http-response']
+operation::mission/request-create-success[snippets='http-request,request-headers,request-fields,http-response']
