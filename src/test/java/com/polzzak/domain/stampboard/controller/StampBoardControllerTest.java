@@ -99,7 +99,6 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					fieldWithPath("data[].partner.nickname").description("상대 nickname").optional(),
 					fieldWithPath("data[].partner.memberType").description("상대 member type").optional(),
 					fieldWithPath("data[].partner.profileUrl").description("상대 member profile image url").optional(),
-					fieldWithPath("data[].partner.kid").description("kid 여부").optional(),
 					fieldWithPath("data[].stampBoardSummaries[]").description("도장판 목록").optional(),
 					fieldWithPath("data[].stampBoardSummaries[].stampBoardId").description("도장판 ID").optional(),
 					fieldWithPath("data[].stampBoardSummaries[].name").description("도장판 이름").optional(),
