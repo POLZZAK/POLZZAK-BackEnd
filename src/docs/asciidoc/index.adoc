@@ -54,6 +54,9 @@
 | `434 TOKEN_REISSUE_SUCCESS`
 | Success token reissue
 
+| `435 TOKEN_UNAUTHORIZED`
+| Request not authorized
+
 | `450 FILE_UPLOAD_FAIL`
 | Failed to upload file
 
@@ -80,6 +83,72 @@ operation::token-authentication-test/access-token-expired-refresh-token-valid[sn
 operation::token-authentication-test/access-token-expired-refresh-token-invalid[snippets='http-request,request-headers,request-cookies,http-response,response-fields']
 ---
 
+[[Member-Type-API]]
+= *Member type API*
+*💬 조회 제외하고 생성/수정/삭제는 Admin 권한을 가진 유저만 요청 가능*
+
+*MemberType*
+
+|===
+| name | description
+| GUARDIAN
+| 보호자
+
+| KID
+| 아이
+|===
+
+*detail: 엄마, 아빠, 삼촌...*
+
+[[사용자-타입-API]]
+== *1. 사용자 타입 목록 조회 API*
+
+=== *1-1* 성공
+
+operation::member-type-rest-controller-test/get-member-type-detail-list-success[snippets='http-request,http-response,response-fields']
+
+== *2. 사용자 타입 생성 API*
+
+=== *2-1* 성공
+
+operation::member-type-rest-controller-test/create-member-type-detail-success[snippets='http-request,request-headers,request-fields,http-response']
+
+=== *2-2* 실패 - 사용자 권한으로 요청
+
+operation::member-type-rest-controller-test/create-member-type-detail-fail-user-role[snippets='http-request,request-headers,http-response,response-fields']
+
+=== *2-3* 실패 - 중복된 타입 생성 요청
+
+operation::member-type-rest-controller-test/create-member-type-detail-fail-duplicate-detail[snippets='http-request,request-headers,http-response,response-fields']
+
+== *3. 사용자 타입 삭제 API*
+
+=== *3-1* 성공
+
+operation::member-type-rest-controller-test/delete-member-type-detail-success[snippets='http-request,request-headers,path-parameters,http-response']
+
+=== *3-2* 실패 - 사용자 권한으로 요청
+
+operation::member-type-rest-controller-test/delete-member-type-detail-fail-user-role[snippets='http-request,request-headers,http-response,response-fields']
+
+== *4. 사용자 타입 수정 API*
+
+=== *4-1* 성공
+
+operation::member-type-rest-controller-test/update-member-type-detail-success[snippets='http-request,request-headers,path-parameters,http-response']
+
+=== *4-2* 실패 - 사용자 권한으로 요청
+
+operation::member-type-rest-controller-test/update-member-type-detail-fail-user-role[snippets='http-request,request-headers,http-response,response-fields']
+
+=== *4-3* 실패 - 중복된 세부 내용
+
+operation::member-type-rest-controller-test/update-member-type-detail-fail-duplicated-detail[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-fields']
+
+=== *4-4* 실패 - 없는 세부 내용
+
+operation::member-type-rest-controller-test/update-member-type-detail-fail-not-exist-detail[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-fields']
+
 [[Auth-API]]
 = *Auth API*
 
@@ -88,7 +157,7 @@ operation::token-authentication-test/access-token-expired-refresh-token-invalid[
 
 === *1-1* 성공
 
-operation::auth-rest-controller-test/user-login-success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+operation::auth-rest-controller-test/user-login-success[snippets='http-request,path-parameters,request-fields,http-response,response-headers,response-fields']
 
 === *1-2* 실패 - 회원가입 필요
 
@@ -103,15 +172,19 @@ operation::auth-rest-controller-test/user-login-fail-invalid[snippets='http-requ
 
 === *2-1* 성공 - 프로필 X
 
-operation::auth-rest-controller-test/user-register-success-empty-profile[snippets='http-request,request-parts,http-response,response-fields']
+operation::auth-rest-controller-test/user-register-success-empty-profile[snippets='http-request,request-parts,http-response,response-headers,response-fields']
 
 === *2-2* 성공 - 프로필 O
 
-operation::auth-rest-controller-test/user-register-success-profile[snippets='http-request,request-parts,http-response,response-fields']
+operation::auth-rest-controller-test/user-register-success-profile[snippets='http-request,request-parts,http-response,response-headers,response-fields']
 
 === *2-3* 실패 - 닉네임 중복
 
-operation::auth-rest-controller-test/user-register-fail[snippets='http-request,request-parts,http-response,response-fields']
+operation::auth-rest-controller-test/user-register-fail-duplicate-nickname[snippets='http-request,request-parts,http-response,response-fields']
+
+=== *2-3* 실패 - 없는 사용자 타입
+
+operation::auth-rest-controller-test/user-register-fail-not-exist-member-type[snippets='http-request,request-parts,http-response,response-fields']
 
 [[닉네임-검증-API]]
 == *3. 닉네임 중복 확인 API*
@@ -220,26 +293,31 @@ operation::family-rest-controller-test/get-received-users-success[snippets='http
 |===
 
 == *도장판 생성 API*
+
 === *성공*
 
 operation::stamp/board-create-success[snippets='http-request,request-headers,request-fields,http-response,response-fields']
 
 == *도장판 목록 조회 API*
+
 === *성공*
 
 operation::stamp/boards-get-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
 
 == *도장판 상세 조회 API*
+
 === *성공*
 
 operation::stamp/board-get-success[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
 == *도장판 삭제 API*
+
 === *성공*
 
 operation::stamp/board-delete-success[snippets='http-request,request-headers,http-response']
 
 == *도장판 수정 API*
+
 === *성공*
 
 operation::stamp/board-update-success[snippets='http-request,request-headers,path-parameters,request-fields,http-response']
@@ -248,11 +326,13 @@ operation::stamp/board-update-success[snippets='http-request,request-headers,pat
 = *도장*
 
 == *도장 생성 API*
+
 === *성공*
 
 operation::stamp/create-success[snippets='http-request,request-headers,request-fields,http-response']
 
 == *도장 상세 조회 API*
+
 === *성공*
 
 operation::stamp/get-success[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
@@ -261,6 +341,5 @@ operation::stamp/get-success[snippets='http-request,request-headers,path-paramet
 = *미션 완료 요청*
 
 == *미션 완료 요청 생성 API*
-
 
 operation::mission/request-create-success[snippets='http-request,request-headers,request-fields,http-response']
