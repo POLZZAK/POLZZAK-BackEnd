@@ -16,7 +16,7 @@ public interface FamilyRequestRepository extends JpaRepository<FamilyRequest, Lo
 
 	List<FamilyRequest> findAllByReceiverId(final Long receiverId);
 
-	@Query("select fr.id from FamilyRequest fr where fr.senderId = :senderId and fr.receiverId = :receiverId")
+	@Query("select fr.id from FamilyRequest fr where fr.sender.id = :senderId and fr.receiver.id = :receiverId")
 	Optional<Long> existsBySenderAndReceiverId(@Param("senderId") final Long senderId,
 		@Param("receiverId") final Long receiverId);
 }

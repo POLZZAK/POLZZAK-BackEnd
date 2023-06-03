@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.Getter;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public class BaseModifiableEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -25,6 +26,10 @@ public class BaseEntity {
 	@CreatedDate
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdDate;
+
+	@LastModifiedDate
+	@Column(nullable = false)
+	private LocalDateTime lastModifiedDate;
 
 	@Override
 	public boolean equals(final Object obj) {
@@ -36,7 +41,7 @@ public class BaseEntity {
 			return false;
 		}
 
-		final BaseEntity that = (BaseEntity)obj;
+		final BaseModifiableEntity that = (BaseModifiableEntity)obj;
 		return Objects.equals(id, that.id);
 	}
 

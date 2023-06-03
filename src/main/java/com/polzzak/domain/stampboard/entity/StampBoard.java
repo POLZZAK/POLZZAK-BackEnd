@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import org.hibernate.annotations.Where;
 
-import com.polzzak.domain.model.BaseEntity;
+import com.polzzak.domain.model.BaseModifiableEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "stamp_board")
-public class StampBoard extends BaseEntity {
+public class StampBoard extends BaseModifiableEntity {
 
 	@Column(nullable = false)
 	private long guardianId;
