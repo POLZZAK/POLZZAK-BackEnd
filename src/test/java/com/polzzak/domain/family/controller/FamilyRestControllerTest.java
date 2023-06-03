@@ -1,5 +1,6 @@
 package com.polzzak.domain.family.controller;
 
+import static com.polzzak.support.FamilyFixtures.*;
 import static com.polzzak.support.TokenFixtures.*;
 import static com.polzzak.support.UserFixtures.*;
 import static org.mockito.Mockito.*;
@@ -20,10 +21,8 @@ import org.springframework.http.MediaType;
 
 import com.polzzak.domain.family.dto.FamilyMapRequest;
 import com.polzzak.domain.family.dto.FamilyMemberDto;
-import com.polzzak.domain.family.dto.FamilyStatus;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
-import com.polzzak.domain.user.entity.MemberType;
 import com.polzzak.support.test.ControllerTestHelper;
 
 @WebMvcTest(FamilyRestController.class)
@@ -35,11 +34,10 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 사용자_닉네임_검색_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String nickname = TEST_NICKNAME;
 		String username = TEST_USERNAME;
-		SearchedMemberDto memberDto = new SearchedMemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.ETC,
-			TEST_PROFILE_URL, FamilyStatus.NONE);
+		SearchedMemberDto memberDto = SEARCHED_KID_MEMBER_DTO;
 
 		// when
 		when(familyMapService.getSearchedMemberByNickname(username, nickname)).thenReturn(memberDto);
@@ -65,7 +63,8 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 						fieldWithPath("messages").description("응답 메시지"),
 						fieldWithPath("data.memberId").description("사용자 ID"),
 						fieldWithPath("data.nickname").description("닉네임"),
-						fieldWithPath("data.memberType").description("사용자 타입"),
+						fieldWithPath("data.memberType.name").description("사용자 타입"),
+						fieldWithPath("data.memberType.detail").description("타입 세부 내용"),
 						fieldWithPath("data.profileUrl").description("프로필 Url"),
 						fieldWithPath("data.familyStatus").description(
 							"연동 상태 (NONE(NONE), RECEIVED(나에게 요청 보낸 사람), SENT(내가 요청 보낸 사람), APPROVE(승인)")
@@ -77,7 +76,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_신청_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
 		FamilyMapRequest familyMapRequest = new FamilyMapRequest(TEST_MEMBER_ID);
 
@@ -113,7 +112,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_신청_실패_중복_요청() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
 		FamilyMapRequest familyMapRequest = new FamilyMapRequest(TEST_MEMBER_ID);
 
@@ -150,7 +149,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_요청_승인_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
 		String id = String.valueOf(TEST_MEMBER_ID);
 
@@ -179,7 +178,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_요청_거절_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
 		String id = String.valueOf(TEST_MEMBER_ID);
 
@@ -208,7 +207,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_요청_취소_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
 		String id = String.valueOf(TEST_MEMBER_ID);
 
@@ -237,11 +236,9 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동된_사용자_목록_조회_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
-		FamilyMemberDto familyMemberDto = new FamilyMemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.MALE_BROTHER,
-			TEST_PROFILE_URL);
-		List<FamilyMemberDto> familyMemberDtos = List.of(familyMemberDto);
+		List<FamilyMemberDto> familyMemberDtos = List.of(FAMILY_KID_MEMBER_DTO);
 
 		// when
 		when(familyMapService.getMyFamilies(username)).thenReturn(familyMemberDtos);
@@ -264,7 +261,8 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 						fieldWithPath("data.families").description("연동된 사용자 목록"),
 						fieldWithPath("data.families[0].memberId").description("사용자 ID"),
 						fieldWithPath("data.families[0].nickname").description("닉네임"),
-						fieldWithPath("data.families[0].memberType").description("사용자 타입"),
+						fieldWithPath("data.families[0].memberType.name").description("사용자 타입"),
+						fieldWithPath("data.families[0].memberType.detail").description("타입 세부 내용"),
 						fieldWithPath("data.families[0].profileUrl").description("프로필 Url")
 					)
 				)
@@ -274,11 +272,9 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_요청보낸_사용자_목록_조회_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
-		FamilyMemberDto familyMemberDto = new FamilyMemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.MALE_BROTHER,
-			TEST_PROFILE_URL);
-		List<FamilyMemberDto> familyMemberDtos = List.of(familyMemberDto);
+		List<FamilyMemberDto> familyMemberDtos = List.of(FAMILY_KID_MEMBER_DTO);
 
 		// when
 		when(familyMapService.getMySentList(username)).thenReturn(familyMemberDtos);
@@ -301,7 +297,8 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 						fieldWithPath("data.families").description("연동 요청보낸 사용자 목록"),
 						fieldWithPath("data.families[0].memberId").description("사용자 ID"),
 						fieldWithPath("data.families[0].nickname").description("닉네임"),
-						fieldWithPath("data.families[0].memberType").description("사용자 타입"),
+						fieldWithPath("data.families[0].memberType.name").description("사용자 타입"),
+						fieldWithPath("data.families[0].memberType.detail").description("타입 세부 내용"),
 						fieldWithPath("data.families[0].profileUrl").description("프로필 Url")
 					)
 				)
@@ -311,11 +308,9 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_요청받은_사용자_목록_조회_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
-		FamilyMemberDto familyMemberDto = new FamilyMemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.MALE_BROTHER,
-			TEST_PROFILE_URL);
-		List<FamilyMemberDto> familyMemberDtos = List.of(familyMemberDto);
+		List<FamilyMemberDto> familyMemberDtos = List.of(FAMILY_KID_MEMBER_DTO);
 
 		// when
 		when(familyMapService.getMyReceivedList(username)).thenReturn(familyMemberDtos);
@@ -337,7 +332,8 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 						fieldWithPath("data.families").description("연동 요청받은 사용자 목록"),
 						fieldWithPath("data.families[0].memberId").description("사용자 ID"),
 						fieldWithPath("data.families[0].nickname").description("닉네임"),
-						fieldWithPath("data.families[0].memberType").description("사용자 타입"),
+						fieldWithPath("data.families[0].memberType.name").description("사용자 타입"),
+						fieldWithPath("data.families[0].memberType.detail").description("타입 세부 내용"),
 						fieldWithPath("data.families[0].profileUrl").description("프로필 Url")
 					)
 				)

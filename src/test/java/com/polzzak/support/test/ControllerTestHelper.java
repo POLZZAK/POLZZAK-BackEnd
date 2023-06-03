@@ -27,10 +27,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.polzzak.global.exception.ErrorCode;
-import com.polzzak.global.exception.JwtException;
+import com.polzzak.global.security.JwtErrorCode;
+import com.polzzak.global.security.JwtException;
 import com.polzzak.global.security.LoginUsername;
 import com.polzzak.global.security.LoginUsernameResolver;
+import com.polzzak.global.security.TokenPayload;
 import com.polzzak.global.security.TokenProvider;
 
 @TestEnvironment
@@ -70,16 +71,29 @@ public abstract class ControllerTestHelper {
 		});
 
 		when(loginUsernameResolver.resolveArgument(any(), any(), any(), any())).thenAnswer(invocation -> {
+			MethodParameter parameter = invocation.getArgument(0);
 			NativeWebRequest webRequest = invocation.getArgument(2);
+			LoginUsername annotation = parameter.getParameterAnnotation(LoginUsername.class);
 
-			checkAccessToken(webRequest);
+			String accessToken = getAccessToken(webRequest);
+			TokenPayload tokenPayload = tokenProvider.getTokenPayload(accessToken);
+
+			if (annotation.administrator()) {
+				String userRole = tokenPayload.userRole();
+				validateAdminUser(userRole);
+			}
 
 			return TEST_USERNAME;
 		});
-		when(tokenProvider.getSubject(REFRESH_TOKEN)).thenReturn(TEST_USERNAME);
-		when(tokenProvider.isValidToken(REFRESH_TOKEN)).thenReturn(true);
+
+		when(tokenProvider.getTokenPayload(USER_ACCESS_TOKEN)).thenReturn(USER_TOKEN_PAYLOAD);
+		when(tokenProvider.getTokenPayload(ADMIN_ACCESS_TOKEN)).thenReturn(ADMIN_TOKEN_PAYLOAD);
+		when(tokenProvider.getTokenPayload(USER_REFRESH_TOKEN)).thenReturn(USER_TOKEN_PAYLOAD);
+		when(tokenProvider.getTokenPayload(ADMIN_REFRESH_TOKEN)).thenReturn(ADMIN_TOKEN_PAYLOAD);
+		when(tokenProvider.isValidToken(USER_REFRESH_TOKEN)).thenReturn(true);
 		when(tokenProvider.isValidToken(INVALID_REFRESH_TOKEN)).thenReturn(false);
-		when(tokenProvider.createAccessToken(TEST_USERNAME)).thenReturn(ACCESS_TOKEN);
+		when(tokenProvider.createAccessToken(USER_TOKEN_PAYLOAD)).thenReturn(USER_ACCESS_TOKEN);
+		when(tokenProvider.createAccessToken(ADMIN_TOKEN_PAYLOAD)).thenReturn(ADMIN_ACCESS_TOKEN);
 	}
 
 	protected String objectToString(final Object data) {
@@ -90,19 +104,30 @@ public abstract class ControllerTestHelper {
 		}
 	}
 
-	private void checkAccessToken(final NativeWebRequest webRequest) {
+	private String getAccessToken(final NativeWebRequest webRequest) {
 		String accessToken = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
 		if (accessToken == null) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		}
 
 		String[] tokenFormat = accessToken.split(" ");
+		validateTokenFormat(tokenFormat);
+		return tokenFormat[1];
+	}
+
+	private void validateTokenFormat(final String[] tokenFormat) {
 		if (!tokenFormat[0].equals(TOKEN_TYPE.trim()) || tokenFormat[1].equals(INVALID_ACCESS_TOKEN)) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		}
 
 		if (tokenFormat[1].equals(EXPIRED_ACCESS_TOKEN)) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_EXPIRED);
+		}
+	}
+
+	private void validateAdminUser(final String userRole) {
+		if (!userRole.equals(TEST_ADMIN_ROLE)) {
+			throw new JwtException(JwtErrorCode.TOKEN_UNAUTHORIZED);
 		}
 	}
 }
