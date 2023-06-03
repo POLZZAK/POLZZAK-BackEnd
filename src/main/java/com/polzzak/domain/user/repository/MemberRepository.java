@@ -11,6 +11,4 @@ import com.polzzak.domain.user.entity.Member;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	@Query("select m from Member m where m.nickname = :nickname")
 	Optional<Member> searchByNickname(@Param("nickname") final String nickname);
-
-	Optional<Member> findByNickname(final String nickname);
 }

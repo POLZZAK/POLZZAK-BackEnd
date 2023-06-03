@@ -54,10 +54,9 @@ public class StampBoardController {
 		@LoginUsername String username, @RequestParam(required = false) Long partnerMemberId,
 		@RequestParam(value = "stampBoardGroup") String stampBoardGroupAsStr
 	) {
-		MemberDto member = userService.getMemberInfo(username);
 		StampBoardGroup stampBoardGroup = StampBoardGroup.getStampBoardGroupByStr(stampBoardGroupAsStr);
 		return ResponseEntity.ok(
-			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(member, partnerMemberId, stampBoardGroup)));
+			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(username, partnerMemberId, stampBoardGroup)));
 	}
 
 	@GetMapping("/stamp-board/{stampBoardId}")
@@ -108,9 +107,7 @@ public class StampBoardController {
 	public ResponseEntity<ApiResponse<Void>> createmissionRequest(
 		@LoginUsername String username, @RequestBody @Valid MissionRequestCreateRequest missionRequestCreateRequest
 	) {
-		MemberDto kid = userService.getMemberInfo(username);
-
-		stampBoardService.createmissionRequest(missionRequestCreateRequest, kid);
+		stampBoardService.createMissionRequest(username, missionRequestCreateRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 }

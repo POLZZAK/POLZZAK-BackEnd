@@ -10,8 +10,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import com.polzzak.global.exception.ErrorCode;
-import com.polzzak.global.exception.JwtException;
 import com.polzzak.global.security.properties.JwtProperties;
 
 import io.jsonwebtoken.Claims;
@@ -23,6 +21,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class TokenProvider {
 
+	public static final String ROLE = "role";
 	private final JwtProperties jwtProperties;
 
 	private final SecretKey key;
@@ -32,16 +31,16 @@ public class TokenProvider {
 		try {
 			this.key = Keys.hmacShaKeyFor(jwtProperties.getKey().getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		}
 	}
 
-	public String createAccessToken(final String payload) {
-		return createToken(payload, jwtProperties.getExpiredTimeMs());
+	public String createAccessToken(final TokenPayload tokenPayload) {
+		return createToken(tokenPayload, jwtProperties.getExpiredTimeMs());
 	}
 
-	public String createRefreshToken(final String payload) {
-		return createToken(payload, jwtProperties.getRefreshExpiredTimeMs());
+	public String createRefreshToken(final TokenPayload tokenPayload) {
+		return createToken(tokenPayload, jwtProperties.getRefreshExpiredTimeMs());
 	}
 
 	public boolean isValidToken(final String token) {
@@ -49,23 +48,22 @@ public class TokenProvider {
 			getClaimsJws(token);
 			return true;
 		} catch (ExpiredJwtException e) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	public String getSubject(final String token) {
-		return getClaimsJws(token)
-			.getBody()
-			.getSubject();
+	public TokenPayload getTokenPayload(final String token) {
+		Jws<Claims> claimsJws = getClaimsJws(token);
+		return new TokenPayload(claimsJws.getBody().getSubject(), claimsJws.getBody().get(ROLE).toString());
 	}
 
 	public String extractAccessToken(final WebRequest request) {
 		String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
 		if (accessToken == null || accessToken.length() < 1) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		}
 
 		return extractToken(accessToken);
@@ -77,7 +75,7 @@ public class TokenProvider {
 		String token = tokenFormat.getSecond();
 		String tokenType = tokenFormat.getFirst();
 		if (!tokenType.equals(jwtProperties.getType()) || !isValidToken(token)) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		}
 
 		return token;
@@ -88,7 +86,7 @@ public class TokenProvider {
 			String[] tokenFormat = accessToken.split(" ");
 			return Pair.of(tokenFormat[0], tokenFormat[1]);
 		} catch (IndexOutOfBoundsException e) {
-			throw new JwtException(ErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
 		}
 	}
 
@@ -99,8 +97,9 @@ public class TokenProvider {
 			.parseClaimsJws(token);
 	}
 
-	private String createToken(final String payload, final long expiredTimeMs) {
-		Claims claims = Jwts.claims().setSubject(payload);
+	private String createToken(final TokenPayload payload, final long expiredTimeMs) {
+		Claims claims = Jwts.claims().setSubject(payload.username());
+		claims.put(ROLE, payload.userRole());
 		Date now = new Date(System.currentTimeMillis());
 		Date expiration = new Date(now.getTime() + expiredTimeMs);
 

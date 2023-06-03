@@ -1,17 +1,17 @@
 package com.polzzak.domain.family.dto;
 
-import com.polzzak.domain.user.dto.MemberDto;
-import com.polzzak.domain.user.entity.MemberType;
+import com.polzzak.domain.user.entity.Member;
 
 public record SearchedMemberDto(
 	Long memberId,
 	String nickname,
-	MemberType memberType,
+	FamilyMemberTypeDto memberType,
 	String profileUrl,
 	FamilyStatus familyStatus
 ) {
-	public static SearchedMemberDto from(final MemberDto memberDto, final FamilyStatus familyStatus) {
-		return new SearchedMemberDto(memberDto.memberId(), memberDto.nickname(), memberDto.memberType(),
-			memberDto.profileUrl(), familyStatus);
+	public static SearchedMemberDto from(final Member member, final String profileUrl,
+		final FamilyStatus familyStatus) {
+		return new SearchedMemberDto(member.getId(), member.getNickname(),
+			FamilyMemberTypeDto.from(member.getMemberType()), profileUrl, familyStatus);
 	}
 }

@@ -43,13 +43,11 @@ public class UserService {
 		return MemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
 	}
 
-	public Optional<MemberDto> getMemberByNickname(final String username, final String nickname) {
+	public Optional<Member> getMemberByNickname(final String username, final String nickname) {
 		Member findMember = findMemberByUsername(username);
 
 		return memberRepository.searchByNickname(nickname)
-			.filter(searchedMember -> !findMember.getNickname().equals(searchedMember.getNickname()))
-			.map(searchedMember -> MemberDto.from(searchedMember,
-				fileClient.getSignedUrl(searchedMember.getProfileKey())));
+			.filter(searchedMember -> !findMember.getNickname().equals(searchedMember.getNickname()));
 	}
 
 	public Member findMemberByUsername(final String username) {
@@ -60,11 +58,6 @@ public class UserService {
 
 	public Member findMemberByMemberId(final Long memberId) {
 		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
-	}
-
-	public Member findMemberByNickname(final String nickname) {
-		return memberRepository.findByNickname(nickname)
 			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
 	}
 }

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.polzzak.domain.user.dto.MemberResponse;
+import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.security.LoginUsername;
@@ -21,7 +21,7 @@ public class UserRestController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<ApiResponse<MemberResponse>> getMemberInfo(final @LoginUsername String username) {
-		return ResponseEntity.ok(ApiResponse.ok(MemberResponse.from(userService.getMemberInfo(username))));
+	public ResponseEntity<ApiResponse<MemberDto>> getMemberInfo(final @LoginUsername String username) {
+		return ResponseEntity.ok(ApiResponse.ok(userService.getMemberInfo(username)));
 	}
 }

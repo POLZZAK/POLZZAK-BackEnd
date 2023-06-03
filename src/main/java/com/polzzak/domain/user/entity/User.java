@@ -2,7 +2,7 @@ package com.polzzak.domain.user.entity;
 
 import java.time.LocalDateTime;
 
-import com.polzzak.domain.model.BaseEntity;
+import com.polzzak.domain.model.BaseModifiableEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users", indexes = @Index(name = "idx_username", columnList = "username"))
-public class User extends BaseEntity {
+public class User extends BaseModifiableEntity {
 	@Column(nullable = false, unique = true)
 	private String username;
 
@@ -37,18 +37,23 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private LocalDateTime signedDate;
 
+	@Column(nullable = false, length = 30)
+	@Enumerated(EnumType.STRING)
+	private UserRole userRole;
+
 	@JoinColumn(name = "member_id")
 	@OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE,
 		CascadeType.REMOVE}, orphanRemoval = true)
 	private Member member;
 
 	@Builder(builderMethodName = "createUser")
-	public User(final String username, final SocialType socialType, final Member member) {
+	public User(final String username, final SocialType socialType, final Member member, final UserRole userRole) {
 		this.username = username;
 		this.socialType = socialType;
 		this.member = member;
 		this.withdraw = false;
 		this.signedDate = LocalDateTime.now();
+		this.userRole = userRole;
 	}
 
 	public void withdraw() {

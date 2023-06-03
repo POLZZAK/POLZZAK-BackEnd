@@ -1,19 +1,15 @@
 package com.polzzak.domain.user.dto;
 
 import com.polzzak.domain.user.entity.Member;
-import com.polzzak.domain.user.entity.MemberType;
 
 public record MemberDto(
 	Long memberId,
 	String nickname,
-	MemberType memberType,
+	MemberTypeDto memberType,
 	String profileUrl
 ) {
 	public static MemberDto from(final Member member, final String profileUrl) {
-		return new MemberDto(member.getId(), member.getNickname(), member.getMemberType(), profileUrl);
-	}
-
-	public boolean isKid() {
-		return memberType == MemberType.KID;
+		return new MemberDto(member.getId(), member.getNickname(), MemberTypeDto.from(member.getMemberType()),
+			profileUrl);
 	}
 }

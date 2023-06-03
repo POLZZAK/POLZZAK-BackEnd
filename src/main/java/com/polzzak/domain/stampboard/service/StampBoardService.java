@@ -74,9 +74,10 @@ public class StampBoardService {
 		return StampBoardDto.from(stampBoard);
 	}
 
-	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(MemberDto member, Long partnerMemberId,
-		StampBoardGroup stampBoardGroup) {
-		List<FamilyMemberDto> families = familyMapService.getMyFamilies(member.memberId());
+	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(final String username, final Long partnerMemberId,
+		final StampBoardGroup stampBoardGroup) {
+		Member member = userService.findMemberByUsername(username);
+		List<FamilyMemberDto> families = familyMapService.getMyFamilies(member.getId());
 		List<FamilyMemberDto> filteredFamilies = getFilteredFamiliesByPartnerId(families, partnerMemberId);
 
 		return filteredFamilies.stream()
@@ -141,15 +142,16 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void createmissionRequest(MissionRequestCreateRequest missionRequestCreateRequest,
-		MemberDto kid) {
+	public void createMissionRequest(final String username,
+		final MissionRequestCreateRequest missionRequestCreateRequest) {
+		Member kid = userService.findMemberByUsername(username);
 		StampBoard stampBoard = getStampBoard(missionRequestCreateRequest.stampBoardId());
 
 		validateForCreateMission(kid, stampBoard);
 
 		Mission mission = getMission(missionRequestCreateRequest.missionId());
 		Member guardianEntity = userService.findMemberByMemberId(missionRequestCreateRequest.guardianId());
-		Member kidEntity = userService.findMemberByMemberId(kid.memberId());
+		Member kidEntity = userService.findMemberByMemberId(kid.getId());
 
 		MissionRequest missionRequest = MissionRequest.createMissionRequest()
 			.stampBoard(stampBoard)
@@ -247,13 +249,13 @@ public class StampBoardService {
 			.toList();
 	}
 
-	private List<StampBoardSummary> getStampBoardSummaries(MemberDto member, long partnerId,
-		StampBoardGroup stampBoardGroup) {
+	private List<StampBoardSummary> getStampBoardSummaries(final Member member, final long partnerId,
+		final StampBoardGroup stampBoardGroup) {
 		List<StampBoard> stampBoards;
 		if (member.isKid()) {
-			stampBoards = getStampBoards(partnerId, member.memberId());
+			stampBoards = getStampBoards(partnerId, member.getId());
 		} else {
-			stampBoards = getStampBoards(member.memberId(), partnerId);
+			stampBoards = getStampBoards(member.getId(), partnerId);
 		}
 
 		return getFilteredStampBoardsByGroup(stampBoards, stampBoardGroup).stream()
@@ -283,8 +285,8 @@ public class StampBoardService {
 	}
 
 	//Mission
-	private void validateForCreateMission(MemberDto member, StampBoard stampBoard) {
-		if (!member.isKid() || stampBoard.isNotOwner(member.memberId())) {
+	private void validateForCreateMission(final Member member, StampBoard stampBoard) {
+		if (!member.isKid() || stampBoard.isNotOwner(member.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		if (stampBoard.isCompleted()) {
