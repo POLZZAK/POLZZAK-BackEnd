@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: polzzak
+  profiles:
+    include:
+      - database
+      - flyway
+      - secret

@@ -14,44 +14,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    ## jdk setting
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      ## jdk setting
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    ## [DEV] create application.yml
-    - name: make secret.yml
-      if: contains(github.ref, 'develop')
-      run: |
-        cd ./src/main/resources
-        echo "${{ secrets.SECRET_SETTINGS }}" | base64 -d >> ./secret.yml        
+      ## [DEV] create application.yml
+      - name: make secret.yml
+        if: contains(github.ref, 'develop')
+        run: |
+          cd ./src/main/resources
+          echo "${{ secrets.SECRET_SETTINGS }}" | base64 -d >> ./application-secret.yml
 
-    ## gradle build
-    - name: Build with Gradle
-      run: ./gradlew clean build
+      ## gradle build
+      - name: Build with Gradle
+        run: ./gradlew clean build
 
-    ## docker build & push to develop
-    - name: Docker build & push to dev
-      if: contains(github.ref, 'develop')
-      run: |
+      ## docker build & push to develop
+      - name: Docker build & push to dev
+        if: contains(github.ref, 'develop')
+        run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -f Dockerfile-dev -t ${{ secrets.DOCKER_REPO }}/polzzak-dev .
           docker push ${{ secrets.DOCKER_REPO }}/polzzak-dev
 
-    ## deploy to develop
-    - name: Deploy to dev
-      uses: appleboy/ssh-action@master
-      id: deploy-dev
-      if: contains(github.ref, 'develop')
-      with:
-        host: ${{ secrets.HOST_DEV }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        script: |
+      ## deploy to develop
+      - name: Deploy to dev
+        uses: appleboy/ssh-action@master
+        id: deploy-dev
+        if: contains(github.ref, 'develop')
+        with:
+          host: ${{ secrets.HOST_DEV }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{ secrets.DOCKER_REPO }}/polzzak-dev
             docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO }}/polzzak-dev
