@@ -28,13 +28,6 @@ public class MemberTypeDetailService {
 		memberTypeDetailRepository.save(createMemberTypeDetail(request));
 	}
 
-	private MemberTypeDetail createMemberTypeDetail(final MemberTypeDetailRequest request) {
-		return MemberTypeDetail.createMemberType()
-			.memberType(request.memberType())
-			.detail(request.detail())
-			.build();
-	}
-
 	public MemberTypeDetail findMemberTypeDetailById(final Long id) {
 		return memberTypeDetailRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("요청한 멤버 타입을 찾을 수 없습니다"));
@@ -59,6 +52,13 @@ public class MemberTypeDetailService {
 
 		MemberTypeDetail memberTypeDetail = findMemberTypeDetailById(id);
 		memberTypeDetail.update(request.memberType(), request.detail());
+	}
+
+	private MemberTypeDetail createMemberTypeDetail(final MemberTypeDetailRequest request) {
+		return MemberTypeDetail.createMemberType()
+			.memberType(request.memberType())
+			.detail(request.detail())
+			.build();
 	}
 
 	private void validateExistDetail(final String detail) {
