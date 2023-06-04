@@ -238,7 +238,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-/src/main/resources/secret.yml
+/src/main/resources/application-secret.yml
 
 # Rest Docs
 /BOOT-INF

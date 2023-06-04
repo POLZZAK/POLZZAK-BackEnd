@@ -16,7 +16,6 @@ import com.polzzak.domain.family.entity.FamilyRequest;
 import com.polzzak.domain.family.repository.FamilyMapRepository;
 import com.polzzak.domain.family.repository.FamilyRequestRepository;
 import com.polzzak.domain.user.entity.Member;
-import com.polzzak.domain.user.entity.MemberType;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.infra.file.FileClient;
 
@@ -39,24 +38,24 @@ public class FamilyMapService {
 	}
 
 	public SearchedMemberDto getSearchedMemberByNickname(final String username, final String nickname) {
-		Member findMember = userService.findMemberByUsername(username);
+		Member requestMember = userService.findMemberByUsername(username);
 
-		Set<String> familiesNicknameSet = getFamilyMemberDtos(findMember).stream()
+		Set<String> familiesNicknameSet = getFamilyMemberDtos(requestMember).stream()
 			.map(familyMemberDto -> familyMemberDto.nickname())
 			.collect(Collectors.toSet());
 
-		Set<String> sentNicknameSet = getSentMemberDtos(findMember.getId()).stream()
+		Set<String> sentNicknameSet = getSentMemberDtos(requestMember.getId()).stream()
 			.map(requestMemberDto -> requestMemberDto.nickname())
 			.collect(Collectors.toSet());
 
-		Set<String> receivedNicknameSet = getReceivedMemberDtos(findMember.getId()).stream()
+		Set<String> receivedNicknameSet = getReceivedMemberDtos(requestMember.getId()).stream()
 			.map(requestMemberDto -> requestMemberDto.nickname())
 			.collect(Collectors.toSet());
 
 		return userService.getMemberByNickname(username, nickname)
-			.filter(memberDto -> isValid(findMember.getMemberType(), memberDto.memberType()))
-			.map(memberDto -> SearchedMemberDto.from(memberDto,
-				getFamilyState(memberDto.nickname(), familiesNicknameSet, sentNicknameSet, receivedNicknameSet)))
+			.filter(findMember -> isValid(requestMember, findMember))
+			.map(member -> SearchedMemberDto.from(member, fileClient.getSignedUrl(member.getProfileKey()),
+				getFamilyState(member.getNickname(), familiesNicknameSet, sentNicknameSet, receivedNicknameSet)))
 			.orElse(null);
 	}
 
@@ -66,7 +65,8 @@ public class FamilyMapService {
 
 		validateRequest(familyMapRequest, findMember);
 
-		familyRequestRepository.save(createFamilyTempMap(findMember.getId(), familyMapRequest.targetId()));
+		Member targetMember = userService.findMemberByMemberId(familyMapRequest.targetId());
+		familyRequestRepository.save(createFamilyRequest(findMember, targetMember));
 	}
 
 	public List<FamilyMemberDto> getMyFamilies(final String username) {
@@ -93,7 +93,9 @@ public class FamilyMapService {
 	public void approveFamilyMap(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
 		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
-		familyMapRepository.save(createFamilyMap(findMember, targetId));
+
+		Member targetMember = userService.findMemberByMemberId(targetId);
+		familyMapRepository.save(createFamilyMap(findMember, targetMember));
 	}
 
 	@Transactional
@@ -138,22 +140,22 @@ public class FamilyMapService {
 		return FamilyStatus.NONE;
 	}
 
-	private FamilyRequest createFamilyTempMap(final Long senderId, final Long targetId) {
-		return FamilyRequest.createFamilyTempMap()
-			.senderId(senderId)
-			.receiverId(targetId)
+	private FamilyRequest createFamilyRequest(final Member sender, final Member receiver) {
+		return FamilyRequest.createFamilyRequest()
+			.sender(sender)
+			.receiver(receiver)
 			.build();
 	}
 
-	private FamilyMap createFamilyMap(final Member member, final Long targetId) {
+	private FamilyMap createFamilyMap(final Member member, final Member targetMember) {
 		return FamilyMap.createFamilyMap()
-			.guardianId(member.getMemberType() == MemberType.KID ? targetId : member.getId())
-			.kidId(member.getMemberType() == MemberType.KID ? member.getId() : targetId)
+			.guardian(member.isGuardian() ? member : targetMember)
+			.kid(member.isKid() ? member : targetMember)
 			.build();
 	}
 
 	private List<FamilyMemberDto> getFamilyMemberDtos(final Member findMember) {
-		if (findMember.getMemberType() == MemberType.KID) {
+		if (findMember.isKid()) {
 			return getGuardianDtoList(familyMapRepository.getFamilyMapsByKidId(findMember.getId()));
 		}
 
@@ -162,14 +164,14 @@ public class FamilyMapService {
 
 	private List<FamilyMemberDto> getKidDtoList(final List<FamilyMap> familyMaps) {
 		return familyMaps.stream().map(familyMap -> {
-			Member kid = userService.findMemberByMemberId(familyMap.getKidId());
+			Member kid = familyMap.getKid();
 			return FamilyMemberDto.from(kid, fileClient.getSignedUrl(kid.getProfileKey()));
 		}).toList();
 	}
 
 	private List<FamilyMemberDto> getGuardianDtoList(final List<FamilyMap> familyMaps) {
 		return familyMaps.stream().map(familyMap -> {
-			Member guardian = userService.findMemberByMemberId(familyMap.getGuardianId());
+			Member guardian = familyMap.getGuardian();
 			return FamilyMemberDto.from(guardian, fileClient.getSignedUrl(guardian.getProfileKey()));
 		}).toList();
 	}
@@ -178,7 +180,8 @@ public class FamilyMapService {
 		List<FamilyRequest> familyRequests = familyRequestRepository.findAllBySenderId(memberId);
 
 		return familyRequests.stream()
-			.map(familyRequest -> getFamilyMemberDto(familyRequest.getReceiverId()))
+			.map(familyRequest -> FamilyMemberDto.from(familyRequest.getReceiver(),
+				fileClient.getSignedUrl(familyRequest.getReceiver().getProfileKey())))
 			.toList();
 	}
 
@@ -186,18 +189,14 @@ public class FamilyMapService {
 		List<FamilyRequest> familyRequests = familyRequestRepository.findAllByReceiverId(memberId);
 
 		return familyRequests.stream()
-			.map(familyRequest -> getFamilyMemberDto(familyRequest.getSenderId()))
+			.map(familyRequest -> FamilyMemberDto.from(familyRequest.getSender(),
+				fileClient.getSignedUrl(familyRequest.getSender().getProfileKey())))
 			.toList();
 	}
 
-	private FamilyMemberDto getFamilyMemberDto(final long memberId) {
-		Member findMember = userService.findMemberByMemberId(memberId);
-		return FamilyMemberDto.from(findMember, fileClient.getSignedUrl(findMember.getProfileKey()));
-	}
-
-	private boolean isValid(final MemberType findMemberType, final MemberType searchedMemberType) {
-		if ((findMemberType == MemberType.KID && searchedMemberType == MemberType.KID)
-			|| (findMemberType != MemberType.KID && searchedMemberType != MemberType.KID)
+	private boolean isValid(final Member requestMember, final Member findMember) {
+		if ((requestMember.isKid() && findMember.isKid())
+			|| (requestMember.isGuardian() && findMember.isGuardian())
 		) {
 			return false;
 		}

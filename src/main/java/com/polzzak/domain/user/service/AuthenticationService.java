@@ -9,12 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.polzzak.domain.membertype.entity.MemberTypeDetail;
+import com.polzzak.domain.membertype.service.MemberTypeDetailService;
 import com.polzzak.domain.user.dto.LoginRequest;
 import com.polzzak.domain.user.dto.OAuthUserInfoResponse;
 import com.polzzak.domain.user.dto.RegisterRequest;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.entity.User;
+import com.polzzak.domain.user.entity.UserRole;
 import com.polzzak.domain.user.properties.GoogleOAuthProperties;
 import com.polzzak.domain.user.properties.KakaoOAuthProperties;
 import com.polzzak.domain.user.properties.OAuthProperties;
@@ -23,6 +26,7 @@ import com.polzzak.global.common.FileType;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.exception.PolzzakException;
 import com.polzzak.global.infra.file.FileClient;
+import com.polzzak.global.security.TokenPayload;
 import com.polzzak.global.security.TokenProvider;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +39,7 @@ public class AuthenticationService {
 
 	private final WebClient webClient;
 	private final FileClient fileClient;
+	private final MemberTypeDetailService memberTypeDetailService;
 	private final TokenProvider tokenProvider;
 	private final KakaoOAuthProperties kakaoOAuthProperties;
 	private final GoogleOAuthProperties googleOAuthProperties;
@@ -42,11 +47,13 @@ public class AuthenticationService {
 	private final String defaultProfileKey = "profile/default_profile.png";
 
 	public AuthenticationService(final UserRepository userRepository, final WebClient webClient,
-		final FileClient fileClient, final TokenProvider tokenProvider,
+		final FileClient fileClient, final MemberTypeDetailService memberTypeDetailService,
+		final TokenProvider tokenProvider,
 		final KakaoOAuthProperties kakaoOAuthProperties, final GoogleOAuthProperties googleOAuthProperties) {
 		this.userRepository = userRepository;
 		this.webClient = webClient;
 		this.fileClient = fileClient;
+		this.memberTypeDetailService = memberTypeDetailService;
 		this.tokenProvider = tokenProvider;
 		this.kakaoOAuthProperties = kakaoOAuthProperties;
 		this.googleOAuthProperties = googleOAuthProperties;
@@ -64,7 +71,7 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public String register(final RegisterRequest registerRequest, final MultipartFile profile) {
+	public TokenPayload register(final RegisterRequest registerRequest, final MultipartFile profile) {
 		validateNickname(registerRequest.nickname());
 
 		String fileKey = null;
@@ -74,15 +81,15 @@ public class AuthenticationService {
 
 		User saveUser = userRepository.save(
 			createUser(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey)));
-		return saveUser.getUsername();
+		return new TokenPayload(saveUser.getUsername(), saveUser.getUserRole().toString());
 	}
 
-	public String generateAccessTokenByUsername(final String username) {
-		return tokenProvider.createAccessToken(username);
+	public String generateAccessToken(final TokenPayload tokenPayload) {
+		return tokenProvider.createAccessToken(tokenPayload);
 	}
 
-	public String generateRefreshTokenByUsername(final String username) {
-		return tokenProvider.createRefreshToken(username);
+	public String generateRefreshToken(final TokenPayload tokenPayload) {
+		return tokenProvider.createRefreshToken(tokenPayload);
 	}
 
 	public void validateNickname(final String nickname) {
@@ -91,10 +98,11 @@ public class AuthenticationService {
 		}
 	}
 
-	public void validateUserByUsername(String username) {
-		if (userRepository.existsByUsername(username).isEmpty()) {
-			throw new IllegalArgumentException("존재하지 않는 사용자입니다");
-		}
+	public String getUserRoleByUsername(String username) {
+		return userRepository.findByUsername(username)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"))
+			.getUserRole()
+			.toString();
 	}
 
 	private String getSocialUserInfo(final LoginRequest loginRequest, final OAuthProperties oAuthProperties) {
@@ -128,15 +136,19 @@ public class AuthenticationService {
 	}
 
 	private User createUser(final RegisterRequest registerRequest, final Optional<String> profileKey) {
+		MemberTypeDetail findMemberTypeDetail = memberTypeDetailService.findMemberTypeDetailById(
+			registerRequest.memberTypeDetailId());
+
 		Member member = Member.createMember()
 			.nickname(registerRequest.nickname())
-			.memberType(registerRequest.memberType())
+			.memberType(findMemberTypeDetail)
 			.profileKey(profileKey.orElse(defaultProfileKey))
 			.build();
 
 		return User.createUser()
 			.username(registerRequest.username())
 			.socialType(registerRequest.socialType())
+			.userRole(UserRole.ROLE_USER)
 			.member(member)
 			.build();
 	}

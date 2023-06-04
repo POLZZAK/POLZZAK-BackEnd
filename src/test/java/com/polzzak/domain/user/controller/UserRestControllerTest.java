@@ -14,8 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 
-import com.polzzak.domain.user.dto.MemberDto;
-import com.polzzak.domain.user.entity.MemberType;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.test.ControllerTestHelper;
 
@@ -28,12 +26,11 @@ class UserRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 사용자_정보_조회_성공() throws Exception {
 		// given
-		String accessToken = ACCESS_TOKEN;
+		String accessToken = USER_ACCESS_TOKEN;
 		String username = TEST_USERNAME;
-		MemberDto memberDto = new MemberDto(TEST_MEMBER_ID, TEST_NICKNAME, MemberType.ETC, TEST_PROFILE_URL);
 
 		// when
-		when(userService.getMemberInfo(username)).thenReturn(memberDto);
+		when(userService.getMemberInfo(username)).thenReturn(MEMBER_GUARDIAN_DTO);
 
 		// then
 		mockMvc.perform(
@@ -50,8 +47,10 @@ class UserRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("data.memberId").description("사용자 ID"),
 						fieldWithPath("data.nickname").description("닉네임"),
-						fieldWithPath("data.memberType").description("사용자 타입"),
+						fieldWithPath("data.memberType.name").description("사용자 타입"),
+						fieldWithPath("data.memberType.detail").description("타입 세부 내용"),
 						fieldWithPath("data.profileUrl").description("프로필 Url")
 					)
 				)

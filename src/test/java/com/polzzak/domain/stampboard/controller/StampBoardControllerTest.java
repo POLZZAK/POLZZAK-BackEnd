@@ -46,7 +46,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				post(BASE_URL + "/stamp-board")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_BOARD_CREATE_REQUEST)))
 			.andDo(print())
@@ -78,7 +78,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		mockMvc.perform(
 				get(BASE_URL + "/stamp-boards")
 					.param("stampBoardGroup", "in_progress")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isOk())
@@ -97,7 +97,8 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					fieldWithPath("data[].partner").description("상대 member ID").optional(),
 					fieldWithPath("data[].partner.memberId").description("상대 member ID").optional(),
 					fieldWithPath("data[].partner.nickname").description("상대 nickname").optional(),
-					fieldWithPath("data[].partner.memberType").description("상대 member type").optional(),
+					fieldWithPath("data[].partner.memberType.name").description("상대 member type").optional(),
+					fieldWithPath("data[].partner.memberType.detail").description("상대 타입 세부 내용").optional(),
 					fieldWithPath("data[].partner.profileUrl").description("상대 member profile image url").optional(),
 					fieldWithPath("data[].stampBoardSummaries[]").description("도장판 목록").optional(),
 					fieldWithPath("data[].stampBoardSummaries[].stampBoardId").description("도장판 ID").optional(),
@@ -119,7 +120,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				get(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isOk())
@@ -165,7 +166,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				delete(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isNoContent())
@@ -185,7 +186,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				patch(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_BOARD_UPDATE_REQUEST)))
 			.andDo(print())
@@ -238,7 +239,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				post(BASE_URL + "/stamp-board/{stampBoardId}/stamp", STAMP_BOARD_ID)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_CREATE_REQUEST)))
 			.andDo(print())
@@ -264,7 +265,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				get(BASE_URL + "/stamp-board/{stampBoardId}/{stampId}", STAMP_BOARD_ID, STAMP_ID)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isOk())
@@ -296,7 +297,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 
 		mockMvc.perform(
 				post(BASE_URL + "/mission-request")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + ACCESS_TOKEN)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(MISSION_COMPLETE_CREATE_REQUEST)))
 			.andDo(print())

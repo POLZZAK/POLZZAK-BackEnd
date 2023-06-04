@@ -1,5 +1,8 @@
 package com.polzzak.support;
 
+import static com.polzzak.support.FamilyFixtures.*;
+import static com.polzzak.support.UserFixtures.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,17 +17,18 @@ import com.polzzak.domain.stampboard.dto.StampBoardUpdateRequest;
 import com.polzzak.domain.stampboard.dto.StampCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampDto;
 import com.polzzak.domain.user.dto.MemberDto;
-import com.polzzak.domain.user.entity.MemberType;
 
 public class StampFixtures {
 	public static final long STAMP_BOARD_ID = 33L;
 	public static final long STAMP_ID = 5L;
 
-	public static final MemberDto GUARDIAN = new MemberDto(1L, "보호자", MemberType.FATHER, "image_url");
+	public static final MemberDto GUARDIAN = new MemberDto(1L, "보호자", MEMBER_GUARDIAN_TYPE_DTO, "image_url");
 	public static final StampBoardCreateRequest STAMP_BOARD_CREATE_REQUEST = new StampBoardCreateRequest(1L, "도장판 이름",
 		30, "칭찬 상이다", List.of("미션1", "미션2", "미션3"));
-	public static final FamilyMemberDto KID1 = new FamilyMemberDto(11L, "아이 1", MemberType.KID, "image_url");
-	public static final FamilyMemberDto KID2 = new FamilyMemberDto(12L, "아이 2", MemberType.KID, "image_url");
+	public static final FamilyMemberDto KID1 = new FamilyMemberDto(11L, "아이 1", FAMILY_MEMBER_KID_TYPE_DTO,
+		"image_url");
+	public static final FamilyMemberDto KID2 = new FamilyMemberDto(12L, "아이 2", FAMILY_MEMBER_KID_TYPE_DTO,
+		"image_url");
 	public static final List<StampBoardSummary> STAMP_BOARD_SUMMARIES1 = List.of(
 		new StampBoardSummary(1L, "도장판 1", 13, 30, "콘서트", 5, "progress"),
 		new StampBoardSummary(3L, "도장판 3", 30, 30, "칭찬", 0, "completed")

@@ -9,6 +9,7 @@ import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +19,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.util.WebUtils;
 
 import com.polzzak.global.common.ApiResponse;
+import com.polzzak.global.security.JwtErrorCode;
+import com.polzzak.global.security.JwtException;
+import com.polzzak.global.security.TokenPayload;
 import com.polzzak.global.security.TokenProvider;
 
 import jakarta.servlet.http.Cookie;
@@ -66,22 +70,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	) {
 		log.error("[JwtException] {}", ex.getMessage());
 
-		if (ex.getErrorCode() != ErrorCode.ACCESS_TOKEN_EXPIRED) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(ApiResponse.error(ex.getErrorCode()));
+		if (ex.getJwtErrorCode() == JwtErrorCode.ACCESS_TOKEN_EXPIRED) {
+			Cookie cookie = WebUtils.getCookie(httpServletRequest, REFRESH_TOKEN_HEADER);
+			if (!isValidRefreshToken(cookie)) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(ApiResponse.error(ErrorCode.REFRESH_TOKEN_INVALID));
+			}
+
+			String refreshToken = cookie.getValue();
+			TokenPayload tokenPayload = tokenProvider.getTokenPayload(refreshToken);
+			addRefreshCookie(httpServletResponse, tokenPayload);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(
+					ApiResponse.error(ErrorCode.TOKEN_REISSUE_SUCCESS, tokenProvider.createAccessToken(tokenPayload)));
 		}
 
-		Cookie cookie = WebUtils.getCookie(httpServletRequest, REFRESH_TOKEN_HEADER);
-		if (!isValidRefreshToken(cookie)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(ApiResponse.error(ErrorCode.REFRESH_TOKEN_INVALID));
-		}
-
-		String refreshToken = cookie.getValue();
-		String payload = tokenProvider.getSubject(refreshToken);
-		addRefreshCookie(httpServletResponse, payload);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(ApiResponse.error(ErrorCode.TOKEN_REISSUE_SUCCESS, tokenProvider.createAccessToken(payload)));
+		JwtErrorCode jwtErrorCode = ex.getJwtErrorCode();
+		return ResponseEntity.status(jwtErrorCode.getHttpStatus())
+			.body(ApiResponse.error(jwtErrorCode.getCode(), jwtErrorCode.getMessage()));
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
@@ -111,10 +117,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 			.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()));
 	}
 
-	private void addRefreshCookie(final HttpServletResponse httpServletResponse, final String payload) {
-		Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_HEADER, tokenProvider.createRefreshToken(payload));
-		refreshTokenCookie.setHttpOnly(true);
-		httpServletResponse.addCookie(refreshTokenCookie);
+	private void addRefreshCookie(final HttpServletResponse httpServletResponse, final TokenPayload payload) {
+		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
+				tokenProvider.createRefreshToken(payload))
+			.sameSite("None")
+			.httpOnly(true)
+			.secure(true)
+			.build();
+		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 	}
 
 	private boolean isValidRefreshToken(final Cookie cookie) {

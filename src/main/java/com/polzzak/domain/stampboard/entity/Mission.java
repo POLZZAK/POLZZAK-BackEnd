@@ -1,7 +1,6 @@
 package com.polzzak.domain.stampboard.entity;
 
-import com.polzzak.domain.model.BaseEntity;
-import com.polzzak.domain.stampboard.entity.StampBoard;
+import com.polzzak.domain.model.BaseModifiableEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "mission")
-public class Mission extends BaseEntity {
+public class Mission extends BaseModifiableEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "stamp_board_id")

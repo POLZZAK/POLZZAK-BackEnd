@@ -4,6 +4,8 @@ import static com.polzzak.global.common.HeadersConstant.*;
 
 import java.util.Locale;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +25,8 @@ import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.service.AuthenticationService;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.exception.ErrorCode;
+import com.polzzak.global.security.TokenPayload;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -46,15 +48,19 @@ public class AuthRestController {
 		String username = authenticationService.getSocialUsername(loginRequest, social);
 
 		try {
-			authenticationService.validateUserByUsername(username);
+			String userRole = authenticationService.getUserRoleByUsername(username);
+			TokenPayload tokenPayload = new TokenPayload(username, userRole);
 
-			Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_HEADER,
-				authenticationService.generateRefreshTokenByUsername(username));
-			refreshTokenCookie.setHttpOnly(true);
-			httpServletResponse.addCookie(refreshTokenCookie);
+			ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
+					authenticationService.generateRefreshToken(tokenPayload))
+				.sameSite("None")
+				.httpOnly(true)
+				.secure(true)
+				.build();
+			httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
 			AccessTokenResponse accessTokenResponse = new AccessTokenResponse(
-				authenticationService.generateAccessTokenByUsername(username));
+				authenticationService.generateAccessToken(tokenPayload));
 
 			return ResponseEntity.ok(ApiResponse.ok(accessTokenResponse));
 		} catch (IllegalArgumentException e) {
@@ -70,15 +76,18 @@ public class AuthRestController {
 		final @RequestPart(required = false) MultipartFile profile,
 		final HttpServletResponse httpServletResponse
 	) {
-		String username = authenticationService.register(registerRequest, profile);
+		TokenPayload tokenPayload = authenticationService.register(registerRequest, profile);
 
-		Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_HEADER,
-			authenticationService.generateRefreshTokenByUsername(username));
-		refreshTokenCookie.setHttpOnly(true);
-		httpServletResponse.addCookie(refreshTokenCookie);
+		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
+				authenticationService.generateRefreshToken(tokenPayload))
+			.sameSite("None")
+			.httpOnly(true)
+			.secure(true)
+			.build();
+		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
 		AccessTokenResponse accessTokenResponse = new AccessTokenResponse(
-			authenticationService.generateAccessTokenByUsername(username));
+			authenticationService.generateAccessToken(tokenPayload));
 		return ResponseEntity.ok(ApiResponse.ok(accessTokenResponse));
 	}
 

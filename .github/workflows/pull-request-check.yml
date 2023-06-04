@@ -22,7 +22,7 @@ jobs:
       - name: make secret.yml
         run: |
           cd ./src/main/resources
-          echo "${{ secrets.SECRET_SETTINGS }}" | base64 -d >> ./secret.yml      
+          echo "${{ secrets.SECRET_SETTINGS }}" | base64 -d >> ./application-secret.yml      
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
