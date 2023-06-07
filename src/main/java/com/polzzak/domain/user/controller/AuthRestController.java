@@ -54,6 +54,7 @@ public class AuthRestController {
 			ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
 					authenticationService.generateRefreshToken(tokenPayload))
 				.path("/")
+				.domain("www.polzzak.co.kr")
 				.sameSite("None")
 				.httpOnly(true)
 				.secure(true)
@@ -82,6 +83,7 @@ public class AuthRestController {
 		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
 				authenticationService.generateRefreshToken(tokenPayload))
 			.path("/")
+			.domain("www.polzzak.co.kr")
 			.sameSite("None")
 			.httpOnly(true)
 			.secure(true)
