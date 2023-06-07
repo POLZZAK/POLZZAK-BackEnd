@@ -43,6 +43,10 @@ public class TokenProvider {
 		return createToken(tokenPayload, jwtProperties.getRefreshExpiredTimeMs());
 	}
 
+	public long getRefreshExpiredTimeMs() {
+		return jwtProperties.getRefreshExpiredTimeMs();
+	}
+
 	public boolean isValidToken(final String token) {
 		try {
 			getClaimsJws(token);

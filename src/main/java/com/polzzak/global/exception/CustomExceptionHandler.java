@@ -81,12 +81,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
 			String refreshToken = cookie.getValue();
 			TokenPayload tokenPayload = tokenProvider.getTokenPayload(refreshToken);
-			addRefreshCookie(httpServletResponse, tokenPayload);
+
+			addRefreshCookie(httpServletResponse, tokenPayload, cookie);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(
-					ApiResponse.error(JwtErrorCode.TOKEN_REISSUE_SUCCESS.getCode(),
-						JwtErrorCode.TOKEN_REISSUE_SUCCESS.getMessage(),
-						tokenProvider.createAccessToken(tokenPayload)));
+				.body(ApiResponse.error(JwtErrorCode.TOKEN_REISSUE_SUCCESS.getCode(),
+					JwtErrorCode.TOKEN_REISSUE_SUCCESS.getMessage(),
+					tokenProvider.createAccessToken(tokenPayload))
+				);
 		}
 
 		JwtErrorCode jwtErrorCode = ex.getJwtErrorCode();
@@ -121,12 +122,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 			.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()));
 	}
 
-	private void addRefreshCookie(final HttpServletResponse httpServletResponse, final TokenPayload payload) {
-		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
-				tokenProvider.createRefreshToken(payload))
-			.sameSite("None")
-			.httpOnly(true)
+	private void addRefreshCookie(final HttpServletResponse httpServletResponse, final TokenPayload payload,
+		final Cookie cookie) {
+		cookie.setMaxAge(0);
+		String refreshToken = tokenProvider.createRefreshToken(payload);
+		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER, refreshToken)
 			.secure(true)
+			.httpOnly(true)
+			.sameSite("None")
+			.maxAge(tokenProvider.getRefreshExpiredTimeMs())
 			.build();
 		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 	}

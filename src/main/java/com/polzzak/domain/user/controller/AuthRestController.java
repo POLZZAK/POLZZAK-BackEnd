@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.WebUtils;
 
 import com.polzzak.domain.user.dto.AccessTokenResponse;
 import com.polzzak.domain.user.dto.LoginRequest;
@@ -27,6 +28,8 @@ import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.security.TokenPayload;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -43,6 +46,7 @@ public class AuthRestController {
 	public ResponseEntity<ApiResponse> socialLogin(
 		final @PathVariable("social") String social,
 		final @RequestBody @Valid LoginRequest loginRequest,
+		final HttpServletRequest httpServletRequest,
 		final HttpServletResponse httpServletResponse
 	) {
 		String username = authenticationService.getSocialUsername(loginRequest, social);
@@ -51,11 +55,18 @@ public class AuthRestController {
 			String userRole = authenticationService.getUserRoleByUsername(username);
 			TokenPayload tokenPayload = new TokenPayload(username, userRole);
 
-			ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
-					authenticationService.generateRefreshToken(tokenPayload))
-				.sameSite("None")
-				.httpOnly(true)
+			Cookie cookie = WebUtils.getCookie(httpServletRequest, REFRESH_TOKEN_HEADER);
+			if (cookie != null) {
+				cookie.setMaxAge(0);
+			}
+
+			String refreshToken = authenticationService.generateRefreshToken(tokenPayload);
+			long refreshExpiredTimeMs = authenticationService.getRefreshExpiredTimeMs();
+			ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER, refreshToken)
 				.secure(true)
+				.httpOnly(true)
+				.sameSite("None")
+				.maxAge(refreshExpiredTimeMs)
 				.build();
 			httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
@@ -74,15 +85,22 @@ public class AuthRestController {
 	public ResponseEntity<ApiResponse> register(
 		final @RequestPart @Valid RegisterRequest registerRequest,
 		final @RequestPart(required = false) MultipartFile profile,
+		final HttpServletRequest httpServletRequest,
 		final HttpServletResponse httpServletResponse
 	) {
 		TokenPayload tokenPayload = authenticationService.register(registerRequest, profile);
+		Cookie cookie = WebUtils.getCookie(httpServletRequest, REFRESH_TOKEN_HEADER);
+		if (cookie != null) {
+			cookie.setMaxAge(0);
+		}
 
-		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
-				authenticationService.generateRefreshToken(tokenPayload))
-			.sameSite("None")
-			.httpOnly(true)
+		String refreshToken = authenticationService.generateRefreshToken(tokenPayload);
+		long refreshExpiredTimeMs = authenticationService.getRefreshExpiredTimeMs();
+		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER, refreshToken)
 			.secure(true)
+			.httpOnly(true)
+			.sameSite("None")
+			.maxAge(refreshExpiredTimeMs)
 			.build();
 		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
