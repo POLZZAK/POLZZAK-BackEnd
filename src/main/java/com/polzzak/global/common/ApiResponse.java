@@ -15,6 +15,10 @@ public record ApiResponse<T>(
 		return new ApiResponse(code, List.of(message), null);
 	}
 
+	public static <T> ApiResponse<T> error(final int code, final String message, final T data) {
+		return new ApiResponse(code, List.of(message), data);
+	}
+
 	public static ApiResponse error(final int code, final List<String> messages) {
 		return new ApiResponse(code, messages, null);
 	}
