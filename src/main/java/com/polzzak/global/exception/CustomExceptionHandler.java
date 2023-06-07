@@ -130,7 +130,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 			.secure(true)
 			.httpOnly(true)
 			.sameSite("None")
-			.maxAge(tokenProvider.getRefreshExpiredTimeMs())
+			.maxAge(tokenProvider.getRefreshExpiredTimeSec())
 			.build();
 		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 	}

@@ -105,8 +105,8 @@ public class AuthenticationService {
 			.toString();
 	}
 
-	public long getRefreshExpiredTimeMs() {
-		return tokenProvider.getRefreshExpiredTimeMs();
+	public long getRefreshExpiredTimeSec() {
+		return tokenProvider.getRefreshExpiredTimeSec();
 	}
 
 	private String getSocialUserInfo(final LoginRequest loginRequest, final OAuthProperties oAuthProperties) {

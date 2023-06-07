@@ -61,12 +61,12 @@ public class AuthRestController {
 			}
 
 			String refreshToken = authenticationService.generateRefreshToken(tokenPayload);
-			long refreshExpiredTimeMs = authenticationService.getRefreshExpiredTimeMs();
+			long refreshExpiredTimeSec = authenticationService.getRefreshExpiredTimeSec();
 			ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER, refreshToken)
 				.secure(true)
 				.httpOnly(true)
 				.sameSite("None")
-				.maxAge(refreshExpiredTimeMs)
+				.maxAge(refreshExpiredTimeSec)
 				.build();
 			httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
@@ -95,12 +95,12 @@ public class AuthRestController {
 		}
 
 		String refreshToken = authenticationService.generateRefreshToken(tokenPayload);
-		long refreshExpiredTimeMs = authenticationService.getRefreshExpiredTimeMs();
+		long refreshExpiredTimeSec = authenticationService.getRefreshExpiredTimeSec();
 		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER, refreshToken)
 			.secure(true)
 			.httpOnly(true)
 			.sameSite("None")
-			.maxAge(refreshExpiredTimeMs)
+			.maxAge(refreshExpiredTimeSec)
 			.build();
 		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
