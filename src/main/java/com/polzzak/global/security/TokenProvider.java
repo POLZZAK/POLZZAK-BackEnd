@@ -48,7 +48,7 @@ public class TokenProvider {
 			getClaimsJws(token);
 			return true;
 		} catch (ExpiredJwtException e) {
-			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_INVALID);
+			throw new JwtException(JwtErrorCode.ACCESS_TOKEN_EXPIRED);
 		} catch (Exception e) {
 			return false;
 		}
