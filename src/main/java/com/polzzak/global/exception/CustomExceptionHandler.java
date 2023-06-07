@@ -2,7 +2,6 @@ package com.polzzak.global.exception;
 
 import static com.polzzak.global.common.HeadersConstant.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,8 +72,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
 		if (ex.getJwtErrorCode() == JwtErrorCode.ACCESS_TOKEN_EXPIRED) {
 			Cookie cookie = WebUtils.getCookie(httpServletRequest, REFRESH_TOKEN_HEADER);
-			Arrays.stream(httpServletRequest.getCookies())
-				.forEach(data -> log.error("cookie value = {}", data.getValue()));
 			log.error("cookie = {}", cookie);
 
 			if (!isValidRefreshToken(cookie)) {
@@ -125,6 +122,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	private void addRefreshCookie(final HttpServletResponse httpServletResponse, final TokenPayload payload) {
 		ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER,
 				tokenProvider.createRefreshToken(payload))
+			.path("/")
 			.sameSite("None")
 			.httpOnly(true)
 			.secure(true)
