@@ -99,13 +99,22 @@ public class FamilyMapService {
 	}
 
 	@Transactional
-	public void rejectFamilyMap(final String username, final Long targetId) {
+	public void deleteFamilyMap(final String username, final Long targetId) {
+		Member findMember = userService.findMemberByUsername(username);
+		long guardianId = findMember.getMemberType().isGuardianType() ? findMember.getId() : targetId;
+		long kidId = findMember.getMemberType().isKidType() ? findMember.getId() : targetId;
+
+		familyMapRepository.deleteByGuardianIdAndKidId(guardianId, kidId);
+	}
+
+	@Transactional
+	public void rejectFamilyRequest(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
 		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
 	}
 
 	@Transactional
-	public void cancelFamilyMap(final String username, final Long targetId) {
+	public void cancelFamilyRequest(final String username, final Long targetId) {
 		Member findMember = userService.findMemberByUsername(username);
 		familyRequestRepository.deleteBySenderIdAndReceiverId(findMember.getId(), targetId);
 	}

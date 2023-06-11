@@ -56,12 +56,21 @@ public class FamilyRestController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@DeleteMapping("/{id}")
+	public ResponseEntity<ApiResponse> deleteFamilyMap(
+		final @LoginUsername String username,
+		final @PathVariable("id") Long id
+	) {
+		familyMapService.deleteFamilyMap(username, id);
+		return ResponseEntity.noContent().build();
+	}
+
 	@DeleteMapping("/reject/{id}")
 	public ResponseEntity<ApiResponse> rejectFamilyMap(
 		final @LoginUsername String username,
 		final @PathVariable("id") Long id
 	) {
-		familyMapService.rejectFamilyMap(username, id);
+		familyMapService.rejectFamilyRequest(username, id);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -70,7 +79,7 @@ public class FamilyRestController {
 		final @LoginUsername String username,
 		final @PathVariable("id") Long id
 	) {
-		familyMapService.cancelFamilyMap(username, id);
+		familyMapService.cancelFamilyRequest(username, id);
 		return ResponseEntity.noContent().build();
 	}
 
