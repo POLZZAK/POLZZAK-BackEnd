@@ -50,7 +50,7 @@ public class TokenAuthenticationTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);
@@ -115,7 +115,7 @@ public class TokenAuthenticationTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);

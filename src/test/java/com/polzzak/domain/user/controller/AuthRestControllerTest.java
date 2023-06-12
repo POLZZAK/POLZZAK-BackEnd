@@ -34,11 +34,11 @@ class AuthRestControllerTest extends ControllerTestHelper {
 	void 로그인_성공() throws Exception {
 		// given
 		LoginRequest loginRequest = new LoginRequest(TEST_OAUTH_ACCESS_TOKEN);
-		String username = TEST_USERNAME;
 
 		// when
-		when(authenticationService.getSocialUsername(loginRequest, TEST_SOCIAL_TYPE)).thenReturn(username);
-		doNothing().when(authenticationService).validateNickname(username);
+		when(authenticationService.getSocialUsername(loginRequest, TEST_SOCIAL_TYPE)).thenReturn(TEST_USERNAME);
+		when(authenticationService.getUserRoleByUsername(TEST_USERNAME)).thenReturn(TEST_USER_ROLE);
+		doNothing().when(authenticationService).validateNickname(TEST_USERNAME);
 		when(authenticationService.generateAccessToken(USER_TOKEN_PAYLOAD)).thenReturn(USER_ACCESS_TOKEN);
 		when(authenticationService.generateRefreshToken(USER_TOKEN_PAYLOAD)).thenReturn(USER_REFRESH_TOKEN);
 
@@ -61,7 +61,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.accessToken").description("엑세스 토큰")
 					)
 				)
@@ -128,7 +128,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);
@@ -165,7 +165,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.accessToken").description("엑세스 토큰")
 					)
 				)
@@ -209,7 +209,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.accessToken").description("엑세스 토큰")
 					)
 				)
@@ -250,7 +250,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);
@@ -291,7 +291,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);
@@ -341,7 +341,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);

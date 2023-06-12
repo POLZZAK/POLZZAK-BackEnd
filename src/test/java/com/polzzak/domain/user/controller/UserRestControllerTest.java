@@ -46,7 +46,7 @@ class UserRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.memberId").description("사용자 ID"),
 						fieldWithPath("data.nickname").description("닉네임"),
 						fieldWithPath("data.memberType.name").description("사용자 타입"),
