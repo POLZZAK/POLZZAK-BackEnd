@@ -87,7 +87,7 @@ operation::token-authentication-test/access-token-expired-refresh-token-invalid[
 = *Member type API*
 *💬 조회 제외하고 생성/수정/삭제는 Admin 권한을 가진 유저만 요청 가능*
 
-*MemberType*
+*MemberType 예시*
 
 |===
 | name | description
@@ -98,7 +98,7 @@ operation::token-authentication-test/access-token-expired-refresh-token-invalid[
 | 아이
 |===
 
-*detail: 엄마, 아빠, 삼촌...*
+*detail 예시: 엄마, 아빠, 삼촌...*
 
 [[사용자-타입-API]]
 == *1. 사용자 타입 목록 조회 API*
@@ -235,38 +235,45 @@ operation::family-rest-controller-test/create-family-map-fail[snippets='http-req
 
 operation::family-rest-controller-test/approve-family-map-success[snippets='http-request,request-headers,path-parameters,http-response']
 
-[[연동-거절-API]]
-== *4. 연동 거절 API*
+[[연동-삭제-API]]
+== *4. 연동 삭제 API*
 
 === *4-1* 성공
+
+operation::family-rest-controller-test/delete-family-map-success[snippets='http-request,request-headers,path-parameters,http-response']
+
+[[연동-거절-API]]
+== *5. 연동 거절 API*
+
+=== *5-1* 성공
 
 operation::family-rest-controller-test/reject-family-map-success[snippets='http-request,request-headers,path-parameters,http-response']
 
 [[연동-취소-API]]
-== *5. 연동 취소 API*
+== *6. 연동 취소 API*
 
-=== *5-1* 성공
+=== *6-1* 성공
 
 operation::family-rest-controller-test/cancel-family-map-success[snippets='http-request,request-headers,path-parameters,http-response']
 
 [[나와-연동된-사용자-목록-조회-API]]
-== *6. 나와 연동된 사용자 목록 조회 API*
+== *7. 나와 연동된 사용자 목록 조회 API*
 
-=== *6-1* 성공
+=== *7-1* 성공
 
 operation::family-rest-controller-test/get-families-success[snippets='http-request,request-headers,http-response,response-fields']
 
 [[요청한-사용자-목록-조회-API]]
-== *7. 요청한 사용자 목록 조회 API*
+== *8. 요청한 사용자 목록 조회 API*
 
-=== *7-1* 성공
+=== *8-1* 성공
 
 operation::family-rest-controller-test/get-sent-users-success[snippets='http-request,request-headers,http-response,response-fields']
 
 [[요청받은-사용자-목록-조회-API]]
-== *8. 요청받은 사용자 목록 조회 API*
+== *9. 요청받은 사용자 목록 조회 API*
 
-=== *8-1* 성공
+=== *9-1* 성공
 
 operation::family-rest-controller-test/get-received-users-success[snippets='http-request,request-headers,http-response,response-fields']
 

@@ -176,6 +176,35 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	}
 
 	@Test
+	void 연동_삭제_성공() throws Exception {
+		// given
+		String accessToken = USER_ACCESS_TOKEN;
+		String username = TEST_USERNAME;
+		String id = String.valueOf(TEST_MEMBER_ID);
+
+		// when
+		doNothing().when(familyMapService).deleteFamilyMap(username, TEST_MEMBER_ID);
+
+		// then
+		mockMvc.perform(
+				delete("/api/v1/families/{id}", id)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+			)
+			.andExpectAll(status().isNoContent())
+			.andDo(
+				document(
+					"{class-name}/delete-family-map-success",
+					requestHeaders(
+						headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+					),
+					pathParameters(
+						parameterWithName("id").description("연동 삭제할 사용자 ID")
+					)
+				)
+			);
+	}
+
+	@Test
 	void 연동_요청_거절_성공() throws Exception {
 		// given
 		String accessToken = USER_ACCESS_TOKEN;
@@ -183,7 +212,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 		String id = String.valueOf(TEST_MEMBER_ID);
 
 		// when
-		doNothing().when(familyMapService).rejectFamilyMap(username, TEST_MEMBER_ID);
+		doNothing().when(familyMapService).rejectFamilyRequest(username, TEST_MEMBER_ID);
 
 		// then
 		mockMvc.perform(
@@ -212,7 +241,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 		String id = String.valueOf(TEST_MEMBER_ID);
 
 		// when
-		doNothing().when(familyMapService).cancelFamilyMap(username, TEST_MEMBER_ID);
+		doNothing().when(familyMapService).cancelFamilyRequest(username, TEST_MEMBER_ID);
 
 		// then
 		mockMvc.perform(
