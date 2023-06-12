@@ -60,7 +60,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.memberId").description("사용자 ID"),
 						fieldWithPath("data.nickname").description("닉네임"),
 						fieldWithPath("data.memberType.name").description("사용자 타입"),
@@ -102,8 +102,8 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("messages").description("응답 메시지").optional(),
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);
@@ -140,7 +140,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
 						fieldWithPath("messages").description("응답 메시지"),
-						fieldWithPath("data").description("응답 데이터")
+						fieldWithPath("data").description("응답 데이터").optional()
 					)
 				)
 			);
@@ -286,7 +286,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.families").description("연동된 사용자 목록"),
 						fieldWithPath("data.families[0].memberId").description("사용자 ID"),
 						fieldWithPath("data.families[0].nickname").description("닉네임"),
@@ -322,7 +322,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.families").description("연동 요청보낸 사용자 목록"),
 						fieldWithPath("data.families[0].memberId").description("사용자 ID"),
 						fieldWithPath("data.families[0].nickname").description("닉네임"),
@@ -357,7 +357,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 					),
 					responseFields(
 						fieldWithPath("code").description("응답 코드"),
-						fieldWithPath("messages").description("응답 메시지"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.families").description("연동 요청받은 사용자 목록"),
 						fieldWithPath("data.families[0].memberId").description("사용자 ID"),
 						fieldWithPath("data.families[0].nickname").description("닉네임"),

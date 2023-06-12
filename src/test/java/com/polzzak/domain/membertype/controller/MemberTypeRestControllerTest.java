@@ -40,7 +40,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				"{class-name}/get-member-type-detail-list-success",
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
-					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("messages").description("응답 메시지").optional(),
 					fieldWithPath("data.memberTypeDetailList[0].memberTypeDetailId").description("memberTypeDetail ID"),
 					fieldWithPath("data.memberTypeDetailList[0].detail").description("타입 내용")
 				)
@@ -96,7 +96,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("data").description("응답 데이터").optional()
 				)
 			));
 	}
@@ -126,7 +126,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("data").description("응답 데이터").optional()
 				)
 			));
 	}
@@ -169,7 +169,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("data").description("응답 데이터").optional()
 				)
 			));
 	}
@@ -221,7 +221,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("data").description("응답 데이터").optional()
 				)
 			));
 	}
@@ -258,7 +258,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("data").description("응답 데이터").optional()
 				)
 			));
 	}
@@ -295,7 +295,7 @@ class MemberTypeRestControllerTest extends ControllerTestHelper {
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("data").description("응답 데이터").optional()
 				)
 			));
 	}

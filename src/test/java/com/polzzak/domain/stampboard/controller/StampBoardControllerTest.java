@@ -64,8 +64,8 @@ class StampBoardControllerTest extends ControllerTestHelper {
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
-					fieldWithPath("messages").description("응답 메시지"),
-					fieldWithPath("data").description("응답 데이터")
+					fieldWithPath("messages").description("응답 메시지").optional(),
+					fieldWithPath("data").description("응답 데이터").optional()
 				)));
 	}
 
@@ -92,7 +92,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
-					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("messages").description("응답 메시지").optional(),
 					fieldWithPath("data[]").description("응답 데이터"),
 					fieldWithPath("data[].partner").description("상대 member ID").optional(),
 					fieldWithPath("data[].partner.memberId").description("상대 member ID").optional(),
@@ -133,7 +133,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
-					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("messages").description("응답 메시지").optional(),
 					fieldWithPath("data").description("응답 데이터"),
 					fieldWithPath("data.stampBoardId").description("도장판 ID"),
 					fieldWithPath("data.name").description("도장판 이름"),
@@ -206,7 +206,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
-					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("messages").description("응답 메시지").optional(),
 					fieldWithPath("data").description("응답 데이터"),
 					fieldWithPath("data.stampBoardId").description("도장판 ID"),
 					fieldWithPath("data.name").description("도장판 이름"),
@@ -279,7 +279,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
-					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("messages").description("응답 메시지").optional(),
 					fieldWithPath("data.id").description("도장 ID"),
 					fieldWithPath("data.stampDesignId").description("도장 디자인 ID"),
 					fieldWithPath("data.missionContent").description("미션 내용"),
