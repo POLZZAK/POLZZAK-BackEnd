@@ -90,7 +90,7 @@ public class FamilyMapService {
 		return getReceivedMemberDtos(memberId);
 	}
 
-	public FamilyNewRequestDto getNewRequestMark(final String username) {
+	public FamilyNewRequestDto getFamilyNewRequestMark(final String username) {
 		Member findMember = userService.findMemberByUsername(username);
 		boolean isFamilyReceived = familyRequestRepository.existsByReceiver(findMember);
 		boolean isFamilySent = familyRequestRepository.existsBySender(findMember);
