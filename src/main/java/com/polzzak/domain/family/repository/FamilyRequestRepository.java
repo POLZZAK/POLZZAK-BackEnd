@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.polzzak.domain.family.entity.FamilyRequest;
+import com.polzzak.domain.user.entity.Member;
 
 public interface FamilyRequestRepository extends JpaRepository<FamilyRequest, Long> {
 	void deleteBySenderIdAndReceiverId(final Long senderId, final Long receiverId);
@@ -19,4 +20,8 @@ public interface FamilyRequestRepository extends JpaRepository<FamilyRequest, Lo
 	@Query("select fr.id from FamilyRequest fr where fr.sender.id = :senderId and fr.receiver.id = :receiverId")
 	Optional<Long> existsBySenderAndReceiverId(@Param("senderId") final Long senderId,
 		@Param("receiverId") final Long receiverId);
+
+	boolean existsByReceiver(final Member receiver);
+
+	boolean existsBySender(final Member sender);
 }

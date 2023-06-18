@@ -277,6 +277,13 @@ operation::family-rest-controller-test/get-sent-users-success[snippets='http-req
 
 operation::family-rest-controller-test/get-received-users-success[snippets='http-request,request-headers,http-response,response-fields']
 
+[[새로운-연동-요청-여부-조회-API]]
+== *10. 새로운 연동 요청 여부 조회 API*
+
+=== *10-1* 성공
+
+operation::family-rest-controller-test/get-new-request-marker-success[snippets='http-request,request-headers,http-response,response-fields']
+
 [[도장판]]
 = *도장판*
 

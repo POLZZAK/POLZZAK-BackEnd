@@ -368,4 +368,30 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 				)
 			);
 	}
+
+	@Test
+	void 새로운_연동_요청_마커_조회_성공() throws Exception {
+		// when & then
+		when(familyMapService.getNewRequestMark(TEST_USERNAME)).thenReturn(FAMILY_NEW_REQUEST_MARKER_DTO);
+
+		mockMvc.perform(
+				get("/api/v1/families/requests")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+			)
+			.andExpectAll(status().isOk())
+			.andDo(
+				document(
+					"{class-name}/get-new-request-marker-success",
+					requestHeaders(
+						headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+					),
+					responseFields(
+						fieldWithPath("code").description("응답 코드"),
+						fieldWithPath("messages").description("응답 메시지").optional(),
+						fieldWithPath("data.isFamilyReceived").description("연동 요청을 받았는지 여부"),
+						fieldWithPath("data.isFamilySent").description("연동 신청을 받았는지 여부")
+					)
+				)
+			);
+	}
 }
