@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.family.dto.FamilyMapRequest;
 import com.polzzak.domain.family.dto.FamilyMemberListResponse;
+import com.polzzak.domain.family.dto.FamilyNewRequestMarkDto;
+import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.security.LoginUsername;
@@ -31,7 +33,7 @@ public class FamilyRestController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<ApiResponse> getMemberByNickname(
+	public ResponseEntity<ApiResponse<SearchedMemberDto>> getMemberByNickname(
 		final @LoginUsername String username,
 		final @RequestParam("nickname") String nickname
 	) {
@@ -39,7 +41,7 @@ public class FamilyRestController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse> createFamilyMap(
+	public ResponseEntity<ApiResponse<Void>> createFamilyMap(
 		final @LoginUsername String username,
 		final @RequestBody @Valid FamilyMapRequest familyMapRequest
 	) {
@@ -48,7 +50,7 @@ public class FamilyRestController {
 	}
 
 	@PatchMapping("/approve/{id}")
-	public ResponseEntity approveFamilyMap(
+	public ResponseEntity<Void> approveFamilyMap(
 		final @LoginUsername String username,
 		final @PathVariable("id") Long id
 	) {
@@ -57,7 +59,7 @@ public class FamilyRestController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse> deleteFamilyMap(
+	public ResponseEntity<Void> deleteFamilyMap(
 		final @LoginUsername String username,
 		final @PathVariable("id") Long id
 	) {
@@ -66,7 +68,7 @@ public class FamilyRestController {
 	}
 
 	@DeleteMapping("/reject/{id}")
-	public ResponseEntity<ApiResponse> rejectFamilyMap(
+	public ResponseEntity<Void> rejectFamilyMap(
 		final @LoginUsername String username,
 		final @PathVariable("id") Long id
 	) {
@@ -75,7 +77,7 @@ public class FamilyRestController {
 	}
 
 	@DeleteMapping("/cancel/{id}")
-	public ResponseEntity<ApiResponse> cancelFamilyMap(
+	public ResponseEntity<Void> cancelFamilyMap(
 		final @LoginUsername String username,
 		final @PathVariable("id") Long id
 	) {
@@ -84,20 +86,27 @@ public class FamilyRestController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse> getUserFamilies(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getUserFamilies(final @LoginUsername String username) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyFamilies(username))));
 	}
 
 	@GetMapping("/requests/sent")
-	public ResponseEntity<ApiResponse> getMySentList(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMySentList(final @LoginUsername String username) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMySentList(username))));
 	}
 
 	@GetMapping("/requests/received")
-	public ResponseEntity<ApiResponse> getMyReceivedList(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(
+		final @LoginUsername String username) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyReceivedList(username))));
+	}
+
+	@GetMapping("/new-request-mark")
+	public ResponseEntity<ApiResponse<FamilyNewRequestMarkDto>> getNewRequestMark(
+		final @LoginUsername String username) {
+		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getFamilyNewRequestMark(username)));
 	}
 }
