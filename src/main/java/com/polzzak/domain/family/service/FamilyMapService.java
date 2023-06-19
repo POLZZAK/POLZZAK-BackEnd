@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.polzzak.domain.family.dto.FamilyMapRequest;
 import com.polzzak.domain.family.dto.FamilyMemberDto;
-import com.polzzak.domain.family.dto.FamilyNewRequestDto;
+import com.polzzak.domain.family.dto.FamilyNewRequestMarkDto;
 import com.polzzak.domain.family.dto.FamilyStatus;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.entity.FamilyMap;
@@ -90,11 +90,11 @@ public class FamilyMapService {
 		return getReceivedMemberDtos(memberId);
 	}
 
-	public FamilyNewRequestDto getNewRequestMark(final String username) {
+	public FamilyNewRequestMarkDto getFamilyNewRequestMark(final String username) {
 		Member findMember = userService.findMemberByUsername(username);
 		boolean isFamilyReceived = familyRequestRepository.existsByReceiver(findMember);
 		boolean isFamilySent = familyRequestRepository.existsBySender(findMember);
-		return new FamilyNewRequestDto(isFamilyReceived, isFamilySent);
+		return new FamilyNewRequestMarkDto(isFamilyReceived, isFamilySent);
 	}
 
 	@Transactional

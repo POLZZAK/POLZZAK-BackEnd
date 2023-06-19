@@ -372,10 +372,10 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 새로운_연동_요청_마커_조회_성공() throws Exception {
 		// when & then
-		when(familyMapService.getNewRequestMark(TEST_USERNAME)).thenReturn(FAMILY_NEW_REQUEST_MARKER_DTO);
+		when(familyMapService.getFamilyNewRequestMark(TEST_USERNAME)).thenReturn(FAMILY_NEW_REQUEST_MARKER_DTO);
 
 		mockMvc.perform(
-				get("/api/v1/families/requests")
+				get("/api/v1/families/new-request-mark")
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isOk())

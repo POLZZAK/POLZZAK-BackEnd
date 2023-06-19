@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.family.dto.FamilyMapRequest;
 import com.polzzak.domain.family.dto.FamilyMemberListResponse;
-import com.polzzak.domain.family.dto.FamilyNewRequestDto;
+import com.polzzak.domain.family.dto.FamilyNewRequestMarkDto;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.global.common.ApiResponse;
@@ -98,14 +98,13 @@ public class FamilyRestController {
 	}
 
 	@GetMapping("/requests/received")
-	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(
-		final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(final @LoginUsername String username) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyReceivedList(username))));
 	}
 
-	@GetMapping("/requests")
-	public ResponseEntity<ApiResponse<FamilyNewRequestDto>> getNewRequestMark(final @LoginUsername String username) {
-		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getNewRequestMark(username)));
+	@GetMapping("/new-request-mark")
+	public ResponseEntity<ApiResponse<FamilyNewRequestMarkDto>> getNewRequestMark(final @LoginUsername String username) {
+		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getFamilyNewRequestMark(username)));
 	}
 }

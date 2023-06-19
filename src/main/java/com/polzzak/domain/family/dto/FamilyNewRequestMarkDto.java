@@ -1,6 +1,6 @@
 package com.polzzak.domain.family.dto;
 
-public record FamilyNewRequestDto(
+public record FamilyNewRequestMarkDto(
 	boolean isFamilyReceived,
 	boolean isFamilySent
 ) {
