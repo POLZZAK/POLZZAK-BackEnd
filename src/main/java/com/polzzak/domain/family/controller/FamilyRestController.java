@@ -98,13 +98,15 @@ public class FamilyRestController {
 	}
 
 	@GetMapping("/requests/received")
-	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(
+		final @LoginUsername String username) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyReceivedList(username))));
 	}
 
 	@GetMapping("/new-request-mark")
-	public ResponseEntity<ApiResponse<FamilyNewRequestMarkDto>> getNewRequestMark(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyNewRequestMarkDto>> getNewRequestMark(
+		final @LoginUsername String username) {
 		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getFamilyNewRequestMark(username)));
 	}
 }

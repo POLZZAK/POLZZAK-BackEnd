@@ -24,5 +24,6 @@ public class FamilyFixtures {
 		FAMILY_MEMBER_KID_TYPE_DTO, TEST_PROFILE_URL);
 	public static final FamilyMemberDto FAMILY_GUARDIAN_MEMBER_DTO = new FamilyMemberDto(TEST_MEMBER_ID, TEST_NICKNAME,
 		FAMILY_MEMBER_GUARDIAN_TYPE_DTO, TEST_PROFILE_URL);
-	public static final FamilyNewRequestMarkDto FAMILY_NEW_REQUEST_MARKER_DTO = new FamilyNewRequestMarkDto(true, false);
+	public static final FamilyNewRequestMarkDto FAMILY_NEW_REQUEST_MARKER_DTO =
+		new FamilyNewRequestMarkDto(true, false);
 }
