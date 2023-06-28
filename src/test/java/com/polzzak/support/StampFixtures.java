@@ -46,8 +46,8 @@ public class StampFixtures {
 		new StampDto(12, 3, "미션2", LocalDateTime.now())
 	);
 	public static final List<MissionRequestDto> MISSION_COMPLETE_DTOS = List.of(
-		new MissionRequestDto(21, "미션3", LocalDateTime.now()),
-		new MissionRequestDto(22, "미션4", LocalDateTime.now())
+		new MissionRequestDto(21, 3, "미션3", LocalDateTime.now()),
+		new MissionRequestDto(22, 4, "미션4", LocalDateTime.now())
 	);
 	public static final StampBoardDto STAMP_BOARD_DTO = new StampBoardDto(33L, "도장판 이름", "progress", 13, 30, "칭찬해주기",
 		MISSION_DTOS, STAMP_DTOS, MISSION_COMPLETE_DTOS, null, null, LocalDateTime.now());
