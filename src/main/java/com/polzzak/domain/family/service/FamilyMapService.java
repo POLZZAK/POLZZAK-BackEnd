@@ -15,7 +15,7 @@ import com.polzzak.domain.family.dto.FamilyNewRequestMarkDto;
 import com.polzzak.domain.family.dto.FamilyStatus;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.entity.FamilyMap;
-import com.polzzak.domain.family.entity.FamilyMapCreateEvent;
+import com.polzzak.domain.family.entity.FamilyMapCreatedEvent;
 import com.polzzak.domain.family.entity.FamilyRequest;
 import com.polzzak.domain.family.repository.FamilyMapRepository;
 import com.polzzak.domain.family.repository.FamilyRequestRepository;
@@ -100,7 +100,7 @@ public class FamilyMapService {
 		validateDuplicateFamilyMap(requestMember, targetId);
 		Member targetMember = findMemberByMemberId(targetId);
 		familyMapRepository.save(createFamilyMap(requestMember, targetMember));
-		eventPublisher.publishEvent(new FamilyMapCreateEvent(List.of(requestMember, targetMember)));
+		eventPublisher.publishEvent(new FamilyMapCreatedEvent(List.of(requestMember, targetMember)));
 	}
 
 	@Transactional

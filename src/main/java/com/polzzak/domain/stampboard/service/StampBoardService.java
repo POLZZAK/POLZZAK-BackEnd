@@ -25,9 +25,9 @@ import com.polzzak.domain.stampboard.entity.Mission;
 import com.polzzak.domain.stampboard.entity.MissionRequest;
 import com.polzzak.domain.stampboard.entity.Stamp;
 import com.polzzak.domain.stampboard.entity.StampBoard;
-import com.polzzak.domain.stampboard.entity.StampBoardCreateEvent;
-import com.polzzak.domain.stampboard.entity.StampBoardDeleteEvent;
-import com.polzzak.domain.stampboard.entity.StampCreateEvent;
+import com.polzzak.domain.stampboard.entity.StampBoardCreatedEvent;
+import com.polzzak.domain.stampboard.entity.StampBoardDeletedEvent;
+import com.polzzak.domain.stampboard.entity.StampCreatedEvent;
 import com.polzzak.domain.stampboard.repository.MissionRepository;
 import com.polzzak.domain.stampboard.repository.MissionRequestRepository;
 import com.polzzak.domain.stampboard.repository.StampBoardRepository;
@@ -61,7 +61,7 @@ public class StampBoardService {
 		}
 		StampBoard stampBoard = stampBoardRepository.save(createStampBoard(stampBoardCreateRequest, findMember));
 		createMission(stampBoard, stampBoardCreateRequest.missionContents());
-		eventPublisher.publishEvent(new StampBoardCreateEvent(findMember));
+		eventPublisher.publishEvent(new StampBoardCreatedEvent(findMember));
 	}
 
 	public StampBoardDto getStampBoardDto(MemberDto member, long stampBoardId) {
@@ -121,7 +121,7 @@ public class StampBoardService {
 		deleteMissions(stampBoard.getId());
 		deleteStamps(stampBoard.getId());
 		deletemissionRequests(stampBoard.getId());
-		eventPublisher.publishEvent(new StampBoardDeleteEvent(findMember));
+		eventPublisher.publishEvent(new StampBoardDeletedEvent(findMember));
 	}
 
 	//Mission
@@ -222,7 +222,7 @@ public class StampBoardService {
 
 		stampBoard.addStampCount(stampCount);
 		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
-		eventPublisher.publishEvent(new StampCreateEvent(List.of(guardian, kid)));
+		eventPublisher.publishEvent(new StampCreatedEvent(List.of(guardian, kid)));
 	}
 
 	public StampDto getStampDto(long stampBoardId, long stampId) {

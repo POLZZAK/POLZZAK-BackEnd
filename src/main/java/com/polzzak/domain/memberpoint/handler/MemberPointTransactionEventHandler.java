@@ -6,14 +6,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import com.polzzak.domain.family.entity.FamilyMapCreateEvent;
+import com.polzzak.domain.family.entity.FamilyMapCreatedEvent;
 import com.polzzak.domain.memberpoint.entity.MemberPoint;
 import com.polzzak.domain.memberpoint.entity.MemberPointHistory;
 import com.polzzak.domain.memberpoint.entity.MemberPointType;
 import com.polzzak.domain.memberpoint.service.MemberPointService;
-import com.polzzak.domain.stampboard.entity.StampBoardCreateEvent;
-import com.polzzak.domain.stampboard.entity.StampBoardDeleteEvent;
-import com.polzzak.domain.stampboard.entity.StampCreateEvent;
+import com.polzzak.domain.stampboard.entity.StampBoardCreatedEvent;
+import com.polzzak.domain.stampboard.entity.StampBoardDeletedEvent;
+import com.polzzak.domain.stampboard.entity.StampCreatedEvent;
 
 @Component
 public class MemberPointTransactionEventHandler {
@@ -26,7 +26,7 @@ public class MemberPointTransactionEventHandler {
 	@Async
 	@TransactionalEventListener
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void handleStampBoardCreateEvent(final StampBoardCreateEvent event) {
+	public void handleStampBoardCreateEvent(final StampBoardCreatedEvent event) {
 		MemberPoint memberPoint = memberPointService.getMemberPoint(event.guardian().getId());
 		memberPoint.updatePoint(MemberPointType.STAMP_BOARD_CREATION.getIncreasedPoint());
 		memberPointService.saveMemberPointHistory(
@@ -36,7 +36,7 @@ public class MemberPointTransactionEventHandler {
 	@Async
 	@TransactionalEventListener
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void handleStampCreateEvent(final StampCreateEvent event) {
+	public void handleStampCreateEvent(final StampCreatedEvent event) {
 		event.members()
 			.forEach(member -> {
 				MemberPoint memberPoint = memberPointService.getMemberPoint(member.getId());
@@ -49,7 +49,7 @@ public class MemberPointTransactionEventHandler {
 	@Async
 	@TransactionalEventListener
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void handleStampBoardDeleteEvent(final StampBoardDeleteEvent event) {
+	public void handleStampBoardDeleteEvent(final StampBoardDeletedEvent event) {
 		MemberPoint memberPoint = memberPointService.getMemberPoint(event.guardian().getId());
 		memberPoint.updatePoint(MemberPointType.STAMP_BOARD_REMOVAL.getIncreasedPoint());
 		memberPointService.saveMemberPointHistory(
@@ -59,7 +59,7 @@ public class MemberPointTransactionEventHandler {
 	@Async
 	@TransactionalEventListener
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void handleFamilyMapCreateEvent(final FamilyMapCreateEvent event) {
+	public void handleFamilyMapCreateEvent(final FamilyMapCreatedEvent event) {
 		event.members()
 			.forEach(member -> {
 				MemberPoint memberPoint = memberPointService.getMemberPoint(member.getId());

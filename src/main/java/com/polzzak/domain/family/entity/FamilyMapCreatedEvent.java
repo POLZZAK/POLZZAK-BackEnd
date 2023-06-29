@@ -1,10 +1,10 @@
-package com.polzzak.domain.stampboard.entity;
+package com.polzzak.domain.family.entity;
 
 import java.util.List;
 
 import com.polzzak.domain.user.entity.Member;
 
-public record StampCreateEvent(
+public record FamilyMapCreatedEvent(
 	List<Member> members
 ) {
 }
