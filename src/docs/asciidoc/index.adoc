@@ -357,3 +357,20 @@ operation::stamp/get-success[snippets='http-request,request-headers,path-paramet
 == *미션 완료 요청 생성 API*
 
 operation::mission/request-create-success[snippets='http-request,request-headers,request-fields,http-response']
+
+[[Point-API]]
+= *Point API*
+
+[[포인트-조회-API]]
+== *1. 포인트 정보 조회 API*
+
+=== *1-1* 성공
+
+operation::member-point-rest-controller-test/get-my-member-points-success[snippets='http-request,request-headers,http-response,response-fields']
+
+[[포인트-내역-조회-API]]
+== *2. 포인트 내역 조회 API*
+
+=== *2-1* 성공
+
+operation::member-point-rest-controller-test/get-my-earning-histories-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
