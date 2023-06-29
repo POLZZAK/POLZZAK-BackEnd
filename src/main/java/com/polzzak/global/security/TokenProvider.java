@@ -22,6 +22,7 @@ import io.jsonwebtoken.security.Keys;
 public class TokenProvider {
 
 	public static final String ROLE = "role";
+	public static final String USERNAME = "username";
 	private final JwtProperties jwtProperties;
 
 	private final SecretKey key;
@@ -60,7 +61,8 @@ public class TokenProvider {
 
 	public TokenPayload getTokenPayload(final String token) {
 		Jws<Claims> claimsJws = getClaimsJws(token);
-		return new TokenPayload(claimsJws.getBody().getSubject(), claimsJws.getBody().get(ROLE).toString());
+		return new TokenPayload(claimsJws.getBody().getSubject(), claimsJws.getBody().get(USERNAME).toString(),
+			claimsJws.getBody().get(ROLE).toString());
 	}
 
 	public String extractAccessToken(final WebRequest request) {
@@ -102,8 +104,9 @@ public class TokenProvider {
 	}
 
 	private String createToken(final TokenPayload payload, final long expiredTimeMs) {
-		Claims claims = Jwts.claims().setSubject(payload.username());
+		Claims claims = Jwts.claims().setSubject(payload.id());
 		claims.put(ROLE, payload.userRole());
+		claims.put(USERNAME, payload.username());
 		Date now = new Date(System.currentTimeMillis());
 		Date expiration = new Date(now.getTime() + expiredTimeMs);
 
