@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
-import com.polzzak.domain.memberpoint.entity.MemberPointEvent;
-import com.polzzak.domain.memberpoint.entity.MemberPointType;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stampboard.dto.MissionDto;
 import com.polzzak.domain.stampboard.dto.MissionRequestCreateRequest;
@@ -27,6 +25,9 @@ import com.polzzak.domain.stampboard.entity.Mission;
 import com.polzzak.domain.stampboard.entity.MissionRequest;
 import com.polzzak.domain.stampboard.entity.Stamp;
 import com.polzzak.domain.stampboard.entity.StampBoard;
+import com.polzzak.domain.stampboard.entity.StampBoardCreateEvent;
+import com.polzzak.domain.stampboard.entity.StampBoardDeleteEvent;
+import com.polzzak.domain.stampboard.entity.StampCreateEvent;
 import com.polzzak.domain.stampboard.repository.MissionRepository;
 import com.polzzak.domain.stampboard.repository.MissionRequestRepository;
 import com.polzzak.domain.stampboard.repository.StampBoardRepository;
@@ -60,8 +61,7 @@ public class StampBoardService {
 		}
 		StampBoard stampBoard = stampBoardRepository.save(createStampBoard(stampBoardCreateRequest, findMember));
 		createMission(stampBoard, stampBoardCreateRequest.missionContents());
-		List<Member> membersToUpdatePoint = List.of(findMember);
-		addMemberPointEvent(membersToUpdatePoint, MemberPointType.STAMP_BOARD_CREATION);
+		eventPublisher.publishEvent(new StampBoardCreateEvent(findMember));
 	}
 
 	public StampBoardDto getStampBoardDto(MemberDto member, long stampBoardId) {
@@ -121,8 +121,7 @@ public class StampBoardService {
 		deleteMissions(stampBoard.getId());
 		deleteStamps(stampBoard.getId());
 		deletemissionRequests(stampBoard.getId());
-		List<Member> membersToUpdatePoint = List.of(findMember);
-		addMemberPointEvent(membersToUpdatePoint, MemberPointType.STAMP_BOARD_REMOVAL);
+		eventPublisher.publishEvent(new StampBoardDeleteEvent(findMember));
 	}
 
 	//Mission
@@ -223,8 +222,7 @@ public class StampBoardService {
 
 		stampBoard.addStampCount(stampCount);
 		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
-		List<Member> membersToUpdatePoint = List.of(guardian, kid);
-		addMemberPointEvent(membersToUpdatePoint, MemberPointType.STAMP_CREATION);
+		eventPublisher.publishEvent(new StampCreateEvent(List.of(guardian, kid)));
 	}
 
 	public StampDto getStampDto(long stampBoardId, long stampId) {
@@ -323,9 +321,5 @@ public class StampBoardService {
 			.goalStampCount(stampBoardCreateRequest.goalStampCount())
 			.reward(stampBoardCreateRequest.reward())
 			.build();
-	}
-
-	private void addMemberPointEvent(final List<Member> membersToUpdatePoint, MemberPointType memberPointType) {
-		eventPublisher.publishEvent(new MemberPointEvent(membersToUpdatePoint, memberPointType));
 	}
 }

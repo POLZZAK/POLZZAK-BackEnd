@@ -55,7 +55,7 @@ public class MemberPoint {
 
 	public void updatePoint(final int point) {
 		this.point += point;
-		if (point < 0) {
+		if (this.point < 0) {
 			this.point = 0;
 		}
 		this.level = this.point / 100;

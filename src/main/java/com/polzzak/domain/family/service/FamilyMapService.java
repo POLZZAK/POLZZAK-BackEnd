@@ -15,11 +15,10 @@ import com.polzzak.domain.family.dto.FamilyNewRequestMarkDto;
 import com.polzzak.domain.family.dto.FamilyStatus;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.entity.FamilyMap;
+import com.polzzak.domain.family.entity.FamilyMapCreateEvent;
 import com.polzzak.domain.family.entity.FamilyRequest;
 import com.polzzak.domain.family.repository.FamilyMapRepository;
 import com.polzzak.domain.family.repository.FamilyRequestRepository;
-import com.polzzak.domain.memberpoint.entity.MemberPointEvent;
-import com.polzzak.domain.memberpoint.entity.MemberPointType;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.global.infra.file.FileClient;
@@ -101,8 +100,7 @@ public class FamilyMapService {
 		validateDuplicateFamilyMap(requestMember, targetId);
 		Member targetMember = findMemberByMemberId(targetId);
 		familyMapRepository.save(createFamilyMap(requestMember, targetMember));
-		List<Member> membersToUpdatePoint = List.of(requestMember, targetMember);
-		addMemberPointEvent(membersToUpdatePoint, MemberPointType.FAMILY_MAP_CREATION);
+		eventPublisher.publishEvent(new FamilyMapCreateEvent(List.of(requestMember, targetMember)));
 	}
 
 	@Transactional
@@ -241,9 +239,5 @@ public class FamilyMapService {
 	private Member findMemberByMemberIdWithMemberType(final long memberId) {
 		return memberRepository.findByIdWithMemberTypeDetail(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
-	}
-
-	private void addMemberPointEvent(final List<Member> membersToUpdatePoint, MemberPointType memberPointType) {
-		eventPublisher.publishEvent(new MemberPointEvent(membersToUpdatePoint, memberPointType));
 	}
 }
