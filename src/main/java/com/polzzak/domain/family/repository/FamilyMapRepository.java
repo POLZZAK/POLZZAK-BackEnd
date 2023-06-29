@@ -18,4 +18,8 @@ public interface FamilyMapRepository extends JpaRepository<FamilyMap, Long> {
 	boolean existsByGuardianIdAndKidId(Long guardianId, Long kidId);
 
 	void deleteByGuardianIdAndKidId(Long guardianId, Long kidId);
+
+	int countByKidId(Long kidId);
+
+	int countByGuardianId(Long guardianId);
 }

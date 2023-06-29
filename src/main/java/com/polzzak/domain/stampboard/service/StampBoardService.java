@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
+import com.polzzak.domain.memberpoint.entity.MemberPointEvent;
+import com.polzzak.domain.memberpoint.entity.MemberPointType;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stampboard.dto.MissionDto;
 import com.polzzak.domain.stampboard.dto.MissionRequestCreateRequest;
@@ -40,29 +43,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StampBoardService {
-
 	private final UserService userService;
 	private final FamilyMapService familyMapService;
 	private final StampBoardRepository stampBoardRepository;
 	private final MissionRepository missionRepository;
 	private final MissionRequestRepository missionRequestRepository;
 	private final StampRepository stampRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	//StampBoard
 	@Transactional
-	public void createStampBoard(MemberDto guardian, StampBoardCreateRequest stampBoardCreateRequest) {
-		if (!familyMapService.isFamily(guardian.memberId(), stampBoardCreateRequest.kidId())) {
+	public void createStampBoard(final String username, final StampBoardCreateRequest stampBoardCreateRequest) {
+		Member findMember = userService.findMemberByUsername(username);
+		if (!familyMapService.isFamily(findMember.getId(), stampBoardCreateRequest.kidId())) {
 			throw new IllegalArgumentException("가족이 아닙니다.");
 		}
-		StampBoard stampBoard = stampBoardRepository.save(StampBoard.createStampBoard()
-			.guardianId(guardian.memberId())
-			.kidId(stampBoardCreateRequest.kidId())
-			.name(stampBoardCreateRequest.name())
-			.goalStampCount(stampBoardCreateRequest.goalStampCount())
-			.reward(stampBoardCreateRequest.reward())
-			.build());
-
+		StampBoard stampBoard = stampBoardRepository.save(createStampBoard(stampBoardCreateRequest, findMember));
 		createMission(stampBoard, stampBoardCreateRequest.missionContents());
+		List<Member> membersToUpdatePoint = List.of(findMember);
+		addMemberPointEvent(membersToUpdatePoint, MemberPointType.STAMP_BOARD_CREATION);
 	}
 
 	public StampBoardDto getStampBoardDto(MemberDto member, long stampBoardId) {
@@ -112,16 +111,18 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void deleteStampBoard(MemberDto user, long stampBoardId) {
+	public void deleteStampBoard(final String username, final long stampBoardId) {
+		Member findMember = userService.findMemberByUsername(username);
 		StampBoard stampBoard = stampBoardRepository.getReferenceById(stampBoardId);
-		if (stampBoard.isNotOwner(user.memberId())) {
+		if (stampBoard.isNotOwner(findMember.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
-
 		stampBoardRepository.delete(stampBoard);
 		deleteMissions(stampBoard.getId());
 		deleteStamps(stampBoard.getId());
 		deletemissionRequests(stampBoard.getId());
+		List<Member> membersToUpdatePoint = List.of(findMember);
+		addMemberPointEvent(membersToUpdatePoint, MemberPointType.STAMP_BOARD_REMOVAL);
 	}
 
 	//Mission
@@ -202,9 +203,10 @@ public class StampBoardService {
 
 	//Stamp
 	@Transactional
-	public void createStamp(MemberDto member, long stampBoardId, StampCreateRequest stampCreateRequest) {
+	public void createStamp(final String username, long stampBoardId, StampCreateRequest stampCreateRequest) {
+		Member guardian = userService.findMemberByUsername(username);
 		StampBoard stampBoard = getStampBoard(stampBoardId);
-		validateForCreateStamp(stampBoard, member);
+		validateForCreateStamp(stampBoard, guardian.getId());
 		int stampCount = getValidStampCountForAdd(stampBoard, stampCreateRequest.count());
 
 		List<Stamp> stamps = new ArrayList<>(stampCount);
@@ -220,6 +222,9 @@ public class StampBoardService {
 		stampRepository.saveAll(stamps);
 
 		stampBoard.addStampCount(stampCount);
+		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
+		List<Member> membersToUpdatePoint = List.of(guardian, kid);
+		addMemberPointEvent(membersToUpdatePoint, MemberPointType.STAMP_CREATION);
 	}
 
 	public StampDto getStampDto(long stampBoardId, long stampId) {
@@ -295,8 +300,8 @@ public class StampBoardService {
 	}
 
 	//Stamp
-	private void validateForCreateStamp(StampBoard stampBoard, MemberDto member) {
-		if (stampBoard.isNotOwner(member.memberId())) {
+	private void validateForCreateStamp(StampBoard stampBoard, final long memberId) {
+		if (stampBoard.isNotOwner(memberId)) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		if (stampBoard.isCompleted()) {
@@ -307,5 +312,20 @@ public class StampBoardService {
 	private int getValidStampCountForAdd(StampBoard stampBoard, int requestStampCount) {
 		int remainingStampCount = stampBoard.getGoalStampCount() - stampBoard.getCurrentStampCount();
 		return Math.min(requestStampCount, remainingStampCount);
+	}
+
+	private StampBoard createStampBoard(final StampBoardCreateRequest stampBoardCreateRequest,
+		final Member findMember) {
+		return StampBoard.createStampBoard()
+			.guardianId(findMember.getId())
+			.kidId(stampBoardCreateRequest.kidId())
+			.name(stampBoardCreateRequest.name())
+			.goalStampCount(stampBoardCreateRequest.goalStampCount())
+			.reward(stampBoardCreateRequest.reward())
+			.build();
+	}
+
+	private void addMemberPointEvent(final List<Member> membersToUpdatePoint, MemberPointType memberPointType) {
+		eventPublisher.publishEvent(new MemberPointEvent(membersToUpdatePoint, memberPointType));
 	}
 }

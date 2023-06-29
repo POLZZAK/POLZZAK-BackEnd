@@ -18,7 +18,7 @@ import com.polzzak.domain.family.dto.FamilyNewRequestMarkDto;
 import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.global.common.ApiResponse;
-import com.polzzak.global.security.LoginUsername;
+import com.polzzak.global.security.LoginId;
 
 import jakarta.validation.Valid;
 
@@ -34,79 +34,78 @@ public class FamilyRestController {
 
 	@GetMapping("/users")
 	public ResponseEntity<ApiResponse<SearchedMemberDto>> getMemberByNickname(
-		final @LoginUsername String username,
+		final @LoginId Long memberId,
 		final @RequestParam("nickname") String nickname
 	) {
-		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getSearchedMemberByNickname(username, nickname)));
+		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getSearchedMemberByNickname(memberId, nickname)));
 	}
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createFamilyMap(
-		final @LoginUsername String username,
+		final @LoginId Long memberId,
 		final @RequestBody @Valid FamilyMapRequest familyMapRequest
 	) {
-		familyMapService.saveFamilyTempMap(username, familyMapRequest);
+		familyMapService.saveFamilyTempMap(memberId, familyMapRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
 	@PatchMapping("/approve/{id}")
 	public ResponseEntity<Void> approveFamilyMap(
-		final @LoginUsername String username,
+		final @LoginId Long memberId,
 		final @PathVariable("id") Long id
 	) {
-		familyMapService.approveFamilyMap(username, id);
+		familyMapService.approveFamilyMap(memberId, id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteFamilyMap(
-		final @LoginUsername String username,
+		final @LoginId Long memberId,
 		final @PathVariable("id") Long id
 	) {
-		familyMapService.deleteFamilyMap(username, id);
+		familyMapService.deleteFamilyMap(memberId, id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/reject/{id}")
 	public ResponseEntity<Void> rejectFamilyMap(
-		final @LoginUsername String username,
+		final @LoginId Long memberId,
 		final @PathVariable("id") Long id
 	) {
-		familyMapService.rejectFamilyRequest(username, id);
+		familyMapService.rejectFamilyRequest(memberId, id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/cancel/{id}")
 	public ResponseEntity<Void> cancelFamilyMap(
-		final @LoginUsername String username,
+		final @LoginId Long memberId,
 		final @PathVariable("id") Long id
 	) {
-		familyMapService.cancelFamilyRequest(username, id);
+		familyMapService.cancelFamilyRequest(memberId, id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getUserFamilies(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getUserFamilies(final @LoginId Long memberId) {
 		return ResponseEntity.ok(
-			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyFamilies(username))));
+			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyFamilies(memberId))));
 	}
 
 	@GetMapping("/requests/sent")
-	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMySentList(final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMySentList(final @LoginId Long memberId) {
 		return ResponseEntity.ok(
-			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMySentList(username))));
+			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMySentList(memberId))));
 	}
 
 	@GetMapping("/requests/received")
-	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(
-		final @LoginUsername String username) {
+	public ResponseEntity<ApiResponse<FamilyMemberListResponse>> getMyReceivedList(final @LoginId Long memberId) {
 		return ResponseEntity.ok(
-			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyReceivedList(username))));
+			ApiResponse.ok(FamilyMemberListResponse.from(familyMapService.getMyReceivedList(memberId))));
 	}
 
 	@GetMapping("/new-request-mark")
 	public ResponseEntity<ApiResponse<FamilyNewRequestMarkDto>> getNewRequestMark(
-		final @LoginUsername String username) {
-		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getFamilyNewRequestMark(username)));
+		final @LoginId Long memberId) {
+		return ResponseEntity.ok(ApiResponse.ok(familyMapService.getFamilyNewRequestMark(memberId)));
 	}
 }

@@ -44,8 +44,7 @@ public class StampBoardController {
 	public ResponseEntity<ApiResponse<Void>> createStampBoard(
 		@LoginUsername String username, @RequestBody @Valid StampBoardCreateRequest stampBoardCreateRequest
 	) {
-		MemberDto guardian = userService.getGuardianInfo(username);
-		stampBoardService.createStampBoard(guardian, stampBoardCreateRequest);
+		stampBoardService.createStampBoard(username, stampBoardCreateRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
@@ -67,10 +66,8 @@ public class StampBoardController {
 	}
 
 	@DeleteMapping("/stamp-board/{stampBoardId}")
-	public ResponseEntity<Void> deleteStampBoard(@LoginUsername String username,
-		@PathVariable long stampBoardId) {
-		MemberDto guardian = userService.getGuardianInfo(username);
-		stampBoardService.deleteStampBoard(guardian, stampBoardId);
+	public ResponseEntity<Void> deleteStampBoard(@LoginUsername String username, @PathVariable long stampBoardId) {
+		stampBoardService.deleteStampBoard(username, stampBoardId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
@@ -89,8 +86,7 @@ public class StampBoardController {
 		@LoginUsername String username, @PathVariable long stampBoardId,
 		@RequestBody @Valid StampCreateRequest stampCreateRequest
 	) {
-		MemberDto guardian = userService.getGuardianInfo(username);
-		stampBoardService.createStamp(guardian, stampBoardId, stampCreateRequest);
+		stampBoardService.createStamp(username, stampBoardId, stampCreateRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 

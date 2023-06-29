@@ -1,9 +1,11 @@
 package com.polzzak.domain.family.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +18,10 @@ import com.polzzak.domain.family.entity.FamilyMap;
 import com.polzzak.domain.family.entity.FamilyRequest;
 import com.polzzak.domain.family.repository.FamilyMapRepository;
 import com.polzzak.domain.family.repository.FamilyRequestRepository;
+import com.polzzak.domain.memberpoint.entity.MemberPointEvent;
+import com.polzzak.domain.memberpoint.entity.MemberPointType;
 import com.polzzak.domain.user.entity.Member;
-import com.polzzak.domain.user.service.UserService;
+import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.global.infra.file.FileClient;
 
 @Service
@@ -27,19 +31,21 @@ public class FamilyMapService {
 	private final FamilyRequestRepository familyRequestRepository;
 
 	private final FileClient fileClient;
-	private final UserService userService;
+	private final MemberRepository memberRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public FamilyMapService(final FamilyMapRepository familyMapRepository,
 		final FamilyRequestRepository familyRequestRepository, final FileClient fileClient,
-		final UserService userService) {
+		final MemberRepository memberRepository, final ApplicationEventPublisher eventPublisher) {
 		this.familyMapRepository = familyMapRepository;
 		this.familyRequestRepository = familyRequestRepository;
 		this.fileClient = fileClient;
-		this.userService = userService;
+		this.memberRepository = memberRepository;
+		this.eventPublisher = eventPublisher;
 	}
 
-	public SearchedMemberDto getSearchedMemberByNickname(final String username, final String nickname) {
-		Member requestMember = userService.findMemberByUsername(username);
+	public SearchedMemberDto getSearchedMemberByNickname(final long memberId, final String nickname) {
+		Member requestMember = findMemberByMemberIdWithMemberType(memberId);
 
 		Set<String> familiesNicknameSet = getFamilyMemberDtos(requestMember).stream()
 			.map(familyMemberDto -> familyMemberDto.nickname())
@@ -53,7 +59,7 @@ public class FamilyMapService {
 			.map(requestMemberDto -> requestMemberDto.nickname())
 			.collect(Collectors.toSet());
 
-		return userService.getMemberByNickname(username, nickname)
+		return getMemberByNickname(requestMember, nickname)
 			.filter(findMember -> isValid(requestMember, findMember))
 			.map(member -> SearchedMemberDto.from(member, fileClient.getSignedUrl(member.getProfileKey()),
 				getFamilyState(member.getNickname(), familiesNicknameSet, sentNicknameSet, receivedNicknameSet)))
@@ -61,81 +67,83 @@ public class FamilyMapService {
 	}
 
 	@Transactional
-	public void saveFamilyTempMap(final String username, final FamilyMapRequest familyMapRequest) {
-		Member findMember = userService.findMemberByUsername(username);
-
-		validateRequest(familyMapRequest, findMember);
-
-		Member targetMember = userService.findMemberByMemberId(familyMapRequest.targetId());
-		familyRequestRepository.save(createFamilyRequest(findMember, targetMember));
-	}
-
-	public List<FamilyMemberDto> getMyFamilies(final String username) {
-		Member findMember = userService.findMemberByUsername(username);
-		return getFamilyMemberDtos(findMember);
+	public void saveFamilyTempMap(final long memberId, final FamilyMapRequest familyMapRequest) {
+		Member requestMember = findMemberByMemberIdWithMemberType(memberId);
+		validateSaveFamilyRequest(requestMember, familyMapRequest.targetId());
+		Member targetMember = findMemberByMemberId(familyMapRequest.targetId());
+		familyRequestRepository.save(createFamilyRequest(requestMember, targetMember));
 	}
 
 	public List<FamilyMemberDto> getMyFamilies(final long memberId) {
-		Member findMember = userService.findMemberByMemberId(memberId);
+		Member findMember = findMemberByMemberIdWithMemberType(memberId);
 		return getFamilyMemberDtos(findMember);
 	}
 
-	public List<FamilyMemberDto> getMySentList(final String username) {
-		long memberId = userService.findMemberByUsername(username).getId();
+	public List<FamilyMemberDto> getMySentList(final long memberId) {
 		return getSentMemberDtos(memberId);
 	}
 
-	public List<FamilyMemberDto> getMyReceivedList(final String username) {
-		long memberId = userService.findMemberByUsername(username).getId();
+	public List<FamilyMemberDto> getMyReceivedList(final long memberId) {
 		return getReceivedMemberDtos(memberId);
 	}
 
-	public FamilyNewRequestMarkDto getFamilyNewRequestMark(final String username) {
-		Member findMember = userService.findMemberByUsername(username);
-		boolean isFamilyReceived = familyRequestRepository.existsByReceiver(findMember);
-		boolean isFamilySent = familyRequestRepository.existsBySender(findMember);
+	public FamilyNewRequestMarkDto getFamilyNewRequestMark(final long memberId) {
+		Member requestMember = findMemberByMemberId(memberId);
+		boolean isFamilyReceived = familyRequestRepository.existsByReceiver(requestMember);
+		boolean isFamilySent = familyRequestRepository.existsBySender(requestMember);
 		return new FamilyNewRequestMarkDto(isFamilyReceived, isFamilySent);
 	}
 
 	@Transactional
-	public void approveFamilyMap(final String username, final Long targetId) {
-		Member findMember = userService.findMemberByUsername(username);
-		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
-
-		Member targetMember = userService.findMemberByMemberId(targetId);
-		familyMapRepository.save(createFamilyMap(findMember, targetMember));
+	public void approveFamilyMap(final long memberId, final Long targetId) {
+		Member requestMember = findMemberByMemberId(memberId);
+		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, memberId);
+		validateDuplicateFamilyMap(requestMember, targetId);
+		Member targetMember = findMemberByMemberId(targetId);
+		familyMapRepository.save(createFamilyMap(requestMember, targetMember));
+		List<Member> membersToUpdatePoint = List.of(requestMember, targetMember);
+		addMemberPointEvent(membersToUpdatePoint, MemberPointType.FAMILY_MAP_CREATION);
 	}
 
 	@Transactional
-	public void deleteFamilyMap(final String username, final Long targetId) {
-		Member findMember = userService.findMemberByUsername(username);
-		long guardianId = findMember.getMemberType().isGuardianType() ? findMember.getId() : targetId;
-		long kidId = findMember.getMemberType().isKidType() ? findMember.getId() : targetId;
-
+	public void deleteFamilyMap(final long memberId, final Long targetId) {
+		Member requestMember = findMemberByMemberIdWithMemberType(memberId);
+		long guardianId = requestMember.getMemberType().isGuardianType() ? requestMember.getId() : targetId;
+		long kidId = requestMember.getMemberType().isKidType() ? requestMember.getId() : targetId;
 		familyMapRepository.deleteByGuardianIdAndKidId(guardianId, kidId);
 	}
 
 	@Transactional
-	public void rejectFamilyRequest(final String username, final Long targetId) {
-		Member findMember = userService.findMemberByUsername(username);
-		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, findMember.getId());
+	public void rejectFamilyRequest(final long memberId, final Long targetId) {
+		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, memberId);
 	}
 
 	@Transactional
-	public void cancelFamilyRequest(final String username, final Long targetId) {
-		Member findMember = userService.findMemberByUsername(username);
-		familyRequestRepository.deleteBySenderIdAndReceiverId(findMember.getId(), targetId);
+	public void cancelFamilyRequest(final long memberId, final Long targetId) {
+		familyRequestRepository.deleteBySenderIdAndReceiverId(memberId, targetId);
 	}
 
 	public boolean isFamily(long guardianId, long kidId) {
 		return familyMapRepository.existsByGuardianIdAndKidId(guardianId, kidId);
 	}
 
-	private void validateRequest(final FamilyMapRequest familyMapRequest, final Member findMember) {
-		if (familyRequestRepository.existsBySenderAndReceiverId(findMember.getId(), familyMapRequest.targetId())
-			.isPresent()
-			|| familyRequestRepository.existsBySenderAndReceiverId(familyMapRequest.targetId(), findMember.getId())
-			.isPresent()) {
+	private void validateSaveFamilyRequest(final Member requestMember, final long targetId) {
+		validateDuplicateFamilyRequest(requestMember, targetId);
+		validateDuplicateFamilyMap(requestMember, targetId);
+	}
+
+	private void validateDuplicateFamilyRequest(final Member requestMember, final long targetId) {
+		if (familyRequestRepository.existsBySenderIdAndReceiverId(targetId, requestMember.getId())
+			|| familyRequestRepository.existsBySenderIdAndReceiverId(requestMember.getId(), targetId)
+		) {
+			throw new IllegalArgumentException("중복된 요청입니다");
+		}
+	}
+
+	private void validateDuplicateFamilyMap(final Member requestMember, final long targetId) {
+		if (familyMapRepository.existsByGuardianIdAndKidId(
+			requestMember.isGuardian() ? requestMember.getId() : targetId,
+			requestMember.isKid() ? requestMember.getId() : targetId)) {
 			throw new IllegalArgumentException("중복된 요청입니다");
 		}
 	}
@@ -175,7 +183,6 @@ public class FamilyMapService {
 		if (findMember.isKid()) {
 			return getGuardianDtoList(familyMapRepository.getFamilyMapsByKidId(findMember.getId()));
 		}
-
 		return getKidDtoList(familyMapRepository.getFamilyMapsByGuardianId(findMember.getId()));
 	}
 
@@ -219,5 +226,24 @@ public class FamilyMapService {
 		}
 
 		return true;
+	}
+
+	private Optional<Member> getMemberByNickname(final Member requestMember, final String nickname) {
+		return memberRepository.searchByNickname(nickname)
+			.filter(searchedMember -> !requestMember.getNickname().equals(searchedMember.getNickname()));
+	}
+
+	private Member findMemberByMemberId(final long memberId) {
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+	}
+
+	private Member findMemberByMemberIdWithMemberType(final long memberId) {
+		return memberRepository.findByIdWithMemberTypeDetail(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+	}
+
+	private void addMemberPointEvent(final List<Member> membersToUpdatePoint, MemberPointType memberPointType) {
+		eventPublisher.publishEvent(new MemberPointEvent(membersToUpdatePoint, memberPointType));
 	}
 }
