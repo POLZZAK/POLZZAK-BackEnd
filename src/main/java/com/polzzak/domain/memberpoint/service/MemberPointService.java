@@ -34,7 +34,7 @@ public class MemberPointService {
 
 	@Transactional
 	public MemberPointResponse getMyMemberPoint(final long id) {
-		MemberPoint memberPoint = getMemberPoint(id);
+		MemberPoint memberPoint = getMemberPointWithWriteLock(id);
 		return MemberPointResponse.from(memberPoint);
 	}
 
@@ -46,8 +46,8 @@ public class MemberPointService {
 	}
 
 	@Transactional
-	public MemberPoint getMemberPoint(final long memberId) {
-		return memberPointRepository.findByMemberId(memberId)
+	public MemberPoint getMemberPointWithWriteLock(final long memberId) {
+		return memberPointRepository.findWithWriteLockByMemberId(memberId)
 			.orElseThrow(() -> new IllegalArgumentException(String.format("사용자 %d의 포인트가 존재하지 않습니다", memberId)));
 	}
 

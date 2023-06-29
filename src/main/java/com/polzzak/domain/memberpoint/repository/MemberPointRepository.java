@@ -11,5 +11,5 @@ import jakarta.persistence.LockModeType;
 
 public interface MemberPointRepository extends JpaRepository<MemberPoint, Long> {
 	@Lock(value = LockModeType.PESSIMISTIC_WRITE)
-	Optional<MemberPoint> findByMemberId(final Long memberId);
+	Optional<MemberPoint> findWithWriteLockByMemberId(final Long memberId);
 }

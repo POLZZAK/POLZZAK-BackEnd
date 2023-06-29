@@ -28,7 +28,7 @@ public class MemberPointTransactionEventHandler {
 	@TransactionalEventListener
 	public void handleStampBoardCreatedEvent(final StampBoardCreatedEvent event) {
 		try {
-			MemberPoint memberPoint = memberPointService.getMemberPoint(event.guardian().getId());
+			MemberPoint memberPoint = memberPointService.getMemberPointWithWriteLock(event.guardian().getId());
 			memberPoint.updatePoint(MemberPointType.STAMP_BOARD_CREATION.getIncreasedPoint());
 			memberPointService.saveMemberPointHistory(
 				createMemberPointHistory(MemberPointType.STAMP_BOARD_CREATION, memberPoint));
@@ -43,7 +43,7 @@ public class MemberPointTransactionEventHandler {
 		try {
 			event.members()
 				.forEach(member -> {
-					MemberPoint memberPoint = memberPointService.getMemberPoint(member.getId());
+					MemberPoint memberPoint = memberPointService.getMemberPointWithWriteLock(member.getId());
 					memberPoint.updatePoint(MemberPointType.STAMP_CREATION.getIncreasedPoint());
 					memberPointService.saveMemberPointHistory(
 						createMemberPointHistory(MemberPointType.STAMP_CREATION, memberPoint));
@@ -57,7 +57,7 @@ public class MemberPointTransactionEventHandler {
 	@TransactionalEventListener
 	public void handleStampBoardDeletedEvent(final StampBoardDeletedEvent event) {
 		try {
-			MemberPoint memberPoint = memberPointService.getMemberPoint(event.guardian().getId());
+			MemberPoint memberPoint = memberPointService.getMemberPointWithWriteLock(event.guardian().getId());
 			memberPoint.updatePoint(MemberPointType.STAMP_BOARD_REMOVAL.getIncreasedPoint());
 			memberPointService.saveMemberPointHistory(
 				createMemberPointHistory(MemberPointType.STAMP_BOARD_REMOVAL, memberPoint));
@@ -72,7 +72,7 @@ public class MemberPointTransactionEventHandler {
 		try {
 			event.members()
 				.forEach(member -> {
-					MemberPoint memberPoint = memberPointService.getMemberPoint(member.getId());
+					MemberPoint memberPoint = memberPointService.getMemberPointWithWriteLock(member.getId());
 					memberPoint.updatePoint(MemberPointType.FAMILY_MAP_CREATION.getIncreasedPoint());
 					memberPointService.saveMemberPointHistory(
 						createMemberPointHistory(MemberPointType.FAMILY_MAP_CREATION, memberPoint));

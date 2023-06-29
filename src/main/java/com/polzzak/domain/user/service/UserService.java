@@ -38,7 +38,7 @@ public class UserService {
 	@Transactional
 	public MemberResponse getMemberResponse(final long memberId) {
 		Member requestMember = findMemberByMemberIdWithMemberType(memberId);
-		MemberPoint memberPoint = memberPointRepository.findByMemberId(memberId)
+		MemberPoint memberPoint = memberPointRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException(String.format("사용자 %d의 포인트가 존재하지 않습니다", memberId)));
 		int familyCount = getFamilyCount(requestMember);
 		return MemberResponse.from(requestMember, memberPoint, fileClient.getSignedUrl(requestMember.getProfileKey()),
