@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.polzzak.global.security.JwtErrorCode;
 import com.polzzak.global.security.JwtException;
+import com.polzzak.global.security.LoginId;
+import com.polzzak.global.security.LoginIdResolver;
 import com.polzzak.global.security.LoginUsername;
 import com.polzzak.global.security.LoginUsernameResolver;
 import com.polzzak.global.security.TokenPayload;
@@ -49,6 +51,9 @@ public abstract class ControllerTestHelper {
 
 	@MockBean
 	private LoginUsernameResolver loginUsernameResolver;
+
+	@MockBean
+	private LoginIdResolver loginIdResolver;
 
 	@BeforeEach
 	protected void setUp(final WebApplicationContext webApplicationContext,
@@ -84,6 +89,27 @@ public abstract class ControllerTestHelper {
 			}
 
 			return TEST_USERNAME;
+		});
+
+		when(loginIdResolver.supportsParameter(any())).thenAnswer(invocation -> {
+			MethodParameter methodParameter = invocation.getArgument(0);
+			return methodParameter.hasParameterAnnotation(LoginId.class);
+		});
+
+		when(loginIdResolver.resolveArgument(any(), any(), any(), any())).thenAnswer(invocation -> {
+			MethodParameter parameter = invocation.getArgument(0);
+			NativeWebRequest webRequest = invocation.getArgument(2);
+			LoginId annotation = parameter.getParameterAnnotation(LoginId.class);
+
+			String accessToken = getAccessToken(webRequest);
+			TokenPayload tokenPayload = tokenProvider.getTokenPayload(accessToken);
+
+			if (annotation.administrator()) {
+				String userRole = tokenPayload.userRole();
+				validateAdminUser(userRole);
+			}
+
+			return TEST_MEMBER_ID;
 		});
 
 		when(tokenProvider.getTokenPayload(USER_ACCESS_TOKEN)).thenReturn(USER_TOKEN_PAYLOAD);

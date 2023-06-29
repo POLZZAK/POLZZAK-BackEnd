@@ -25,17 +25,11 @@ class UserRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 사용자_정보_조회_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
+		when(userService.getMemberResponse(TEST_MEMBER_ID)).thenReturn(MEMBER_RESPONSE);
 
-		// when
-		when(userService.getMemberInfo(username)).thenReturn(MEMBER_GUARDIAN_DTO);
-
-		// then
 		mockMvc.perform(
 				get("/api/v1/users/me")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isOk())
 			.andDo(
@@ -49,9 +43,12 @@ class UserRestControllerTest extends ControllerTestHelper {
 						fieldWithPath("messages").description("응답 메시지").optional(),
 						fieldWithPath("data.memberId").description("사용자 ID"),
 						fieldWithPath("data.nickname").description("닉네임"),
+						fieldWithPath("data.memberPoint.point").description("사용자 포인트"),
+						fieldWithPath("data.memberPoint.level").description("사용자 레벨"),
 						fieldWithPath("data.memberType.name").description("사용자 타입"),
 						fieldWithPath("data.memberType.detail").description("타입 세부 내용"),
-						fieldWithPath("data.profileUrl").description("프로필 Url")
+						fieldWithPath("data.profileUrl").description("프로필 Url"),
+						fieldWithPath("data.familyCount").description("연동된 가족 수")
 					)
 				)
 			);

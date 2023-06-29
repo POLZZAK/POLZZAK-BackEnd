@@ -18,6 +18,8 @@ public class TokenFixtures {
 	public static final Cookie REFRESH_COOKIE = new Cookie(REFRESH_TOKEN_HEADER, USER_REFRESH_TOKEN);
 	public static final Cookie INVALID_REFRESH_COOKIE = new Cookie(REFRESH_TOKEN_HEADER, INVALID_REFRESH_TOKEN);
 	public static final String TOKEN_TYPE = "Bearer ";
-	public static final TokenPayload USER_TOKEN_PAYLOAD = new TokenPayload(TEST_USERNAME, TEST_USER_ROLE);
-	public static final TokenPayload ADMIN_TOKEN_PAYLOAD = new TokenPayload(TEST_USERNAME, TEST_ADMIN_ROLE);
+	public static final TokenPayload USER_TOKEN_PAYLOAD = new TokenPayload(TEST_MEMBER_ID.toString(), TEST_USERNAME,
+		TEST_USER_ROLE);
+	public static final TokenPayload ADMIN_TOKEN_PAYLOAD = new TokenPayload(TEST_MEMBER_ID.toString(), TEST_USERNAME,
+		TEST_ADMIN_ROLE);
 }

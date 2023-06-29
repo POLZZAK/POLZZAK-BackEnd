@@ -11,17 +11,12 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import com.polzzak.domain.family.dto.FamilyMapRequest;
-import com.polzzak.domain.family.dto.FamilyMemberDto;
-import com.polzzak.domain.family.dto.SearchedMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.support.test.ControllerTestHelper;
 
@@ -33,20 +28,13 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 사용자_닉네임_검색_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String nickname = TEST_NICKNAME;
-		String username = TEST_USERNAME;
-		SearchedMemberDto memberDto = SEARCHED_KID_MEMBER_DTO;
+		when(familyMapService.getSearchedMemberByNickname(TEST_MEMBER_ID, TEST_NICKNAME)).thenReturn(
+			SEARCHED_KID_MEMBER_DTO);
 
-		// when
-		when(familyMapService.getSearchedMemberByNickname(username, nickname)).thenReturn(memberDto);
-
-		// then
 		mockMvc.perform(
 				get("/api/v1/families/users")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
-					.param("nickname", nickname)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.param("nickname", TEST_NICKNAME)
 			)
 			.andExpectAll(status().isOk())
 			.andDo(
@@ -75,20 +63,13 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_신청_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		FamilyMapRequest familyMapRequest = new FamilyMapRequest(TEST_MEMBER_ID);
+		doNothing().when(familyMapService).saveFamilyTempMap(TEST_MEMBER_ID, TEST_FAMILY_MAP_REQUEST);
 
-		// when
-		doNothing().when(familyMapService).saveFamilyTempMap(username, familyMapRequest);
-
-		// then
 		mockMvc.perform(
 				post("/api/v1/families")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectToString(familyMapRequest))
+					.content(objectToString(TEST_FAMILY_MAP_REQUEST))
 			)
 			.andExpectAll(status().isCreated())
 			.andDo(
@@ -111,21 +92,14 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_신청_실패_중복_요청() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		FamilyMapRequest familyMapRequest = new FamilyMapRequest(TEST_MEMBER_ID);
-
-		// when
 		doThrow(new IllegalArgumentException("중복된 요청입니다")).when(familyMapService)
-			.saveFamilyTempMap(username, familyMapRequest);
+			.saveFamilyTempMap(TEST_MEMBER_ID, TEST_FAMILY_MAP_REQUEST);
 
-		// then
 		mockMvc.perform(
 				post("/api/v1/families")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectToString(familyMapRequest))
+					.content(objectToString(TEST_FAMILY_MAP_REQUEST))
 			)
 			.andExpectAll(status().isBadRequest())
 			.andDo(
@@ -148,18 +122,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_요청_승인_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		String id = String.valueOf(TEST_MEMBER_ID);
+		doNothing().when(familyMapService).approveFamilyMap(TEST_MEMBER_ID, TEST_MEMBER_ID);
 
-		// when
-		doNothing().when(familyMapService).approveFamilyMap(username, TEST_MEMBER_ID);
-
-		// then
 		mockMvc.perform(
-				patch("/api/v1/families/approve/{id}", id)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+				patch("/api/v1/families/approve/{id}", TEST_TARGET_MEMBER_ID)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isNoContent())
 			.andDo(
@@ -177,18 +144,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_삭제_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		String id = String.valueOf(TEST_MEMBER_ID);
+		doNothing().when(familyMapService).deleteFamilyMap(TEST_MEMBER_ID, TEST_MEMBER_ID);
 
-		// when
-		doNothing().when(familyMapService).deleteFamilyMap(username, TEST_MEMBER_ID);
-
-		// then
 		mockMvc.perform(
-				delete("/api/v1/families/{id}", id)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+				delete("/api/v1/families/{id}", TEST_TARGET_MEMBER_ID)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isNoContent())
 			.andDo(
@@ -207,17 +167,15 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 연동_요청_거절_성공() throws Exception {
 		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
 		String id = String.valueOf(TEST_MEMBER_ID);
 
 		// when
-		doNothing().when(familyMapService).rejectFamilyRequest(username, TEST_MEMBER_ID);
+		doNothing().when(familyMapService).rejectFamilyRequest(TEST_MEMBER_ID, TEST_MEMBER_ID);
 
 		// then
 		mockMvc.perform(
-				delete("/api/v1/families/reject/{id}", id)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+				delete("/api/v1/families/reject/{id}", TEST_TARGET_MEMBER_ID)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isNoContent())
 			.andDo(
@@ -235,18 +193,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_요청_취소_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		String id = String.valueOf(TEST_MEMBER_ID);
+		doNothing().when(familyMapService).cancelFamilyRequest(TEST_MEMBER_ID, TEST_MEMBER_ID);
 
-		// when
-		doNothing().when(familyMapService).cancelFamilyRequest(username, TEST_MEMBER_ID);
-
-		// then
 		mockMvc.perform(
-				delete("/api/v1/families/cancel/{id}", id)
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+				delete("/api/v1/families/cancel/{id}", TEST_TARGET_MEMBER_ID)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isNoContent())
 			.andDo(
@@ -264,18 +215,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동된_사용자_목록_조회_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		List<FamilyMemberDto> familyMemberDtos = List.of(FAMILY_KID_MEMBER_DTO);
+		when(familyMapService.getMyFamilies(TEST_MEMBER_ID)).thenReturn(TEST_FAMILY_MEMBER_DTO_LIST);
 
-		// when
-		when(familyMapService.getMyFamilies(username)).thenReturn(familyMemberDtos);
-
-		// then
 		mockMvc.perform(
 				get("/api/v1/families")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isOk())
 			.andDo(
@@ -300,18 +244,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_요청보낸_사용자_목록_조회_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		List<FamilyMemberDto> familyMemberDtos = List.of(FAMILY_KID_MEMBER_DTO);
+		when(familyMapService.getMySentList(TEST_MEMBER_ID)).thenReturn(TEST_FAMILY_MEMBER_DTO_LIST);
 
-		// when
-		when(familyMapService.getMySentList(username)).thenReturn(familyMemberDtos);
-
-		// then
 		mockMvc.perform(
 				get("/api/v1/families/requests/sent")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isOk())
 			.andDo(
@@ -336,17 +273,11 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 
 	@Test
 	void 연동_요청받은_사용자_목록_조회_성공() throws Exception {
-		// given
-		String accessToken = USER_ACCESS_TOKEN;
-		String username = TEST_USERNAME;
-		List<FamilyMemberDto> familyMemberDtos = List.of(FAMILY_KID_MEMBER_DTO);
-
-		// when
-		when(familyMapService.getMyReceivedList(username)).thenReturn(familyMemberDtos);
+		when(familyMapService.getMyReceivedList(TEST_MEMBER_ID)).thenReturn(TEST_FAMILY_MEMBER_DTO_LIST);
 
 		mockMvc.perform(
 				get("/api/v1/families/requests/received")
-					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + accessToken)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 			)
 			.andExpectAll(status().isOk())
 			.andDo(
@@ -372,7 +303,7 @@ class FamilyRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 새로운_연동_요청_마커_조회_성공() throws Exception {
 		// when & then
-		when(familyMapService.getFamilyNewRequestMark(TEST_USERNAME)).thenReturn(FAMILY_NEW_REQUEST_MARKER_DTO);
+		when(familyMapService.getFamilyNewRequestMark(TEST_MEMBER_ID)).thenReturn(FAMILY_NEW_REQUEST_MARKER_DTO);
 
 		mockMvc.perform(
 				get("/api/v1/families/new-request-mark")
