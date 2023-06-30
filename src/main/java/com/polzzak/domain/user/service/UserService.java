@@ -35,7 +35,6 @@ public class UserService {
 		this.familyMapRepository = familyMapRepository;
 	}
 
-	@Transactional
 	public MemberResponse getMemberResponse(final long memberId) {
 		Member requestMember = findMemberByMemberIdWithMemberType(memberId);
 		MemberPoint memberPoint = memberPointRepository.findById(memberId)

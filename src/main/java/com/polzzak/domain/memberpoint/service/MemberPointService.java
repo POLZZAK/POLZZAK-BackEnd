@@ -29,7 +29,7 @@ public class MemberPointService {
 	@Transactional
 	public void saveMemberPoint(final Member member) {
 		MemberPoint savedMemberPoint = memberPointRepository.save(createMemberPoint(member));
-		memberPointHistoryRepository.save(createMemberPointHistory(savedMemberPoint));
+		memberPointHistoryRepository.save(createMemberRegistrationPointHistory(savedMemberPoint));
 	}
 
 	@Transactional
@@ -56,7 +56,7 @@ public class MemberPointService {
 		memberPointHistoryRepository.save(memberPointHistory);
 	}
 
-	private MemberPointHistory createMemberPointHistory(final MemberPoint savedMemberPoint) {
+	private MemberPointHistory createMemberRegistrationPointHistory(final MemberPoint savedMemberPoint) {
 		return MemberPointHistory.createMemberPointHistory()
 			.description(MemberPointType.REGISTER.getDescription())
 			.increasedPoint(MemberPointType.REGISTER.getIncreasedPoint())
