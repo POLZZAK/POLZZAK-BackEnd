@@ -10,7 +10,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +21,7 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "stamp")
 public class Stamp extends BaseEntity {
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "stamp_board_id")
 	private StampBoard stampBoard;
@@ -29,7 +29,7 @@ public class Stamp extends BaseEntity {
 	@Column(nullable = false)
 	private int stampDesignId;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "mission_id")
 	private Mission mission;
 

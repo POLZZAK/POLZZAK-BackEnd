@@ -117,10 +117,8 @@ public class StampBoardService {
 		if (stampBoard.isNotOwner(findMember.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
+		//TODO jjh 삭제 개선
 		stampBoardRepository.delete(stampBoard);
-		deleteMissions(stampBoard.getId());
-		deleteStamps(stampBoard.getId());
-		deletemissionRequests(stampBoard.getId());
 		eventPublisher.publishEvent(new StampBoardDeletedEvent(findMember));
 	}
 
