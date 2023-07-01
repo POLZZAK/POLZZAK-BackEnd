@@ -9,11 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.polzzak.domain.memberpoint.service.MemberPointService;
 import com.polzzak.domain.membertype.entity.MemberTypeDetail;
 import com.polzzak.domain.membertype.service.MemberTypeDetailService;
 import com.polzzak.domain.user.dto.LoginRequest;
 import com.polzzak.domain.user.dto.OAuthUserInfoResponse;
 import com.polzzak.domain.user.dto.RegisterRequest;
+import com.polzzak.domain.user.dto.UserDto;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.entity.User;
@@ -40,6 +42,7 @@ public class AuthenticationService {
 	private final WebClient webClient;
 	private final FileClient fileClient;
 	private final MemberTypeDetailService memberTypeDetailService;
+	private final MemberPointService memberPointService;
 	private final TokenProvider tokenProvider;
 	private final KakaoOAuthProperties kakaoOAuthProperties;
 	private final GoogleOAuthProperties googleOAuthProperties;
@@ -48,9 +51,10 @@ public class AuthenticationService {
 
 	public AuthenticationService(final UserRepository userRepository, final WebClient webClient,
 		final FileClient fileClient, final MemberTypeDetailService memberTypeDetailService,
-		final TokenProvider tokenProvider,
+		final MemberPointService memberPointService, final TokenProvider tokenProvider,
 		final KakaoOAuthProperties kakaoOAuthProperties, final GoogleOAuthProperties googleOAuthProperties) {
 		this.userRepository = userRepository;
+		this.memberPointService = memberPointService;
 		this.webClient = webClient;
 		this.fileClient = fileClient;
 		this.memberTypeDetailService = memberTypeDetailService;
@@ -73,15 +77,14 @@ public class AuthenticationService {
 	@Transactional
 	public TokenPayload register(final RegisterRequest registerRequest, final MultipartFile profile) {
 		validateNickname(registerRequest.nickname());
-
 		String fileKey = null;
 		if (profile != null) {
 			fileKey = fileClient.uploadFile(profile, FileType.PROFILE_IMAGE);
 		}
-
-		User saveUser = userRepository.save(
-			createUser(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey)));
-		return new TokenPayload(saveUser.getUsername(), saveUser.getUserRole().toString());
+		Member member = createMember(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey));
+		User saveUser = userRepository.save(createUser(registerRequest, member));
+		memberPointService.saveMemberPoint(member);
+		return new TokenPayload(saveUser.getId().toString(), saveUser.getUsername(), saveUser.getUserRole().toString());
 	}
 
 	public String generateAccessToken(final TokenPayload tokenPayload) {
@@ -98,11 +101,10 @@ public class AuthenticationService {
 		}
 	}
 
-	public String getUserRoleByUsername(String username) {
-		return userRepository.findByUsername(username)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"))
-			.getUserRole()
-			.toString();
+	public UserDto getUserByUsername(String username) {
+		User user = userRepository.findByUsername(username)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
+		return UserDto.from(user);
 	}
 
 	public long getRefreshExpiredTimeSec() {
@@ -139,7 +141,16 @@ public class AuthenticationService {
 		return socialType.name() + "_" + id;
 	}
 
-	private User createUser(final RegisterRequest registerRequest, final Optional<String> profileKey) {
+	private User createUser(final RegisterRequest registerRequest, final Member member) {
+		return User.createUser()
+			.username(registerRequest.username())
+			.socialType(registerRequest.socialType())
+			.userRole(UserRole.ROLE_USER)
+			.member(member)
+			.build();
+	}
+
+	private Member createMember(final RegisterRequest registerRequest, final Optional<String> profileKey) {
 		MemberTypeDetail findMemberTypeDetail = memberTypeDetailService.findMemberTypeDetailById(
 			registerRequest.memberTypeDetailId());
 
@@ -148,12 +159,6 @@ public class AuthenticationService {
 			.memberType(findMemberTypeDetail)
 			.profileKey(profileKey.orElse(defaultProfileKey))
 			.build();
-
-		return User.createUser()
-			.username(registerRequest.username())
-			.socialType(registerRequest.socialType())
-			.userRole(UserRole.ROLE_USER)
-			.member(member)
-			.build();
+		return member;
 	}
 }

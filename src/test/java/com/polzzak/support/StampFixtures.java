@@ -22,7 +22,7 @@ public class StampFixtures {
 	public static final long STAMP_BOARD_ID = 33L;
 	public static final long STAMP_ID = 5L;
 
-	public static final MemberDto GUARDIAN = new MemberDto(1L, "보호자", MEMBER_GUARDIAN_TYPE_DTO, "image_url");
+	public static final MemberDto GUARDIAN = new MemberDto(1L, "보호자", MEMBER_GUARDIAN_TYPE_DTO);
 	public static final StampBoardCreateRequest STAMP_BOARD_CREATE_REQUEST = new StampBoardCreateRequest(1L, "도장판 이름",
 		30, "칭찬 상이다", List.of("미션1", "미션2", "미션3"));
 	public static final FamilyMemberDto KID1 = new FamilyMemberDto(11L, "아이 1", FAMILY_MEMBER_KID_TYPE_DTO,

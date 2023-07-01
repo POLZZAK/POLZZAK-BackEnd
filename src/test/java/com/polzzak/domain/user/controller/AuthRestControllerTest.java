@@ -37,7 +37,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 
 		// when
 		when(authenticationService.getSocialUsername(loginRequest, TEST_SOCIAL_TYPE)).thenReturn(TEST_USERNAME);
-		when(authenticationService.getUserRoleByUsername(TEST_USERNAME)).thenReturn(TEST_USER_ROLE);
+		when(authenticationService.getUserByUsername(TEST_USERNAME)).thenReturn(USER_DTO);
 		doNothing().when(authenticationService).validateNickname(TEST_USERNAME);
 		when(authenticationService.generateAccessToken(USER_TOKEN_PAYLOAD)).thenReturn(USER_ACCESS_TOKEN);
 		when(authenticationService.generateRefreshToken(USER_TOKEN_PAYLOAD)).thenReturn(USER_REFRESH_TOKEN);
@@ -76,7 +76,7 @@ class AuthRestControllerTest extends ControllerTestHelper {
 		// when
 		when(authenticationService.getSocialUsername(loginRequest, TEST_SOCIAL_TYPE)).thenReturn(TEST_USERNAME);
 		doThrow(new IllegalArgumentException("사용자가 존재하지 않습니다")).when(authenticationService)
-			.getUserRoleByUsername(TEST_USERNAME);
+			.getUserByUsername(TEST_USERNAME);
 
 		// then
 		mockMvc.perform(

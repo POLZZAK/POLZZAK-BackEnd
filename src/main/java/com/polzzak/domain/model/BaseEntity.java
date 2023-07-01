@@ -20,7 +20,7 @@ import lombok.Getter;
 public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long id = 0L;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)

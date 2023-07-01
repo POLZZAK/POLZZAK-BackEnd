@@ -22,6 +22,7 @@ import com.polzzak.domain.user.dto.AccessTokenResponse;
 import com.polzzak.domain.user.dto.LoginRequest;
 import com.polzzak.domain.user.dto.LoginResponse;
 import com.polzzak.domain.user.dto.RegisterRequest;
+import com.polzzak.domain.user.dto.UserDto;
 import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.service.AuthenticationService;
 import com.polzzak.global.common.ApiResponse;
@@ -52,8 +53,8 @@ public class AuthRestController {
 		String username = authenticationService.getSocialUsername(loginRequest, social);
 
 		try {
-			String userRole = authenticationService.getUserRoleByUsername(username);
-			TokenPayload tokenPayload = new TokenPayload(username, userRole);
+			UserDto userDto = authenticationService.getUserByUsername(username);
+			TokenPayload tokenPayload = new TokenPayload(userDto.id().toString(), username, userDto.userRole());
 
 			Cookie cookie = WebUtils.getCookie(httpServletRequest, REFRESH_TOKEN_HEADER);
 			if (cookie != null) {
