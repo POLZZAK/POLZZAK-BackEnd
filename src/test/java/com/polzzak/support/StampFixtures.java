@@ -21,6 +21,7 @@ import com.polzzak.domain.user.dto.MemberDto;
 public class StampFixtures {
 	public static final long STAMP_BOARD_ID = 33L;
 	public static final long STAMP_ID = 5L;
+	public static final long MISSION_REQUEST_ID = 50L;
 
 	public static final MemberDto GUARDIAN = new MemberDto(1L, "보호자", MEMBER_GUARDIAN_TYPE_DTO);
 	public static final StampBoardCreateRequest STAMP_BOARD_CREATE_REQUEST = new StampBoardCreateRequest(1L, "도장판 이름",
@@ -58,6 +59,6 @@ public class StampFixtures {
 	);
 	public static final StampBoardUpdateRequest STAMP_BOARD_UPDATE_REQUEST = new StampBoardUpdateRequest("도장판 이름",
 		"칭찬 상이다", UPDATE_MISSION_DTOS);
-	public static final StampCreateRequest STAMP_CREATE_REQUEST = new StampCreateRequest(4, 1L, 2);
+	public static final StampCreateRequest STAMP_CREATE_REQUEST = new StampCreateRequest(4L, 1L, 2);
 	public static final StampDto STAMP_DTO = new StampDto(11, 1, "미션1", LocalDateTime.now());
 }

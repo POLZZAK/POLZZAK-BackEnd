@@ -358,6 +358,10 @@ operation::stamp/get-success[snippets='http-request,request-headers,path-paramet
 
 operation::mission/request-create-success[snippets='http-request,request-headers,request-fields,http-response']
 
+== *미션 완료 요청 삭제 API*
+
+operation::mission/request-delete-success[snippets='http-request,request-headers,path-parameters,http-response']
+
 [[Point-API]]
 = *Point API*
 

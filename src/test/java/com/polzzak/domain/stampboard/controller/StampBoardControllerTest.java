@@ -45,7 +45,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		doNothing().when(stampBoardService).createStampBoard(any(), any());
 
 		mockMvc.perform(
-				post(BASE_URL + "/stamp-board")
+				post(BASE_URL + "/stamp-boards")
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_BOARD_CREATE_REQUEST)))
@@ -119,7 +119,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		when(stampBoardService.getStampBoardDto(any(), anyLong())).thenReturn(STAMP_BOARD_DTO);
 
 		mockMvc.perform(
-				get(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
+				get(BASE_URL + "/stamp-boards/{stampBoardId}", STAMP_BOARD_ID)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
@@ -166,7 +166,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		doNothing().when(stampBoardService).deleteStampBoard(any(), anyLong());
 
 		mockMvc.perform(
-				delete(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
+				delete(BASE_URL + "/stamp-boards/{stampBoardId}", STAMP_BOARD_ID)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
@@ -186,7 +186,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		when(stampBoardService.updateStampBoard(any(), anyLong(), any())).thenReturn(STAMP_BOARD_DTO);
 
 		mockMvc.perform(
-				patch(BASE_URL + "/stamp-board/{stampBoardId}", STAMP_BOARD_ID)
+				patch(BASE_URL + "/stamp-boards/{stampBoardId}", STAMP_BOARD_ID)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_BOARD_UPDATE_REQUEST)))
@@ -240,7 +240,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		doNothing().when(stampBoardService).createStamp(any(), anyLong(), any());
 
 		mockMvc.perform(
-				post(BASE_URL + "/stamp-board/{stampBoardId}/stamp", STAMP_BOARD_ID)
+				post(BASE_URL + "/stamp-boards/{stampBoardId}/stamp", STAMP_BOARD_ID)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(STAMP_CREATE_REQUEST)))
@@ -251,7 +251,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
 				),
 				requestFields(
-					fieldWithPath("count").description("추가할 도장 개수"),
+					fieldWithPath("missionRequestId").description("미션 요청 ID"),
 					fieldWithPath("missionId").description("미션 ID"),
 					fieldWithPath("stampDesignId").description("도장 디자인 ID")
 				),
@@ -266,7 +266,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		when(stampBoardService.getStampDto(anyLong(), anyLong())).thenReturn(STAMP_DTO);
 
 		mockMvc.perform(
-				get(BASE_URL + "/stamp-board/{stampBoardId}/{stampId}", STAMP_BOARD_ID, STAMP_ID)
+				get(BASE_URL + "/stamp-boards/{stampBoardId}/{stampId}", STAMP_BOARD_ID, STAMP_ID)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
@@ -298,7 +298,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 		doNothing().when(stampBoardService).createMission(any(), any());
 
 		mockMvc.perform(
-				post(BASE_URL + "/mission-request")
+				post(BASE_URL + "/mission-requests")
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectToString(MISSION_COMPLETE_CREATE_REQUEST)))
@@ -314,4 +314,26 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					fieldWithPath("guardianId").description("보호자 ID")
 				)));
 	}
+
+	@Test
+	@DisplayName("미션 요청 삭제 테스트")
+	void deleteMissionRequest() throws Exception {
+		when(userService.getGuardianInfo(anyString())).thenReturn(GUARDIAN);
+		doNothing().when(stampBoardService).deleteMissionRequest(anyLong(), anyLong());
+
+		mockMvc.perform(
+				delete(BASE_URL + "/mission-requests/{missionRequestId}", MISSION_REQUEST_ID)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isNoContent())
+			.andDo(document("mission/request-delete-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				pathParameters(
+					parameterWithName("missionRequestId").description("미션 요청 ID")
+				)));
+	}
+
 }
