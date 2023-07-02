@@ -44,4 +44,9 @@ public class Mission extends BaseModifiableEntity {
 		this.content = content;
 		this.isActive = true;
 	}
+
+	public boolean isNotOwner(long memberId) {
+		return stampBoard.isNotOwner(memberId);
+	}
+
 }

@@ -40,7 +40,7 @@ public class StampBoardController {
 	private final UserService userService;
 
 	//StampBoard
-	@PostMapping("/stamp-board")
+	@PostMapping("/stamp-boards")
 	public ResponseEntity<ApiResponse<Void>> createStampBoard(
 		@LoginUsername String username, @RequestBody @Valid StampBoardCreateRequest stampBoardCreateRequest
 	) {
@@ -58,20 +58,20 @@ public class StampBoardController {
 			ApiResponse.ok(stampBoardService.getFamilyStampBoardSummaries(username, partnerMemberId, stampBoardGroup)));
 	}
 
-	@GetMapping("/stamp-board/{stampBoardId}")
+	@GetMapping("/stamp-boards/{stampBoardId}")
 	public ResponseEntity<ApiResponse<StampBoardDto>> getStampBoard(@LoginUsername String username,
 		@PathVariable long stampBoardId) {
 		MemberDto member = userService.getMemberInfo(username);
 		return ResponseEntity.ok(ApiResponse.ok(stampBoardService.getStampBoardDto(member, stampBoardId)));
 	}
 
-	@DeleteMapping("/stamp-board/{stampBoardId}")
+	@DeleteMapping("/stamp-boards/{stampBoardId}")
 	public ResponseEntity<Void> deleteStampBoard(@LoginUsername String username, @PathVariable long stampBoardId) {
 		stampBoardService.deleteStampBoard(username, stampBoardId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@PatchMapping("/stamp-board/{stampBoardId}")
+	@PatchMapping("/stamp-boards/{stampBoardId}")
 	public ResponseEntity<ApiResponse<StampBoardDto>> updateStampBoard(@LoginUsername String username,
 		@PathVariable long stampBoardId,
 		@RequestBody @Valid StampBoardUpdateRequest stampBoardUpdateRequest) {
@@ -81,7 +81,7 @@ public class StampBoardController {
 	}
 
 	//Stamp
-	@PostMapping("/stamp-board/{stampBoardId}/stamp")
+	@PostMapping("/stamp-boards/{stampBoardId}/stamp")
 	public ResponseEntity<?> createStamp(
 		@LoginUsername String username, @PathVariable long stampBoardId,
 		@RequestBody @Valid StampCreateRequest stampCreateRequest
@@ -90,7 +90,7 @@ public class StampBoardController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
-	@GetMapping("/stamp-board/{stampBoardId}/{stampId}")
+	@GetMapping("/stamp-boards/{stampBoardId}/{stampId}")
 	public ResponseEntity<ApiResponse<StampDto>> getStamp(
 		@PathVariable long stampBoardId,
 		@PathVariable long stampId
@@ -99,11 +99,20 @@ public class StampBoardController {
 	}
 
 	//Mission
-	@PostMapping("/mission-request")
+	@PostMapping("/mission-requests")
 	public ResponseEntity<ApiResponse<Void>> createmissionRequest(
 		@LoginUsername String username, @RequestBody @Valid MissionRequestCreateRequest missionRequestCreateRequest
 	) {
 		stampBoardService.createMissionRequest(username, missionRequestCreateRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
+	}
+
+	@DeleteMapping("/mission-requests/{missionRequestId}")
+	public ResponseEntity<ApiResponse<Void>> deleteMissionRequest(
+		@LoginUsername String username, @PathVariable long missionRequestId
+	) {
+		MemberDto guardian = userService.getGuardianInfo(username);
+		stampBoardService.deleteMissionRequest(guardian.memberId(), missionRequestId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

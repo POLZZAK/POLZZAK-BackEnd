@@ -1,6 +1,5 @@
 package com.polzzak.domain.stampboard.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +43,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StampBoardService {
+
 	private final UserService userService;
 	private final FamilyMapService familyMapService;
 	private final StampBoardRepository stampBoardRepository;
@@ -194,7 +194,16 @@ public class StampBoardService {
 	}
 
 	@Transactional
-	public void deletemissionRequests(long stampBoardId) {
+	public void deleteMissionRequest(long memberId, long missionRequestId) {
+		MissionRequest missionRequest = missionRequestRepository.getReferenceById(missionRequestId);
+		if (missionRequest.isNotOwner(memberId)) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+		missionRequestRepository.delete(missionRequest);
+	}
+
+	@Transactional
+	public void deleteMissionRequests(long stampBoardId) {
 		missionRequestRepository.deleteByStampBoardId(stampBoardId);
 	}
 
@@ -204,21 +213,17 @@ public class StampBoardService {
 		Member guardian = userService.findMemberByUsername(username);
 		StampBoard stampBoard = getStampBoard(stampBoardId);
 		validateForCreateStamp(stampBoard, guardian.getId());
-		int stampCount = getValidStampCountForAdd(stampBoard, stampCreateRequest.count());
 
-		List<Stamp> stamps = new ArrayList<>(stampCount);
-
-		Mission mission = getMission(stampCreateRequest.missionId());
-		for (int i = 0; i < stampCount; i++) {
-			stamps.add(Stamp.createMission()
-				.stampBoard(stampBoard)
-				.mission(mission)
-				.stampDesignId(stampCreateRequest.stampDesignId())
-				.build());
+		Mission mission = getMissionByRequest(stampCreateRequest);
+		if (mission.isNotOwner(guardian.getId())) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
-		stampRepository.saveAll(stamps);
+		stampRepository.save(createStamp(stampBoard, mission, stampCreateRequest.stampDesignId()));
+		stampBoard.addStampCount();
+		if (stampCreateRequest.missionRequestId() != null) {
+			deleteMissionRequest(guardian.getId(), stampCreateRequest.missionRequestId());
+		}
 
-		stampBoard.addStampCount(stampCount);
 		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
 		eventPublisher.publishEvent(new StampCreatedEvent(List.of(guardian, kid)));
 	}
@@ -295,7 +300,27 @@ public class StampBoardService {
 		}
 	}
 
+	private Mission getMissionByRequest(StampCreateRequest stampCreateRequest) {
+		if (stampCreateRequest.missionRequestId() != null) {
+			MissionRequest missionRequest = missionRequestRepository.getReferenceById(
+				stampCreateRequest.missionRequestId());
+			return missionRequest.getMission();
+		}
+		if (stampCreateRequest.missionId() != null) {
+			return missionRepository.getReferenceById(stampCreateRequest.missionId());
+		}
+		throw new IllegalArgumentException("mission info is null");
+	}
+
 	//Stamp
+	private Stamp createStamp(final StampBoard stampBoard, final Mission mission, final int stampDesignId) {
+		return Stamp.createStamp()
+			.stampBoard(stampBoard)
+			.mission(mission)
+			.stampDesignId(stampDesignId)
+			.build();
+	}
+
 	private void validateForCreateStamp(StampBoard stampBoard, final long memberId) {
 		if (stampBoard.isNotOwner(memberId)) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
@@ -303,11 +328,6 @@ public class StampBoardService {
 		if (stampBoard.isCompleted()) {
 			throw new IllegalArgumentException("이미 도장을 다 모았습니다.");
 		}
-	}
-
-	private int getValidStampCountForAdd(StampBoard stampBoard, int requestStampCount) {
-		int remainingStampCount = stampBoard.getGoalStampCount() - stampBoard.getCurrentStampCount();
-		return Math.min(requestStampCount, remainingStampCount);
 	}
 
 	private StampBoard createStampBoard(final StampBoardCreateRequest stampBoardCreateRequest,

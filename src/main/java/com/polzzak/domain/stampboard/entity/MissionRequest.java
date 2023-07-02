@@ -42,4 +42,7 @@ public class MissionRequest extends BaseEntity {
 		this.guardian = guardian;
 		this.kid = kid;
 	}
+	public boolean isNotOwner(long memberId) {
+		return kid.getId() != memberId && guardian.getId() != memberId;
+	}
 }

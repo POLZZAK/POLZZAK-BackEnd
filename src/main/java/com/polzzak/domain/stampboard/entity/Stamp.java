@@ -33,7 +33,7 @@ public class Stamp extends BaseEntity {
 	@JoinColumn(name = "mission_id")
 	private Mission mission;
 
-	@Builder(builderMethodName = "createMission")
+	@Builder(builderMethodName = "createStamp")
 	public Stamp(StampBoard stampBoard, Mission mission, int stampDesignId) {
 		this.stampBoard = stampBoard;
 		this.mission = mission;
