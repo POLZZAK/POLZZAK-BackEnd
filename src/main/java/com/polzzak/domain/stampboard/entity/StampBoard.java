@@ -88,17 +88,34 @@ public class StampBoard extends BaseModifiableEntity {
 	public void addStampCount() {
 		this.currentStampCount++;
 
-		if (isCompleted()) {
+		if (isCompleteStamp()) {
 			complete();
 		}
 	}
 
+	public boolean isCompleteStamp() {
+		return currentStampCount == goalStampCount && this.status == Status.PROGRESS;
+	}
+
 	public boolean isCompleted() {
-		return currentStampCount == goalStampCount;
+		return status == Status.COMPLETED;
 	}
 
 	public void updateReward(String reward) {
 		this.reward = reward;
+	}
+
+	public void issueCoupon(LocalDateTime rewardDate) {
+		this.rewardDate = rewardDate;
+		this.status = Status.ISSUED_COUPON;
+	}
+
+	public void rewardCoupon() {
+		this.status = Status.REWARDED;
+	}
+
+	public boolean isIssuedCoupon() {
+		return this.status == Status.ISSUED_COUPON;
 	}
 
 	private void complete() {
