@@ -89,7 +89,11 @@ public class StampBoardService {
 	}
 
 	public StampBoard getStampBoard(long stampBoardId) {
-		return stampBoardRepository.getReferenceById(stampBoardId);
+		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeletedFalse(stampBoardId);
+		if (stampBoard == null) {
+			throw new IllegalArgumentException("stamp board is deleted.");
+		}
+		return stampBoard;
 	}
 
 	@Transactional
@@ -113,12 +117,12 @@ public class StampBoardService {
 	@Transactional
 	public void deleteStampBoard(final String username, final long stampBoardId) {
 		Member findMember = userService.findMemberByUsername(username);
-		StampBoard stampBoard = stampBoardRepository.getReferenceById(stampBoardId);
-		if (stampBoard.isNotOwner(findMember.getId())) {
+		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeletedFalse(stampBoardId);
+		if (stampBoard == null || stampBoard.isNotOwner(findMember.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		//TODO jjh 삭제 개선
-		stampBoardRepository.delete(stampBoard);
+		stampBoardRepository.updateIsDeletedById(stampBoardId, true);
 		eventPublisher.publishEvent(new StampBoardDeletedEvent(findMember));
 	}
 

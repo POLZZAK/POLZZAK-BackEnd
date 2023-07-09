@@ -49,6 +49,8 @@ public class StampBoard extends BaseModifiableEntity {
 	@Column(nullable = false)
 	private String reward;
 
+	private boolean isDeleted;
+
 	private LocalDateTime completedDate;
 
 	private LocalDateTime rewardDate;
@@ -67,6 +69,7 @@ public class StampBoard extends BaseModifiableEntity {
 		this.kidId = kidId;
 		this.name = name;
 		this.status = Status.PROGRESS;
+		this.isDeleted = false;
 		this.currentStampCount = 0;
 		this.goalStampCount = goalStampCount;
 		this.reward = reward;
