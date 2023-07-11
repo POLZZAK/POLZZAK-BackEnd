@@ -49,6 +49,7 @@ public class StampBoard extends BaseModifiableEntity {
 	@Column(nullable = false)
 	private String reward;
 
+	@Column(nullable = false, columnDefinition = "TINYINT(1)")
 	private boolean isDeleted;
 
 	private LocalDateTime completedDate;
@@ -108,8 +109,9 @@ public class StampBoard extends BaseModifiableEntity {
 		this.reward = reward;
 	}
 
-	public void issueCoupon(LocalDateTime rewardDate) {
-		this.rewardDate = rewardDate;
+	public void issueCoupon(long rewardDate) {
+		this.rewardDate = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(rewardDate),
+			java.time.ZoneId.systemDefault());
 		this.status = Status.ISSUED_COUPON;
 	}
 

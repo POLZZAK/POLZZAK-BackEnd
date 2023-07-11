@@ -1,18 +1,22 @@
 package com.polzzak.domain.coupon.service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.TimeZone;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.polzzak.domain.coupon.dto.CouponIssueRequest;
+import com.polzzak.domain.coupon.dto.CouponDto;
+import com.polzzak.domain.coupon.dto.CouponListDto;
 import com.polzzak.domain.coupon.entity.Coupon;
 import com.polzzak.domain.coupon.repository.CouponRepository;
+import com.polzzak.domain.family.dto.FamilyMemberDto;
+import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
 import com.polzzak.domain.user.dto.MemberDto;
+import com.polzzak.domain.user.dto.MemberResponse;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.exception.ErrorCode;
@@ -27,52 +31,66 @@ public class CouponService {
 
 	private final StampBoardService stampBoardService;
 	private final UserService userService;
+	private final FamilyMapService familyMapService;
 	private final CouponRepository couponRepository;
 
 	@Transactional
-	public void issueCoupon(MemberDto guardian, CouponIssueRequest couponIssueRequest) {
-		StampBoard stampBoard = stampBoardService.getStampBoard(couponIssueRequest.stampBoardId());
+	public void issueCoupon(MemberDto guardian, long stampBoardId) {
+		StampBoard stampBoard = stampBoardService.getStampBoard(stampBoardId);
 		validateIssueCoupon(guardian, stampBoard);
 
 		Member guardianEntity = userService.findMemberByMemberId(stampBoard.getGuardianId());
 		Member kidEntity = userService.findMemberByMemberId(stampBoard.getKidId());
-		LocalDateTime rewardDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(couponIssueRequest.rewardDate()),
-			TimeZone.getDefault().toZoneId());
+		LocalDateTime rewardDate = stampBoard.getRewardDate();
 
-		Coupon coupon = couponRepository.save(Coupon.createCoupon()
+		Coupon coupon = Coupon.createCoupon()
 			.guardian(guardianEntity)
 			.kid(kidEntity)
 			.stampBoard(stampBoard)
 			.reward(stampBoard.getReward())
 			.rewardDate(rewardDate)
-			.build());
-		stampBoard.issueCoupon(coupon.getRewardDate());
+			.build();
+		couponRepository.save(coupon);
+		stampBoard.rewardCoupon();
+	}
+
+	public List<CouponListDto> getCouponList(MemberDto kid, Coupon.CouponState couponState) {
+		List<CouponListDto> result = new ArrayList<>();
+		for (FamilyMemberDto family : familyMapService.getMyFamilies(kid.memberId())) {
+			List<Coupon> coupons = couponRepository.findByGuardianIdAndState(family.memberId(), couponState);
+			result.add(CouponListDto.from(kid, coupons));
+		}
+
+		return result;
+	}
+
+	public CouponDto getCoupon(MemberDto member, long couponId) {
+		Coupon coupon = couponRepository.getReferenceById(couponId);
+		if (coupon.isNotOwner(member)) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+
+		MemberResponse guardianResponse = userService.getMemberResponse(coupon.getGuardian().getId());
+		MemberResponse kidResponse = userService.getMemberResponse(coupon.getKid().getId());
+		return CouponDto.from(coupon, coupon.getStampBoard(), guardianResponse, kidResponse);
 	}
 
 	@Transactional
-	public void rewardCoupon(MemberDto kid, long couponId) {
+	public void receiveReward(MemberDto kid, long couponId) {
 		Coupon coupon = couponRepository.getReferenceById(couponId);
-		StampBoard stampBoard = coupon.getStampBoard();
-		validateRewardCoupon(kid, stampBoard, coupon);
+		if (coupon.isNotOwner(kid)) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
 
-		stampBoard.rewardCoupon();
+		coupon.receiveReward();
 	}
 
 	private void validateIssueCoupon(MemberDto guardian, StampBoard stampBoard) {
 		if (stampBoard.isNotOwner(guardian.memberId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
-		if (!stampBoard.isCompleted()) {
-			throw new IllegalArgumentException("stamp board is not completed.");
-		}
-	}
-
-	private void validateRewardCoupon(MemberDto kid, StampBoard stampBoard, Coupon coupon) {
-		if (coupon.isNotOwner(kid.memberId()) || stampBoard.isNotOwner(kid.memberId())) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
 		if (!stampBoard.isIssuedCoupon()) {
-			throw new IllegalArgumentException("stamp board is not completed.");
+			throw new IllegalArgumentException("stamp board is not issued coupon.");
 		}
 	}
 }

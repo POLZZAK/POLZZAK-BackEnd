@@ -4,10 +4,13 @@ import java.time.LocalDateTime;
 
 import com.polzzak.domain.model.BaseEntity;
 import com.polzzak.domain.stampboard.entity.StampBoard;
+import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -39,11 +42,11 @@ public class Coupon extends BaseEntity {
 	private String reward;
 
 	@Column(nullable = false)
-	private LocalDateTime rewardDate;
+	@Enumerated(EnumType.STRING)
+	private CouponState state;
 
-	public boolean isNotOwner(long kidId) {
-		return kid.getId() != kidId;
-	}
+	@Column(nullable = false)
+	private LocalDateTime rewardDate;
 
 	@Builder(builderMethodName = "createCoupon")
 	public Coupon(Member guardian, Member kid, StampBoard stampBoard, String reward, LocalDateTime rewardDate) {
@@ -51,6 +54,26 @@ public class Coupon extends BaseEntity {
 		this.kid = kid;
 		this.stampBoard = stampBoard;
 		this.reward = reward;
+		this.state = CouponState.ISSUED;
 		this.rewardDate = rewardDate;
 	}
+
+	public boolean isNotOwner(MemberDto member) {
+		return guardian.getId() != member.memberId() && kid.getId() != member.memberId();
+	}
+
+	public void receiveReward() {
+		this.state = CouponState.REWARDED;
+	}
+
+	public enum CouponState {
+		ISSUED("쿠폰 발급"), REWARDED("선물 수령");
+
+		private final String description;
+
+		CouponState(String description) {
+			this.description = description;
+		}
+	}
+
 }

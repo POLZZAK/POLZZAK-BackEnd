@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stampboard.dto.MissionRequestCreateRequest;
+import com.polzzak.domain.stampboard.dto.RewardDateOfCoupon;
 import com.polzzak.domain.stampboard.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardDto;
 import com.polzzak.domain.stampboard.dto.StampBoardGroup;
@@ -80,6 +81,15 @@ public class StampBoardController {
 		return ResponseEntity.ok(ApiResponse.ok(stampBoard));
 	}
 
+	@PostMapping("/stamp-boards/{stampBoardId}/issue-coupon")
+	public ResponseEntity<ApiResponse<Void>> createCoupon(
+		@LoginUsername String username, @PathVariable long stampBoardId, @RequestBody RewardDateOfCoupon rewardDateOfCoupon
+	) {
+		MemberDto guardian = userService.getGuardianInfo(username);
+		stampBoardService.issueCoupon(guardian, stampBoardId, rewardDateOfCoupon.rewardDate());
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
+	}
+
 	//Stamp
 	@PostMapping("/stamp-boards/{stampBoardId}/stamp")
 	public ResponseEntity<?> createStamp(
@@ -100,7 +110,7 @@ public class StampBoardController {
 
 	//Mission
 	@PostMapping("/mission-requests")
-	public ResponseEntity<ApiResponse<Void>> createmissionRequest(
+	public ResponseEntity<ApiResponse<Void>> createMissionRequest(
 		@LoginUsername String username, @RequestBody @Valid MissionRequestCreateRequest missionRequestCreateRequest
 	) {
 		stampBoardService.createMissionRequest(username, missionRequestCreateRequest);
