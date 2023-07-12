@@ -3,8 +3,6 @@ package com.polzzak.domain.coupon.controller;
 import static com.polzzak.support.CouponFixtures.*;
 import static com.polzzak.support.TokenFixtures.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
