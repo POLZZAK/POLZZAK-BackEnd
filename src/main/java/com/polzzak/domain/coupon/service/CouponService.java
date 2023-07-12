@@ -17,6 +17,7 @@ import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.dto.MemberResponse;
+import com.polzzak.domain.user.dto.MemberTypeDto;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.exception.ErrorCode;
@@ -54,11 +55,17 @@ public class CouponService {
 		stampBoard.rewardCoupon();
 	}
 
-	public List<CouponListDto> getCouponList(MemberDto kid, Coupon.CouponState couponState) {
+	public List<CouponListDto> getCouponList(MemberDto member, Coupon.CouponState couponState) {
 		List<CouponListDto> result = new ArrayList<>();
-		for (FamilyMemberDto family : familyMapService.getMyFamilies(kid.memberId())) {
-			List<Coupon> coupons = couponRepository.findByGuardianIdAndState(family.memberId(), couponState);
-			result.add(CouponListDto.from(kid, coupons));
+		for (FamilyMemberDto family : familyMapService.getMyFamilies(member.memberId())) {
+			List<Coupon> coupons;
+			if (MemberTypeDto.isKid(member.memberType())) {
+				coupons = couponRepository.findByGuardianIdAndState(family.memberId(), couponState);
+			} else {
+				coupons = couponRepository.findByKidIdAndState(family.memberId(), couponState);
+			}
+
+			result.add(CouponListDto.from(family, coupons));
 		}
 
 		return result;
