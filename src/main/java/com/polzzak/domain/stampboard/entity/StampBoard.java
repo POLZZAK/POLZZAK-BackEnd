@@ -49,6 +49,9 @@ public class StampBoard extends BaseModifiableEntity {
 	@Column(nullable = false)
 	private String reward;
 
+	@Column(nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean isDeleted;
+
 	private LocalDateTime completedDate;
 
 	private LocalDateTime rewardDate;
@@ -67,6 +70,7 @@ public class StampBoard extends BaseModifiableEntity {
 		this.kidId = kidId;
 		this.name = name;
 		this.status = Status.PROGRESS;
+		this.isDeleted = false;
 		this.currentStampCount = 0;
 		this.goalStampCount = goalStampCount;
 		this.reward = reward;
@@ -88,17 +92,35 @@ public class StampBoard extends BaseModifiableEntity {
 	public void addStampCount() {
 		this.currentStampCount++;
 
-		if (isCompleted()) {
+		if (isCompleteStamp()) {
 			complete();
 		}
 	}
 
+	public boolean isCompleteStamp() {
+		return currentStampCount == goalStampCount && this.status == Status.PROGRESS;
+	}
+
 	public boolean isCompleted() {
-		return currentStampCount == goalStampCount;
+		return status == Status.COMPLETED;
 	}
 
 	public void updateReward(String reward) {
 		this.reward = reward;
+	}
+
+	public void issueCoupon(long rewardDate) {
+		this.rewardDate = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(rewardDate),
+			java.time.ZoneId.systemDefault());
+		this.status = Status.ISSUED_COUPON;
+	}
+
+	public void rewardCoupon() {
+		this.status = Status.REWARDED;
+	}
+
+	public boolean isIssuedCoupon() {
+		return this.status == Status.ISSUED_COUPON;
 	}
 
 	private void complete() {

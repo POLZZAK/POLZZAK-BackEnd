@@ -57,6 +57,14 @@ public class UserService {
 		return MemberDto.from(findMember);
 	}
 
+	public MemberDto getKidInfo(final String username) {
+		Member findMember = findMemberByUsername(username);
+		if (!findMember.isKid()) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+		return MemberDto.from(findMember);
+	}
+
 	public Member findMemberByUsername(final String username) {
 		return userRepository.findByUsername(username)
 			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"))

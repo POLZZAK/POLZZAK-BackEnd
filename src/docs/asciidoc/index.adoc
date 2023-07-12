@@ -378,3 +378,34 @@ operation::member-point-rest-controller-test/get-my-member-points-success[snippe
 === *2-1* 성공
 
 operation::member-point-rest-controller-test/get-my-earning-histories-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+
+[[Coupon-API]]
+= *Coupon API*
+
+[[쿠폰-발급-API]]
+== *1. 쿠폰 발급 API*
+
+=== *1-1* 성공
+
+operation::coupon/coupon-create-success[snippets='http-request,request-headers,request-fields,request-body,http-response,response-fields']
+
+[[쿠폰-목록-조회-API]]
+== *2. 쿠폰 목록 조회 API*
+
+=== *2-1* 성공
+
+operation::coupon/coupons-get-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+
+[[쿠폰-상세-조회-API]]
+== *3. 쿠폰 상세 조회 API*
+
+=== *3-1* 성공
+
+operation::coupon/coupon-get-success[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[쿠폰-수령-API]]
+== *4. 쿠폰 수령 API*
+
+=== *4-1* 성공
+
+operation::coupon/coupon-receive-success[snippets='http-request,request-headers,path-parameters,http-response']
