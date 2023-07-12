@@ -3,14 +3,14 @@ package com.polzzak.domain.coupon.dto;
 import java.util.List;
 
 import com.polzzak.domain.coupon.entity.Coupon;
-import com.polzzak.domain.user.dto.MemberDto;
+import com.polzzak.domain.family.dto.FamilyMemberDto;
 
-public record CouponListDto(MemberDto guardian, List<CouponSummaryDto> coupons) {
+public record CouponListDto(FamilyMemberDto family, List<CouponSummaryDto> coupons) {
 
-	public static CouponListDto from(MemberDto guardian, List<Coupon> coupons) {
+	public static CouponListDto from(FamilyMemberDto family, List<Coupon> coupons) {
 		List<CouponSummaryDto> couponSummaryDtoList = coupons.stream()
 			.map(coupon -> CouponSummaryDto.from(coupon.getReward(), coupon.getRewardDate()))
 			.toList();
-		return new CouponListDto(guardian, couponSummaryDtoList);
+		return new CouponListDto(family, couponSummaryDtoList);
 	}
 }

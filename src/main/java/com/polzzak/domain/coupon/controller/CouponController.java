@@ -33,20 +33,20 @@ public class CouponController {
 	private final UserService userService;
 
 	@PostMapping
-	public ResponseEntity<Void> issueCoupon(
+	public ResponseEntity<ApiResponse<Void>> issueCoupon(
 		@LoginUsername String username, @RequestBody StampBoardForIssueCoupon stampBoardForIssueCoupon
 	) {
 		MemberDto kid = userService.getKidInfo(username);
 		couponService.issueCoupon(kid, stampBoardForIssueCoupon.stampBoardId());
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<CouponListDto>>> getCoupons(
 		@LoginUsername String username, @RequestParam("couponState") String couponStateAsStr) {
-		MemberDto kid = userService.getKidInfo(username);
+		MemberDto member = userService.getMemberInfo(username);
 		Coupon.CouponState couponState = Coupon.CouponState.valueOf(couponStateAsStr.toUpperCase());
-		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(kid, couponState)));
+		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(member, couponState)));
 	}
 
 	@GetMapping("/{couponId}")
