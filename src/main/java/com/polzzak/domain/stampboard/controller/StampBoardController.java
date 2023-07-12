@@ -83,7 +83,8 @@ public class StampBoardController {
 
 	@PostMapping("/stamp-boards/{stampBoardId}/issue-coupon")
 	public ResponseEntity<ApiResponse<Void>> createCoupon(
-		@LoginUsername String username, @PathVariable long stampBoardId, @RequestBody RewardDateOfCoupon rewardDateOfCoupon
+		@LoginUsername String username, @PathVariable long stampBoardId,
+		@RequestBody RewardDateOfCoupon rewardDateOfCoupon
 	) {
 		MemberDto guardian = userService.getGuardianInfo(username);
 		stampBoardService.issueCoupon(guardian, stampBoardId, rewardDateOfCoupon.rewardDate());
