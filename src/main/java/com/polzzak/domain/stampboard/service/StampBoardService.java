@@ -122,7 +122,7 @@ public class StampBoardService {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		//TODO jjh 삭제 개선
-		stampBoardRepository.updateIsDeletedById(stampBoardId, true);
+		stampBoardRepository.delete(stampBoard);
 		eventPublisher.publishEvent(new StampBoardDeletedEvent(findMember));
 	}
 

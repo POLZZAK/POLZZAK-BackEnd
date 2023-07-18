@@ -20,6 +20,7 @@ import com.polzzak.domain.coupon.service.CouponService;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.common.ApiResponse;
+import com.polzzak.global.security.LoginId;
 import com.polzzak.global.security.LoginUsername;
 
 import lombok.RequiredArgsConstructor;
@@ -34,33 +35,29 @@ public class CouponController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> issueCoupon(
-		@LoginUsername String username, @RequestBody StampBoardForIssueCoupon stampBoardForIssueCoupon
+		@LoginId Long memberId, @RequestBody StampBoardForIssueCoupon stampBoardForIssueCoupon
 	) {
-		MemberDto kid = userService.getKidInfo(username);
-		couponService.issueCoupon(kid, stampBoardForIssueCoupon.stampBoardId());
+		couponService.issueCoupon(memberId, stampBoardForIssueCoupon.stampBoardId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
 	}
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<CouponListDto>>> getCoupons(
-		@LoginUsername String username, @RequestParam("couponState") String couponStateAsStr) {
-		MemberDto member = userService.getMemberInfo(username);
+		@LoginId Long memberId, @RequestParam("couponState") String couponStateAsStr) {
 		Coupon.CouponState couponState = Coupon.CouponState.valueOf(couponStateAsStr.toUpperCase());
-		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(member, couponState)));
+		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(memberId, couponState)));
 	}
 
 	@GetMapping("/{couponId}")
 	public ResponseEntity<ApiResponse<CouponDto>> getCoupon(
-		@LoginUsername String username, @PathVariable long couponId) {
-		MemberDto member = userService.getMemberInfo(username);
-		return ResponseEntity.ok(ApiResponse.ok(couponService.getCoupon(member, couponId)));
+		@LoginId Long memberId, @PathVariable long couponId) {
+		return ResponseEntity.ok(ApiResponse.ok(couponService.getCoupon(memberId, couponId)));
 	}
 
 	@PostMapping("/{couponId}/receive")
 	public ResponseEntity<Void> receiveCoupon(
-		@LoginUsername String username, @PathVariable long couponId) {
-		MemberDto kid = userService.getKidInfo(username);
-		couponService.receiveReward(kid, couponId);
+		@LoginId Long memberId, @PathVariable long couponId) {
+		couponService.receiveReward(memberId, couponId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

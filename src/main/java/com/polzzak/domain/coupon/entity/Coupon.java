@@ -19,6 +19,7 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
@@ -62,18 +63,19 @@ public class Coupon extends BaseEntity {
 		return guardian.getId() != member.memberId() && kid.getId() != member.memberId();
 	}
 
+	public boolean isNotOwner(Member member) {
+		return guardian.getId() != member.getId() && kid.getId() != member.getId();
+	}
+
 	public void receiveReward() {
 		this.state = CouponState.REWARDED;
 	}
 
+	@RequiredArgsConstructor
 	public enum CouponState {
 		ISSUED("쿠폰 발급"), REWARDED("선물 수령");
 
 		private final String description;
-
-		CouponState(String description) {
-			this.description = description;
-		}
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.polzzak.domain.coupon.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,13 +10,10 @@ import com.polzzak.domain.coupon.dto.CouponDto;
 import com.polzzak.domain.coupon.dto.CouponListDto;
 import com.polzzak.domain.coupon.entity.Coupon;
 import com.polzzak.domain.coupon.repository.CouponRepository;
-import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
-import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.dto.MemberResponse;
-import com.polzzak.domain.user.dto.MemberTypeDto;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.exception.ErrorCode;
@@ -36,8 +32,9 @@ public class CouponService {
 	private final CouponRepository couponRepository;
 
 	@Transactional
-	public void issueCoupon(MemberDto guardian, long stampBoardId) {
+	public void issueCoupon(Long guardianId, long stampBoardId) {
 		StampBoard stampBoard = stampBoardService.getStampBoard(stampBoardId);
+		Member guardian = userService.findMemberByMemberIdWithMemberType(guardianId);
 		validateIssueCoupon(guardian, stampBoard);
 
 		Member guardianEntity = userService.findMemberByMemberId(stampBoard.getGuardianId());
@@ -55,27 +52,18 @@ public class CouponService {
 		stampBoard.rewardCoupon();
 	}
 
-	public List<CouponListDto> getCouponList(MemberDto member, Coupon.CouponState couponState) {
-		List<CouponListDto> result = new ArrayList<>();
-		for (FamilyMemberDto family : familyMapService.getMyFamilies(member.memberId())) {
-			List<Coupon> coupons;
-			if (MemberTypeDto.isKid(member.memberType())) {
-				coupons = couponRepository.findByGuardianIdAndState(family.memberId(), couponState);
-			} else {
-				coupons = couponRepository.findByKidIdAndState(family.memberId(), couponState);
-			}
+	public List<CouponListDto> getCouponList(Long memberId, Coupon.CouponState couponState) {
+		Member member = userService.findMemberByMemberIdWithMemberType(memberId);
 
-			result.add(CouponListDto.from(family, coupons));
-		}
-
-		return result;
+		return familyMapService.getMyFamilies(member.getId()).stream()
+			.map(family -> CouponListDto.from(family, getCoupons(member, family.memberId(), couponState)))
+			.toList();
 	}
 
-	public CouponDto getCoupon(MemberDto member, long couponId) {
+	public CouponDto getCoupon(Long memberId, long couponId) {
+		Member member = userService.findMemberByMemberId(memberId);
 		Coupon coupon = couponRepository.getReferenceById(couponId);
-		if (coupon.isNotOwner(member)) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
+		validateCouponOwner(coupon, member);
 
 		MemberResponse guardianResponse = userService.getMemberResponse(coupon.getGuardian().getId());
 		MemberResponse kidResponse = userService.getMemberResponse(coupon.getKid().getId());
@@ -83,17 +71,29 @@ public class CouponService {
 	}
 
 	@Transactional
-	public void receiveReward(MemberDto kid, long couponId) {
+	public void receiveReward(Long kidId, long couponId) {
+		Member kid = userService.findMemberByMemberIdWithMemberType(kidId);
 		Coupon coupon = couponRepository.getReferenceById(couponId);
-		if (coupon.isNotOwner(kid)) {
-			throw new PolzzakException(ErrorCode.FORBIDDEN);
-		}
+		validateCouponOwner(coupon, kid);
 
 		coupon.receiveReward();
 	}
 
-	private void validateIssueCoupon(MemberDto guardian, StampBoard stampBoard) {
-		if (stampBoard.isNotOwner(guardian.memberId())) {
+	private List<Coupon> getCoupons(Member member, long familyMemberId, Coupon.CouponState couponState) {
+		if (member.isKid()) {
+			return couponRepository.findByGuardianIdAndState(familyMemberId, couponState);
+		}
+		return couponRepository.findByKidIdAndState(familyMemberId, couponState);
+	}
+
+	private void validateCouponOwner(Coupon coupon, Member member) {
+		if (coupon.isNotOwner(member)) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void validateIssueCoupon(Member guardian, StampBoard stampBoard) {
+		if (!guardian.isGuardian() || stampBoard.isNotOwner(guardian.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		if (!stampBoard.isIssuedCoupon()) {

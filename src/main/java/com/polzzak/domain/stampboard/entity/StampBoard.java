@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.polzzak.domain.model.BaseModifiableEntity;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "stamp_board")
+@SQLDelete(sql = "UPDATE stamp_board SET is_deleted = 1 WHERE id = ?")
 public class StampBoard extends BaseModifiableEntity {
 
 	@Column(nullable = false)
