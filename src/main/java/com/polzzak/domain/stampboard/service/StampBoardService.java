@@ -100,7 +100,7 @@ public class StampBoardService {
 	public StampBoardDto updateStampBoard(MemberDto member, long stampBoardId,
 		StampBoardUpdateRequest stampBoardUpdateRequest) {
 		StampBoard stampBoard = getStampBoard(stampBoardId);
-		validateStampBoardForUpdate(stampBoard, member);
+		validateStampBoardForUpdate(stampBoard, member, stampBoardUpdateRequest.goalStampCount());
 
 		if (!stampBoard.getName().equals(stampBoardUpdateRequest.name())) {
 			stampBoard.updateName(stampBoardUpdateRequest.name());
@@ -108,6 +108,7 @@ public class StampBoardService {
 		if (!stampBoard.getReward().equals(stampBoardUpdateRequest.reward())) {
 			stampBoard.updateReward(stampBoardUpdateRequest.reward());
 		}
+		stampBoard.updateStampCount(stampBoardUpdateRequest.goalStampCount());
 
 		updateMissions(stampBoard, stampBoard.getMissions(), stampBoardUpdateRequest.missions());
 
@@ -293,13 +294,17 @@ public class StampBoardService {
 			.toList();
 	}
 
-	private void validateStampBoardForUpdate(StampBoard stampBoard, MemberDto member) {
+	private void validateStampBoardForUpdate(StampBoard stampBoard, MemberDto member, int stampCount) {
 		if (stampBoard.isNotOwner(member.memberId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		if (stampBoard.getCurrentStampCount() == stampBoard.getGoalStampCount()) {
 			throw new IllegalArgumentException("도장을 다 모으면 수정할 수 없습니다.");
 		}
+		if (stampCount < stampBoard.getCurrentStampCount()) {
+			throw new IllegalArgumentException("현재 도장보다 적은 목표 설정은 불가합니다.");
+		}
+
 	}
 
 	private void validateIssueCoupon(MemberDto guardian, StampBoard stampBoard) {
