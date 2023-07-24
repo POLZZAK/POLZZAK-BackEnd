@@ -89,7 +89,11 @@ public class StampBoardService {
 	}
 
 	public StampBoard getStampBoard(long stampBoardId) {
-		return stampBoardRepository.getReferenceById(stampBoardId);
+		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeleted(stampBoardId, false);
+		if (stampBoard == null) {
+			throw new IllegalArgumentException("stamp board is deleted.");
+		}
+		return stampBoard;
 	}
 
 	@Transactional
@@ -113,13 +117,21 @@ public class StampBoardService {
 	@Transactional
 	public void deleteStampBoard(final String username, final long stampBoardId) {
 		Member findMember = userService.findMemberByUsername(username);
-		StampBoard stampBoard = stampBoardRepository.getReferenceById(stampBoardId);
-		if (stampBoard.isNotOwner(findMember.getId())) {
+		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeleted(stampBoardId, false);
+		if (stampBoard == null || stampBoard.isNotOwner(findMember.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		//TODO jjh 삭제 개선
 		stampBoardRepository.delete(stampBoard);
 		eventPublisher.publishEvent(new StampBoardDeletedEvent(findMember));
+	}
+
+	@Transactional
+	public void issueCoupon(final MemberDto guardian, final long stampBoardId, long rewardDate) {
+		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeleted(stampBoardId, false);
+		validateIssueCoupon(guardian, stampBoard);
+
+		stampBoard.issueCoupon(rewardDate);
 	}
 
 	//Mission
@@ -287,6 +299,15 @@ public class StampBoardService {
 		}
 		if (stampBoard.getCurrentStampCount() == stampBoard.getGoalStampCount()) {
 			throw new IllegalArgumentException("도장을 다 모으면 수정할 수 없습니다.");
+		}
+	}
+
+	private void validateIssueCoupon(MemberDto guardian, StampBoard stampBoard) {
+		if (stampBoard == null || stampBoard.isNotOwner(guardian.memberId())) {
+			throw new PolzzakException(ErrorCode.FORBIDDEN);
+		}
+		if (!stampBoard.isCompleted()) {
+			throw new IllegalArgumentException("stamp board is not completed.");
 		}
 	}
 
