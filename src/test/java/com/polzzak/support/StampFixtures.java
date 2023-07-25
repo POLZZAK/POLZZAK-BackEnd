@@ -58,7 +58,7 @@ public class StampFixtures {
 		new MissionDto(null, "새 미션")
 	);
 	public static final StampBoardUpdateRequest STAMP_BOARD_UPDATE_REQUEST = new StampBoardUpdateRequest("도장판 이름",
-		"칭찬 상이다", UPDATE_MISSION_DTOS);
+		"칭찬 상이다", UPDATE_MISSION_DTOS, 30);
 	public static final StampCreateRequest STAMP_CREATE_REQUEST = new StampCreateRequest(4L, 1L, 2);
 	public static final StampDto STAMP_DTO = new StampDto(11, 1, "미션1", LocalDateTime.now());
 }

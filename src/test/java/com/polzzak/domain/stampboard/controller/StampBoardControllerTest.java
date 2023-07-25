@@ -203,7 +203,8 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					fieldWithPath("name").description("도장판 이름(변경 없을 경우 기존 값 입력)"),
 					fieldWithPath("reward").description("보상 쿠폰(변경 없을 경우 기존 값 입력)"),
 					fieldWithPath("missions[].id").description("적용할 미션 ID(null일 경우 새 미션으로 처리)").optional(),
-					fieldWithPath("missions[].content").description("적용할 미션 내용")
+					fieldWithPath("missions[].content").description("적용할 미션 내용"),
+					fieldWithPath("goalStampCount").description("목표 도장 개수")
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
@@ -228,6 +229,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.missionRequestList[].missionId").description("미션 ID").optional(),
 					fieldWithPath("data.missionRequestList[].missionContent").description("미션 내용").optional(),
 					fieldWithPath("data.missionRequestList[].createdDate").description("미션 완료 시각").optional(),
+					fieldWithPath("data.goalStampCount").description("목표 도장 개수"),
 					fieldWithPath("data.completedDate").description("도장 다 모은 시각"),
 					fieldWithPath("data.rewardDate").description("쿠폰 수령 시각"),
 					fieldWithPath("data.createdDate").description("도장판 생성 시각")

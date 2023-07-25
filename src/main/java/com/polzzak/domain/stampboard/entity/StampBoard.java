@@ -125,6 +125,10 @@ public class StampBoard extends BaseModifiableEntity {
 		return this.status == Status.ISSUED_COUPON;
 	}
 
+	public void updateStampCount(int goalStampCount) {
+		this.goalStampCount = goalStampCount;
+	}
+
 	private void complete() {
 		status = StampBoard.Status.COMPLETED;
 		completedDate = LocalDateTime.now();
