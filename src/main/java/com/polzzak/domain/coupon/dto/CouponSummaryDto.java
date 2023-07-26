@@ -7,6 +7,6 @@ public record CouponSummaryDto(
 ) {
 
 	public static CouponSummaryDto from(long couponId, String reward, LocalDateTime rewardDate) {
-		return new CouponSummaryDto(couponId, reward, LocalDateTime.now().minusHours(2), rewardDate);
+		return new CouponSummaryDto(couponId, reward, rewardDate.minusHours(2), rewardDate);
 	}
 }

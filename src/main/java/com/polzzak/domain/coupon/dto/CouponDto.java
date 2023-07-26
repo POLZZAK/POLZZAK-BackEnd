@@ -22,7 +22,7 @@ public record CouponDto(
 
 		return new CouponDto(coupon.getId(), coupon.getReward(), CouponMember.from(guardianResponse),
 			CouponMember.from(kidResponse), missionContents, stampBoard.getGoalStampCount(), coupon.getState(),
-			LocalDateTime.now().minusHours(2), stampBoard.getCreatedDate(), stampBoard.getCompletedDate());
+			stampBoard.getCreatedDate().plusHours(2), stampBoard.getCreatedDate(), stampBoard.getCompletedDate());
 	}
 
 	public record CouponMember(String nickname, String profileUrl) {
