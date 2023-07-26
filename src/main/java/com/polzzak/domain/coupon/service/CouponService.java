@@ -10,6 +10,7 @@ import com.polzzak.domain.coupon.dto.CouponDto;
 import com.polzzak.domain.coupon.dto.CouponListDto;
 import com.polzzak.domain.coupon.entity.Coupon;
 import com.polzzak.domain.coupon.repository.CouponRepository;
+import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
@@ -52,12 +53,20 @@ public class CouponService {
 		stampBoard.rewardCoupon();
 	}
 
-	public List<CouponListDto> getCouponList(Long memberId, Coupon.CouponState couponState) {
+	public List<CouponListDto> getCouponList(Long memberId, Long partnerMemberId, Coupon.CouponState couponState) {
 		Member member = userService.findMemberByMemberIdWithMemberType(memberId);
+		List<FamilyMemberDto> allFamilies = familyMapService.getMyFamilies(member.getId());
 
-		return familyMapService.getMyFamilies(member.getId()).stream()
-			.map(family -> CouponListDto.from(family, getCoupons(member, family.memberId(), couponState)))
-			.toList();
+		List<FamilyMemberDto> targetFamilies;
+		if (partnerMemberId == null) {
+			targetFamilies = allFamilies;
+		} else {
+			targetFamilies = allFamilies.stream()
+				.filter(familyMemberDto -> familyMemberDto.memberId() == partnerMemberId)
+				.toList();
+		}
+
+		return getCouponListDtos(member, targetFamilies, couponState);
 	}
 
 	public CouponDto getCoupon(Long memberId, long couponId) {
@@ -77,6 +86,13 @@ public class CouponService {
 		validateCouponOwner(coupon, kid);
 
 		coupon.receiveReward();
+	}
+
+	private List<CouponListDto> getCouponListDtos(Member member, List<FamilyMemberDto> families,
+		Coupon.CouponState couponState) {
+		return families.stream()
+			.map(family -> CouponListDto.from(family, getCoupons(member, family.memberId(), couponState)))
+			.toList();
 	}
 
 	private List<Coupon> getCoupons(Member member, long familyMemberId, Coupon.CouponState couponState) {

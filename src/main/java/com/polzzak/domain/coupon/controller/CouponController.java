@@ -17,11 +17,8 @@ import com.polzzak.domain.coupon.dto.CouponListDto;
 import com.polzzak.domain.coupon.dto.StampBoardForIssueCoupon;
 import com.polzzak.domain.coupon.entity.Coupon;
 import com.polzzak.domain.coupon.service.CouponService;
-import com.polzzak.domain.user.dto.MemberDto;
-import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.security.LoginId;
-import com.polzzak.global.security.LoginUsername;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 public class CouponController {
 
 	private final CouponService couponService;
-	private final UserService userService;
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> issueCoupon(
@@ -43,9 +39,10 @@ public class CouponController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<CouponListDto>>> getCoupons(
-		@LoginId Long memberId, @RequestParam("couponState") String couponStateAsStr) {
+		@LoginId Long memberId, @RequestParam(required = false) Long partnerMemberId,
+		@RequestParam("couponState") String couponStateAsStr) {
 		Coupon.CouponState couponState = Coupon.CouponState.valueOf(couponStateAsStr.toUpperCase());
-		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(memberId, couponState)));
+		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(memberId, partnerMemberId, couponState)));
 	}
 
 	@GetMapping("/{couponId}")
@@ -55,7 +52,7 @@ public class CouponController {
 	}
 
 	@PostMapping("/{couponId}/receive")
-	public ResponseEntity<Void> receiveCoupon(
+	public ResponseEntity<Void> receiveReward(
 		@LoginId Long memberId, @PathVariable long couponId) {
 		couponService.receiveReward(memberId, couponId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
