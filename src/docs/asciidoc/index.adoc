@@ -1,8 +1,8 @@
 = Polzzak API DOCS
 :doctype: book
 :icons: font
-:source-highlighter: highlightjs // 문서에 표기되는 코드들의 하이라이팅을 highlightjs를 사용
-:toc: left // toc (Table Of Contents)를 문서의 좌측에 두기
+:source-highlighter: highlightjs
+:toc: left
 :toclevels: 2
 :sectlinks:
 
@@ -381,6 +381,19 @@ operation::member-point-rest-controller-test/get-my-earning-histories-success[sn
 
 [[Coupon-API]]
 = *Coupon API*
+
+== *쿠폰 STATUS*
+
+|===
+| status | value
+
+| `ISSUED`
+| 쿠폰 발급(아이가 쿠폰 수령 후)
+
+| `REWARDED`
+| 선물 수령 완료
+
+|===
 
 [[쿠폰-발급-API]]
 == *1. 쿠폰 발급 API*
