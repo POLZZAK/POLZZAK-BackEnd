@@ -69,13 +69,15 @@ class CouponControllerTest extends ControllerTestHelper {
 	@Test
 	@DisplayName("쿠폰 목록 조회 테스트")
 	void getCouponsTest() throws Exception {
-		when(couponService.getCouponList(any(), any())).thenReturn(COUPON_LIST_DTO_LIST);
+		when(couponService.getCouponList(any(), anyLong(), any())).thenReturn(COUPON_LIST_DTO_LIST);
 
 		mockMvc.perform(
 				get(BASE_URL)
 					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
 					.contentType(MediaType.APPLICATION_JSON)
-					.param("couponState", "issued"))
+					.param("partnerMemberId", "123")
+					.param("couponState", "issued")
+			)
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(document("coupon/coupons-get-success",
@@ -83,7 +85,8 @@ class CouponControllerTest extends ControllerTestHelper {
 					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
 				),
 				queryParameters(
-					parameterWithName("couponState").description("쿠폰 상태(선물 전, 받기 완료)")
+					parameterWithName("couponState").description("쿠폰 상태(선물 전, 받기 완료)"),
+					parameterWithName("partnerMemberId").description("조회할 상대 member ID")
 				),
 				responseFields(
 					fieldWithPath("code").description("응답 코드"),
@@ -96,7 +99,9 @@ class CouponControllerTest extends ControllerTestHelper {
 					fieldWithPath("data[].family.memberType.detail").description("상대방 멤버 타입 상세 정보").optional(),
 					fieldWithPath("data[].family.profileUrl").description("상대방 프로필 URL").optional(),
 					fieldWithPath("data[].coupons[]").description("상대방 프로필 URL").optional(),
+					fieldWithPath("data[].coupons[].couponId").description("쿠폰 ID").optional(),
 					fieldWithPath("data[].coupons[].reward").description("선물 내용").optional(),
+					fieldWithPath("data[].coupons[].rewardRequestDate").description("조르기 시도한 시간").optional(),
 					fieldWithPath("data[].coupons[].rewardDate").description("선물 주는 날짜").optional()
 				)));
 	}
@@ -132,13 +137,14 @@ class CouponControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.missionContents[]").description("완료 미션 리스트"),
 					fieldWithPath("data.stampCount").description("도장 개수"),
 					fieldWithPath("data.state").description("쿠폰 상태"),
+					fieldWithPath("data.rewardRequestDate").description("조르기 시도한 시간").optional(),
 					fieldWithPath("data.startDate").description("도장판 시작 날짜"),
 					fieldWithPath("data.endDate").description("도장판 완료 날짜")
 				)));
 	}
 
 	@Test
-	@DisplayName("쿠폰 수령 테스트")
+	@DisplayName("보상 수령 테스트")
 	void receiveCouponTest() throws Exception {
 		doNothing().when(couponService).receiveReward(any(), anyLong());
 

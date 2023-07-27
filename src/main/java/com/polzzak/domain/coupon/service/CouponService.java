@@ -10,6 +10,7 @@ import com.polzzak.domain.coupon.dto.CouponDto;
 import com.polzzak.domain.coupon.dto.CouponListDto;
 import com.polzzak.domain.coupon.entity.Coupon;
 import com.polzzak.domain.coupon.repository.CouponRepository;
+import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
 import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
@@ -32,7 +33,7 @@ public class CouponService {
 	private final CouponRepository couponRepository;
 
 	@Transactional
-	public void issueCoupon(Long guardianId, long stampBoardId) {
+	public void issueCoupon(final Long guardianId, final long stampBoardId) {
 		StampBoard stampBoard = stampBoardService.getStampBoard(stampBoardId);
 		Member guardian = userService.findMemberByMemberIdWithMemberType(guardianId);
 		validateIssueCoupon(guardian, stampBoard);
@@ -52,15 +53,16 @@ public class CouponService {
 		stampBoard.rewardCoupon();
 	}
 
-	public List<CouponListDto> getCouponList(Long memberId, Coupon.CouponState couponState) {
+	public List<CouponListDto> getCouponList(final Long memberId, final Long partnerMemberId,
+		final Coupon.CouponState couponState) {
 		Member member = userService.findMemberByMemberIdWithMemberType(memberId);
+		List<FamilyMemberDto> targetFamilies = getTargetFamilies(familyMapService.getMyFamilies(member.getId()),
+			partnerMemberId);
 
-		return familyMapService.getMyFamilies(member.getId()).stream()
-			.map(family -> CouponListDto.from(family, getCoupons(member, family.memberId(), couponState)))
-			.toList();
+		return getCouponListDtos(member, targetFamilies, couponState);
 	}
 
-	public CouponDto getCoupon(Long memberId, long couponId) {
+	public CouponDto getCoupon(final Long memberId, final long couponId) {
 		Member member = userService.findMemberByMemberId(memberId);
 		Coupon coupon = couponRepository.getReferenceById(couponId);
 		validateCouponOwner(coupon, member);
@@ -71,7 +73,7 @@ public class CouponService {
 	}
 
 	@Transactional
-	public void receiveReward(Long kidId, long couponId) {
+	public void receiveReward(final Long kidId, final long couponId) {
 		Member kid = userService.findMemberByMemberIdWithMemberType(kidId);
 		Coupon coupon = couponRepository.getReferenceById(couponId);
 		validateCouponOwner(coupon, kid);
@@ -79,20 +81,38 @@ public class CouponService {
 		coupon.receiveReward();
 	}
 
-	private List<Coupon> getCoupons(Member member, long familyMemberId, Coupon.CouponState couponState) {
+	private List<FamilyMemberDto> getTargetFamilies(final List<FamilyMemberDto> allFamilies,
+		final Long partnerMemberId) {
+		if (partnerMemberId == null) {
+			return allFamilies;
+		}
+		return allFamilies.stream()
+			.filter(familyMemberDto -> familyMemberDto.memberId() == partnerMemberId)
+			.toList();
+	}
+
+	private List<CouponListDto> getCouponListDtos(final Member member, final List<FamilyMemberDto> families,
+		Coupon.CouponState couponState) {
+		return families.stream()
+			.map(family -> CouponListDto.from(family, getCoupons(member, family.memberId(), couponState)))
+			.toList();
+	}
+
+	private List<Coupon> getCoupons(final Member member, final long familyMemberId,
+		final Coupon.CouponState couponState) {
 		if (member.isKid()) {
 			return couponRepository.findByGuardianIdAndState(familyMemberId, couponState);
 		}
 		return couponRepository.findByKidIdAndState(familyMemberId, couponState);
 	}
 
-	private void validateCouponOwner(Coupon coupon, Member member) {
+	private void validateCouponOwner(final Coupon coupon, final Member member) {
 		if (coupon.isNotOwner(member)) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 	}
 
-	private void validateIssueCoupon(Member guardian, StampBoard stampBoard) {
+	private void validateIssueCoupon(final Member guardian, final StampBoard stampBoard) {
 		if (!guardian.isGuardian() || stampBoard.isNotOwner(guardian.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
