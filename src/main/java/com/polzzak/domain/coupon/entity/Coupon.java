@@ -50,7 +50,8 @@ public class Coupon extends BaseEntity {
 	private LocalDateTime rewardDate;
 
 	@Builder(builderMethodName = "createCoupon")
-	public Coupon(Member guardian, Member kid, StampBoard stampBoard, String reward, LocalDateTime rewardDate) {
+	public Coupon(final Member guardian, final Member kid, final StampBoard stampBoard, final String reward,
+		final LocalDateTime rewardDate) {
 		this.guardian = guardian;
 		this.kid = kid;
 		this.stampBoard = stampBoard;
@@ -59,11 +60,11 @@ public class Coupon extends BaseEntity {
 		this.rewardDate = rewardDate;
 	}
 
-	public boolean isNotOwner(MemberDto member) {
+	public boolean isNotOwner(final MemberDto member) {
 		return guardian.getId() != member.memberId() && kid.getId() != member.memberId();
 	}
 
-	public boolean isNotOwner(Member member) {
+	public boolean isNotOwner(final Member member) {
 		return guardian.getId() != member.getId() && kid.getId() != member.getId();
 	}
 

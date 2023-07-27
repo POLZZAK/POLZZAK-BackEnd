@@ -31,7 +31,7 @@ public class CouponController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> issueCoupon(
-		@LoginId Long memberId, @RequestBody StampBoardForIssueCoupon stampBoardForIssueCoupon
+		final @LoginId Long memberId, final @RequestBody StampBoardForIssueCoupon stampBoardForIssueCoupon
 	) {
 		couponService.issueCoupon(memberId, stampBoardForIssueCoupon.stampBoardId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
@@ -39,21 +39,21 @@ public class CouponController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<CouponListDto>>> getCoupons(
-		@LoginId Long memberId, @RequestParam(required = false) Long partnerMemberId,
-		@RequestParam("couponState") String couponStateAsStr) {
+		final @LoginId Long memberId, final @RequestParam(required = false) Long partnerMemberId,
+		final @RequestParam("couponState") String couponStateAsStr) {
 		Coupon.CouponState couponState = Coupon.CouponState.valueOf(couponStateAsStr.toUpperCase());
 		return ResponseEntity.ok(ApiResponse.ok(couponService.getCouponList(memberId, partnerMemberId, couponState)));
 	}
 
 	@GetMapping("/{couponId}")
 	public ResponseEntity<ApiResponse<CouponDto>> getCoupon(
-		@LoginId Long memberId, @PathVariable long couponId) {
+		final @LoginId Long memberId, final @PathVariable long couponId) {
 		return ResponseEntity.ok(ApiResponse.ok(couponService.getCoupon(memberId, couponId)));
 	}
 
 	@PostMapping("/{couponId}/receive")
 	public ResponseEntity<Void> receiveReward(
-		@LoginId Long memberId, @PathVariable long couponId) {
+		final @LoginId Long memberId, final @PathVariable long couponId) {
 		couponService.receiveReward(memberId, couponId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

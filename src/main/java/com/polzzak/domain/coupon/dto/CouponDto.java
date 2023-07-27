@@ -14,8 +14,8 @@ public record CouponDto(
 	Coupon.CouponState state, LocalDateTime rewardRequestDate, LocalDateTime startDate, LocalDateTime endDate
 ) {
 
-	public static CouponDto from(Coupon coupon, StampBoard stampBoard, MemberResponse guardianResponse,
-		MemberResponse kidResponse) {
+	public static CouponDto from(final Coupon coupon, final StampBoard stampBoard,
+		final MemberResponse guardianResponse, final MemberResponse kidResponse) {
 		List<String> missionContents = stampBoard.getMissions().stream()
 			.map(Mission::getContent)
 			.toList();
@@ -26,7 +26,7 @@ public record CouponDto(
 	}
 
 	public record CouponMember(String nickname, String profileUrl) {
-		public static CouponMember from(MemberResponse memberResponse) {
+		public static CouponMember from(final MemberResponse memberResponse) {
 			return new CouponMember(memberResponse.nickname(), memberResponse.profileUrl());
 		}
 	}

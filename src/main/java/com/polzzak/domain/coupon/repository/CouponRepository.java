@@ -8,7 +8,7 @@ import com.polzzak.domain.coupon.entity.Coupon;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
-	List<Coupon> findByGuardianIdAndState(Long guardianId, Coupon.CouponState state);
+	List<Coupon> findByGuardianIdAndState(final Long guardianId, final Coupon.CouponState state);
 
-	List<Coupon> findByKidIdAndState(Long kidId, Coupon.CouponState state);
+	List<Coupon> findByKidIdAndState(final Long kidId, final Coupon.CouponState state);
 }
