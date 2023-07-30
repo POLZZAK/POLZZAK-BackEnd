@@ -10,6 +10,7 @@ import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stampboard.dto.MissionDto;
 import com.polzzak.domain.stampboard.dto.MissionRequestDto;
+import com.polzzak.domain.stampboard.dto.RewardDateOfCoupon;
 import com.polzzak.domain.stampboard.dto.StampBoardCreateRequest;
 import com.polzzak.domain.stampboard.dto.StampBoardDto;
 import com.polzzak.domain.stampboard.dto.StampBoardSummary;
@@ -61,4 +62,5 @@ public class StampFixtures {
 		"칭찬 상이다", UPDATE_MISSION_DTOS, 30);
 	public static final StampCreateRequest STAMP_CREATE_REQUEST = new StampCreateRequest(4L, 1L, 2);
 	public static final StampDto STAMP_DTO = new StampDto(11, 1, "미션1", LocalDateTime.now());
+	public static final RewardDateOfCoupon REWARD_DATE_OF_COUPON = new RewardDateOfCoupon(1690718200390L);
 }

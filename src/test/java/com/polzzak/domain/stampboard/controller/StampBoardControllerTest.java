@@ -338,4 +338,33 @@ class StampBoardControllerTest extends ControllerTestHelper {
 				)));
 	}
 
+	@Test
+	@DisplayName("쿠폰 발급 테스트")
+	void issueCouponTest() throws Exception {
+		doNothing().when(stampBoardService).issueCoupon(any(), anyLong(), anyLong());
+
+		mockMvc.perform(
+				post(BASE_URL + "/stamp-boards/{stampBoardId}/issue-coupon", STAMP_BOARD_ID)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectToString(REWARD_DATE_OF_COUPON)))
+			.andDo(print())
+			.andExpect(status().isCreated())
+			.andDo(document("stamp/issue-coupon-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				pathParameters(
+					parameterWithName("stampBoardId").description("도장판 ID")
+				),
+				requestFields(
+					fieldWithPath("rewardDate").description("상품 수령 날짜")
+				),
+				responseFields(
+					fieldWithPath("code").description("응답 코드"),
+					fieldWithPath("messages").description("응답 메시지").optional(),
+					fieldWithPath("data").description("응답 데이터").optional()
+				)));
+	}
+
 }

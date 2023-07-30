@@ -396,7 +396,17 @@ operation::member-point-rest-controller-test/get-my-earning-histories-success[sn
 |===
 
 [[쿠폰-발급-API]]
-== *1. 쿠폰 발급 API*
+== *1. 쿠폰 발급 API(보호자)*
+
+아이에게 쿠폰을 발급하는 API입니다.
+
+=== *1-1* 성공
+
+operation::stamp/issue-coupon-success[snippets='http-request,request-headers,request-fields,request-body,http-response,response-fields']
+
+== *2. 쿠폰 수령 API(아이)*
+
+발급 요청이 있는 쿠폰을 수령하는 API입니다.
 
 === *1-1* 성공
 
@@ -417,7 +427,7 @@ operation::coupon/coupons-get-success[snippets='http-request,request-headers,que
 operation::coupon/coupon-get-success[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
 [[쿠폰-수령-API]]
-== *4. 쿠폰 수령 API*
+== *4. 상품 수령 API*
 
 === *4-1* 성공
 
