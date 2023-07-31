@@ -256,7 +256,7 @@ public class StampBoardService {
 
 	//StampBoard
 	private List<StampBoard> getStampBoards(long guardianId, long kidId) {
-		return stampBoardRepository.findByGuardianIdAndKidId(guardianId, kidId);
+		return stampBoardRepository.findByGuardianIdAndKidIdAndIsDeleted(guardianId, kidId, false);
 	}
 
 	private List<FamilyMemberDto> getFilteredFamiliesByPartnerId(List<FamilyMemberDto> families, Long partnerMemberId) {
