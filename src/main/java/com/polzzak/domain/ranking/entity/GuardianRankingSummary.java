@@ -1,5 +1,9 @@
 package com.polzzak.domain.ranking.entity;
 
+import java.time.LocalDateTime;
+
+import com.polzzak.domain.memberpoint.entity.MemberPoint;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -15,9 +19,10 @@ public class GuardianRankingSummary extends RankingSummary {
 	private String memberTypeDetail;
 
 	@Builder(builderMethodName = "createGuardianRankingSummary")
-	public GuardianRankingSummary(int ranking, RankingStatus rankingStatus, String nickname, int point, int level,
-		String memberTypeDetail) {
-		super(ranking, rankingStatus, nickname, point, level);
+	public GuardianRankingSummary(final int ranking, final RankingStatus rankingStatus, final String nickname,
+		final int point, final int level, final String profileKey, final LocalDateTime createdDate,
+		final MemberPoint memberPoint, final String memberTypeDetail) {
+		super(ranking, rankingStatus, nickname, point, level, profileKey, createdDate, memberPoint);
 		this.memberTypeDetail = memberTypeDetail;
 	}
 }
