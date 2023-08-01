@@ -19,6 +19,6 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long> 
 	Optional<MemberPoint> findWithWriteLockByMemberId(final Long memberId);
 
 	@Query("select mp from MemberPoint mp where mp.member.memberType.type = :memberType order by mp.point desc")
-	List<MemberPoint> findGuardianPointRankingTop30(final @Param("memberType") MemberType memberType,
+	List<MemberPoint> findMemberPointRankings(final @Param("memberType") MemberType memberType,
 		Pageable pageable);
 }
