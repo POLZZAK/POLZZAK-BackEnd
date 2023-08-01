@@ -432,3 +432,35 @@ operation::coupon/coupon-get-success[snippets='http-request,request-headers,path
 === *4-1* 성공
 
 operation::coupon/coupon-receive-success[snippets='http-request,request-headers,path-parameters,http-response']
+
+[[Ranking-API]]
+= *Ranking API*
+
+== *RANKING STATUS*
+
+|===
+| status | value
+
+| `UP`
+| 상승
+
+| `DOWN`
+| 하락
+
+| `HOLD`
+| 유지(변화 없음)
+
+|===
+
+[[보호자-랭킹-조회-API]]
+== *1. 보호자 랭킹 조회*
+
+=== *1-1* 성공
+
+operation::ranking-controller-test/get-guardian-ranking-summaries[snippets='http-request,http-response,response-fields']
+
+== *2. 아이 랭킹 조회*
+
+=== *2-1* 성공
+
+operation::ranking-controller-test/get-kid-ranking-summaries[snippets='http-request,http-response,response-fields']
