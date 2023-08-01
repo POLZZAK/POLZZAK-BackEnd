@@ -9,16 +9,16 @@ public record KidRankingSummaryDto(
 	String nickname,
 	int point,
 	int level,
-	String profileKey
+	String profileUrl
 ) {
-	public static KidRankingSummaryDto from(final KidRankingSummary kidRankingSummary) {
+	public static KidRankingSummaryDto of(final KidRankingSummary kidRankingSummary, final String profileUrl) {
 		return new KidRankingSummaryDto(
 			kidRankingSummary.getRanking(),
 			kidRankingSummary.getRankingStatus(),
 			kidRankingSummary.getNickname(),
 			kidRankingSummary.getPoint(),
 			kidRankingSummary.getLevel(),
-			kidRankingSummary.getProfileKey()
+			profileUrl
 		);
 	}
 }
