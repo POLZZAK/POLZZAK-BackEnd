@@ -87,7 +87,7 @@ class StampBoardControllerTest extends ControllerTestHelper {
 					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
 				),
 				queryParameters(
-					parameterWithName("memberId").description("조회할 member ID").optional(),
+					parameterWithName("partnerMemberId").description("조회할 member ID").optional(),
 					parameterWithName("stampBoardGroup").description("진행 중인 도장판 여부(in_progress, ended)")
 				),
 				responseFields(
