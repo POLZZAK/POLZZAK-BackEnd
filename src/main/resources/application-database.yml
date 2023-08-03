@@ -5,8 +5,12 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
+    show-sql: true
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
 ---
 spring:
   config.activate.on-profile: test
