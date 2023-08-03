@@ -33,10 +33,10 @@ public class CouponService {
 	private final CouponRepository couponRepository;
 
 	@Transactional
-	public void issueCoupon(final Long guardianId, final long stampBoardId) {
+	public void issueCoupon(final Long kidId, final long stampBoardId) {
 		StampBoard stampBoard = stampBoardService.getStampBoard(stampBoardId);
-		Member guardian = userService.findMemberByMemberIdWithMemberType(guardianId);
-		validateIssueCoupon(guardian, stampBoard);
+		Member kid = userService.findMemberByMemberIdWithMemberType(kidId);
+		validateIssueCoupon(kid, stampBoard);
 
 		Member guardianEntity = userService.findMemberByMemberId(stampBoard.getGuardianId());
 		Member kidEntity = userService.findMemberByMemberId(stampBoard.getKidId());
@@ -112,8 +112,8 @@ public class CouponService {
 		}
 	}
 
-	private void validateIssueCoupon(final Member guardian, final StampBoard stampBoard) {
-		if (!guardian.isGuardian() || stampBoard.isNotOwner(guardian.getId())) {
+	private void validateIssueCoupon(final Member kid, final StampBoard stampBoard) {
+		if (!kid.isKid() || stampBoard.isNotOwner(kid.getId())) {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 		if (!stampBoard.isIssuedCoupon()) {
