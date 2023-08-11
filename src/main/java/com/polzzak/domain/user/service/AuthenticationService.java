@@ -83,7 +83,7 @@ public class AuthenticationService {
 		}
 		Member member = createMember(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey));
 		User saveUser = userRepository.save(createUser(registerRequest, member));
-		memberPointService.saveMemberPoint(member);
+		memberPointService.saveMemberPoint(saveUser.getMember());
 		return new TokenPayload(saveUser.getId().toString(), saveUser.getUsername(), saveUser.getUserRole().toString());
 	}
 
