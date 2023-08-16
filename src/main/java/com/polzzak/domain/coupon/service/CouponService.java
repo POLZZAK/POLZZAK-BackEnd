@@ -3,6 +3,7 @@ package com.polzzak.domain.coupon.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,8 @@ import com.polzzak.domain.coupon.entity.Coupon;
 import com.polzzak.domain.coupon.repository.CouponRepository;
 import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
+import com.polzzak.domain.notification.dto.NotificationCreateEvent;
+import com.polzzak.domain.notification.entity.NotificationType;
 import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
 import com.polzzak.domain.user.dto.MemberResponse;
@@ -31,6 +34,7 @@ public class CouponService {
 	private final UserService userService;
 	private final FamilyMapService familyMapService;
 	private final CouponRepository couponRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
 	public void issueCoupon(final Long kidId, final long stampBoardId) {
@@ -79,6 +83,9 @@ public class CouponService {
 		validateCouponOwner(coupon, kid);
 
 		coupon.receiveReward();
+
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(kidId, kidId, NotificationType.REWARDED, String.valueOf(couponId)));
 	}
 
 	private List<FamilyMemberDto> getTargetFamilies(final List<FamilyMemberDto> allFamilies,
