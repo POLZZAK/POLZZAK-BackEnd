@@ -250,7 +250,7 @@ public class StampBoardService {
 		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
 		if (stampBoard.isCompleted()) {
 			eventPublisher.publishEvent(
-				new NotificationCreateEvent(kid.getId(), kid.getId(), NotificationType.STAMP_BOARD_COMPLETE,
+				new NotificationCreateEvent(kid.getId(), guardian.getId(), NotificationType.STAMP_BOARD_COMPLETE,
 					String.valueOf(stampBoardId)));
 		}
 		eventPublisher.publishEvent(new StampCreatedEvent(List.of(guardian, kid)));
