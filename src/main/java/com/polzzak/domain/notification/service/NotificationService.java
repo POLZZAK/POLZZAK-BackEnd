@@ -83,11 +83,11 @@ public class NotificationService {
 		return switch (notification.getType()) {
 			case FAMILY_REQUEST, FAMILY_REQUEST_COMPLETE -> notification.getSender().getNickname();
 			case LEVEL_UP, LEVEL_DOWN -> data;
-			case STAMP_REQUEST, STAMP_BOARD_COMPLETE, CREATED_STAMP_BOARD -> {
+			case STAMP_REQUEST, STAMP_BOARD_COMPLETE, CREATED_STAMP_BOARD, ISSUED_COUPON -> {
 				StampBoard stampBoard = stampBoardService.getStampBoard(Long.parseLong(data));
 				yield stampBoard.getName();
 			}
-			case REWARD_REQUEST, REWARDED, REWARD_REQUEST_AGAIN, REWARD_FAIL, ISSUED_COUPON, REWARDED_REQUEST -> {
+			case REWARD_REQUEST, REWARDED, REWARD_REQUEST_AGAIN, REWARD_FAIL, REWARDED_REQUEST -> {
 				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
 				yield coupon.reward();
 			}
