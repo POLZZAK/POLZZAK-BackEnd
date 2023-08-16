@@ -433,6 +433,13 @@ operation::coupon/coupon-get-success[snippets='http-request,request-headers,path
 
 operation::coupon/coupon-receive-success[snippets='http-request,request-headers,path-parameters,http-response']
 
+[[상품-조르기-API]]
+== *4. 상품 조르기 API*
+
+=== *4-1* 성공
+
+operation::coupon/coupon-request-success[snippets='http-request,request-headers,path-parameters,http-response']
+
 [[Ranking-API]]
 = *Ranking API*
 
