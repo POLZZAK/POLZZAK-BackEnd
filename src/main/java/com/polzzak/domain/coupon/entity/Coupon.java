@@ -47,6 +47,9 @@ public class Coupon extends BaseEntity {
 	private CouponState state;
 
 	@Column(nullable = false)
+	private LocalDateTime requestDate;
+
+	@Column(nullable = false)
 	private LocalDateTime rewardDate;
 
 	@Builder(builderMethodName = "createCoupon")
@@ -70,6 +73,17 @@ public class Coupon extends BaseEntity {
 
 	public void receiveReward() {
 		this.state = CouponState.REWARDED;
+	}
+
+	public void requestReward() {
+		requestDate = LocalDateTime.now();
+	}
+
+	public boolean isPossibleRequest() {
+		if (requestDate == null) {
+			return true;
+		}
+		return requestDate.isBefore(LocalDateTime.now().minusHours(1));
 	}
 
 	@RequiredArgsConstructor
