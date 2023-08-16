@@ -85,7 +85,8 @@ public class CouponService {
 		coupon.receiveReward();
 
 		eventPublisher.publishEvent(
-			new NotificationCreateEvent(kidId, kidId, NotificationType.REWARDED, String.valueOf(couponId)));
+			new NotificationCreateEvent(kidId, coupon.getGuardian().getId(), NotificationType.REWARDED,
+				String.valueOf(couponId)));
 	}
 
 	@Transactional
@@ -98,7 +99,8 @@ public class CouponService {
 
 		coupon.requestReward();
 		eventPublisher.publishEvent(
-			new NotificationCreateEvent(kidId, coupon.getGuardian().getId(), NotificationType.REWARD_REQUEST, String.valueOf(couponId)));
+			new NotificationCreateEvent(kidId, coupon.getGuardian().getId(), NotificationType.REWARD_REQUEST,
+				String.valueOf(couponId)));
 	}
 
 	private List<FamilyMemberDto> getTargetFamilies(final List<FamilyMemberDto> allFamilies,
