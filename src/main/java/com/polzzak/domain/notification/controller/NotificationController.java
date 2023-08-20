@@ -26,6 +26,7 @@ public class NotificationController {
 	public ResponseEntity<ApiResponse<NotificationResponse>> getNotifications(final @LoginId Long memberId,
 		// Long.MAX_VALUE
 		@RequestParam(required = false, defaultValue = "9223372036854775807") final long startId) {
-		return ResponseEntity.ok(ApiResponse.ok(notificationService.getNotificationResponse(memberId, NOTIFICATION_PAGE_SIZE, startId)));
+		return ResponseEntity.ok(
+			ApiResponse.ok(notificationService.getNotificationResponse(memberId, NOTIFICATION_PAGE_SIZE, startId)));
 	}
 }
