@@ -65,7 +65,7 @@ public class StampBoardService {
 		createMission(stampBoard, stampBoardCreateRequest.missionContents());
 		eventPublisher.publishEvent(new StampBoardCreatedEvent(findMember));
 		eventPublisher.publishEvent(new NotificationCreateEvent(findMember.getId(), stampBoardCreateRequest.kidId(),
-			NotificationType.CREATED_STAMP_BOARD, null));
+			NotificationType.CREATED_STAMP_BOARD, String.valueOf(stampBoard.getId())));
 	}
 
 	public StampBoardDto getStampBoardDto(MemberDto member, long stampBoardId) {
