@@ -24,5 +24,5 @@ public class CouponFixtures {
 		CouponListDto.from(FAMILY_GUARDIAN_MEMBER_DTO, COUPONS_FOR_LIST));
 	public static final CouponDto COUPON_DTO = new CouponDto(1, "상상상", new CouponDto.CouponMember("보호자", "profile url"),
 		new CouponDto.CouponMember("아이", "profile url"), List.of("미션1", "미션2", "미션3"), 10, Coupon.CouponState.ISSUED,
-		LocalDateTime.now().minusHours(2), LocalDateTime.now(), LocalDateTime.now());
+		LocalDateTime.now(), LocalDateTime.now().minusHours(2), LocalDateTime.now(), LocalDateTime.now());
 }

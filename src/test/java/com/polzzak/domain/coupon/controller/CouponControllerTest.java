@@ -137,6 +137,7 @@ class CouponControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.missionContents[]").description("완료 미션 리스트"),
 					fieldWithPath("data.stampCount").description("도장 개수"),
 					fieldWithPath("data.state").description("쿠폰 상태"),
+					fieldWithPath("data.rewardDate").description("상품 수령 날짜").optional(),
 					fieldWithPath("data.rewardRequestDate").description("조르기 시도한 시간").optional(),
 					fieldWithPath("data.startDate").description("도장판 시작 날짜"),
 					fieldWithPath("data.endDate").description("도장판 완료 날짜")
