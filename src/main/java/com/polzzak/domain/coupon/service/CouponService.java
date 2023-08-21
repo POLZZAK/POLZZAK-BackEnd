@@ -93,7 +93,7 @@ public class CouponService {
 	public void requestReward(final Long kidId, final long couponId) {
 		Member kid = userService.findMemberByMemberIdWithMemberType(kidId);
 		Coupon coupon = couponRepository.getReferenceById(couponId);
-		if (coupon.isPossibleRequest()) {
+		if (!coupon.isPossibleRequest()) {
 			throw new IllegalArgumentException("선물 조르기는 1시간 마다 가능합니다.");
 		}
 
