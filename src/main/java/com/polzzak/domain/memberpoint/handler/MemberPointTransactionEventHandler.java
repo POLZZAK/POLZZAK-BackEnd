@@ -2,6 +2,7 @@ package com.polzzak.domain.memberpoint.handler;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.polzzak.domain.family.entity.FamilyMapCreatedEvent;
@@ -25,6 +26,7 @@ public class MemberPointTransactionEventHandler {
 	}
 
 	@Async
+	@Transactional
 	@TransactionalEventListener
 	public void handleStampBoardCreatedEvent(final StampBoardCreatedEvent event) {
 		try {
@@ -38,6 +40,7 @@ public class MemberPointTransactionEventHandler {
 	}
 
 	@Async
+	@Transactional
 	@TransactionalEventListener
 	public void handleStampCreatedEvent(final StampCreatedEvent event) {
 		try {
@@ -54,6 +57,7 @@ public class MemberPointTransactionEventHandler {
 	}
 
 	@Async
+	@Transactional
 	@TransactionalEventListener
 	public void handleStampBoardDeletedEvent(final StampBoardDeletedEvent event) {
 		try {
@@ -67,6 +71,7 @@ public class MemberPointTransactionEventHandler {
 	}
 
 	@Async
+	@Transactional
 	@TransactionalEventListener
 	public void handleFamilyMapCreatedEvent(final FamilyMapCreatedEvent event) {
 		try {
