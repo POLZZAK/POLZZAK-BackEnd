@@ -21,11 +21,12 @@ public class NotificationController {
 	private final NotificationService notificationService;
 
 	private static final int NOTIFICATION_PAGE_SIZE = 10;
+	private final String longMaxValue = "9223372036854775807";
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<NotificationResponse>> getNotifications(final @LoginId Long memberId,
 		// Long.MAX_VALUE
-		@RequestParam(required = false, defaultValue = "9223372036854775807") final long startId) {
+		@RequestParam(required = false, defaultValue = longMaxValue) final long startId) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(notificationService.getNotificationResponse(memberId, NOTIFICATION_PAGE_SIZE, startId)));
 	}

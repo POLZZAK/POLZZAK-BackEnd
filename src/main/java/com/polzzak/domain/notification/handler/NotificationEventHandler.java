@@ -1,6 +1,7 @@
 package com.polzzak.domain.notification.handler;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -17,6 +18,7 @@ public class NotificationEventHandler {
 
 	private final NotificationService notificationService;
 
+	@Async
 	@EventListener
 	public void addNotification(NotificationCreateEvent event) {
 		try {
