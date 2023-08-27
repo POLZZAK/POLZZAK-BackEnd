@@ -9,7 +9,6 @@ import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.user.dto.MemberResponse;
 
 public record CouponDto(
-	//TODO jjh 알림 추가 후 조르기 시간 로직 변경
 	long couponId, String reward, CouponMember guardian, CouponMember kid, List<String> missionContents, int stampCount,
 	Coupon.CouponState state, LocalDateTime rewardDate, LocalDateTime rewardRequestDate, LocalDateTime startDate,
 	LocalDateTime endDate
@@ -23,7 +22,7 @@ public record CouponDto(
 
 		return new CouponDto(coupon.getId(), coupon.getReward(), CouponMember.from(guardianResponse),
 			CouponMember.from(kidResponse), missionContents, stampBoard.getGoalStampCount(), coupon.getState(),
-			coupon.getRewardDate(), stampBoard.getCreatedDate().plusHours(2), stampBoard.getCreatedDate(),
+			coupon.getRewardDate(), coupon.getRequestDate(), stampBoard.getCreatedDate(),
 			stampBoard.getCompletedDate());
 	}
 

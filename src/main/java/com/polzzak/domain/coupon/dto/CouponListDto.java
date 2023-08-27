@@ -9,7 +9,7 @@ public record CouponListDto(FamilyMemberDto family, List<CouponSummaryDto> coupo
 
 	public static CouponListDto from(final FamilyMemberDto family, final List<Coupon> coupons) {
 		List<CouponSummaryDto> couponSummaryDtoList = coupons.stream()
-			.map(coupon -> CouponSummaryDto.from(coupon.getId(), coupon.getReward(), coupon.getRewardDate()))
+			.map(CouponSummaryDto::from)
 			.toList();
 		return new CouponListDto(family, couponSummaryDtoList);
 	}
