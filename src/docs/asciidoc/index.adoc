@@ -433,6 +433,13 @@ operation::coupon/coupon-get-success[snippets='http-request,request-headers,path
 
 operation::coupon/coupon-receive-success[snippets='http-request,request-headers,path-parameters,http-response']
 
+[[상품-조르기-API]]
+== *4. 상품 조르기 API*
+
+=== *4-1* 성공
+
+operation::coupon/coupon-request-success[snippets='http-request,request-headers,path-parameters,http-response']
+
 [[Ranking-API]]
 = *Ranking API*
 
@@ -464,3 +471,84 @@ operation::ranking-controller-test/get-guardian-ranking-summaries[snippets='http
 === *2-1* 성공
 
 operation::ranking-controller-test/get-kid-ranking-summaries[snippets='http-request,http-response,response-fields']
+
+[[Notification-API]]
+= *Notification API*
+
+== *알림 STATUS*
+
+|===
+| status | value
+
+| `READ`
+| 읽음
+
+| `UNREAD`
+| 안 읽음
+
+| `REQUEST_FAMILY`
+| 연동 요청
+
+| `REQUEST_FAMILY_ACCEPT`
+| 연동 수락
+
+| `REQUEST_FAMILY_REJECT`
+| 연동 거절
+
+|===
+== *알림 LINK*
+
+|===
+| status | value
+
+| `my-page`
+| 마이 페이지
+
+| `stamp-board/1`
+| 1번 도장판 상세 페이지
+
+| `coupon/1`
+| 1번 쿠폰 상세 페이지
+
+|===
+
+== *알림 TYPE*
+
+|===
+| type | value
+
+| `FAMILY_REQUEST`
+| 연동 요청
+| `FAMILY_REQUEST_COMPLETE`
+| 연동 완료
+| `LEVEL_UP`
+| 레벨 업
+| `LEVEL_DOWN`
+| 레벨 다운
+| `STAMP_REQUEST`
+| 도장 요청
+| `REWARD_REQUEST`
+| 선물 조르기
+| `STAMP_BOARD_COMPLETE`
+| 도장판 채우기 완료
+| `REWARDED`
+| 선물 받기 완료
+| `REWARD_REQUEST_AGAIN`
+| 선물 약속 D - 1
+| `REWARD_FAIL`
+| 선물 약속 어김
+| `CREATED_STAMP_BOARD`
+| 새로운 도장판 생성
+| `ISSUED_COUPON`
+| 쿠폰 발급 완료
+| `REWARDED_REQUEST`
+| 선물 받기 완료 요청
+
+|===
+
+[[알림-API]]
+== *1. 알림 목록 조회 API*
+
+=== *1-1* 성공
+
+operation::notification/notifications-get-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']

@@ -163,4 +163,24 @@ class CouponControllerTest extends ControllerTestHelper {
 					parameterWithName("couponId").description("쿠폰 ID")
 				)));
 	}
+
+	@Test
+	@DisplayName("조르기 테스트")
+	void requestRewardTest() throws Exception {
+		doNothing().when(couponService).requestReward(any(), anyLong());
+
+		mockMvc.perform(
+				post(BASE_URL + "/{couponId}/request", 1)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isNoContent())
+			.andDo(document("coupon/coupon-request-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				pathParameters(
+					parameterWithName("couponId").description("쿠폰 ID")
+				)));
+	}
 }

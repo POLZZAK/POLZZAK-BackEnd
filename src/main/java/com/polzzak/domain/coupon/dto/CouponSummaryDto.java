@@ -2,11 +2,14 @@ package com.polzzak.domain.coupon.dto;
 
 import java.time.LocalDateTime;
 
+import com.polzzak.domain.coupon.entity.Coupon;
+
 public record CouponSummaryDto(
 	long couponId, String reward, LocalDateTime rewardRequestDate, LocalDateTime rewardDate
 ) {
 
-	public static CouponSummaryDto from(final long couponId, final String reward, final LocalDateTime rewardDate) {
-		return new CouponSummaryDto(couponId, reward, rewardDate.minusHours(2), rewardDate);
+	public static CouponSummaryDto from(final Coupon coupon) {
+		return new CouponSummaryDto(coupon.getId(), coupon.getReward(), coupon.getRequestDate(),
+			coupon.getRewardDate());
 	}
 }

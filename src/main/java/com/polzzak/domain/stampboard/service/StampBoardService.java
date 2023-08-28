@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.polzzak.domain.family.dto.FamilyMemberDto;
 import com.polzzak.domain.family.service.FamilyMapService;
+import com.polzzak.domain.notification.dto.NotificationCreateEvent;
+import com.polzzak.domain.notification.entity.NotificationType;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stampboard.dto.MissionDto;
 import com.polzzak.domain.stampboard.dto.MissionRequestCreateRequest;
@@ -62,6 +64,8 @@ public class StampBoardService {
 		StampBoard stampBoard = stampBoardRepository.save(createStampBoard(stampBoardCreateRequest, findMember));
 		createMission(stampBoard, stampBoardCreateRequest.missionContents());
 		eventPublisher.publishEvent(new StampBoardCreatedEvent(findMember));
+		eventPublisher.publishEvent(new NotificationCreateEvent(findMember.getId(), stampBoardCreateRequest.kidId(),
+			NotificationType.CREATED_STAMP_BOARD, String.valueOf(stampBoard.getId())));
 	}
 
 	public StampBoardDto getStampBoardDto(MemberDto member, long stampBoardId) {
@@ -133,6 +137,9 @@ public class StampBoardService {
 		validateIssueCoupon(guardian, stampBoard);
 
 		stampBoard.issueCoupon(rewardDate);
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(guardian.memberId(), stampBoard.getKidId(), NotificationType.ISSUED_COUPON,
+				String.valueOf(stampBoardId)));
 	}
 
 	//Mission
@@ -172,6 +179,9 @@ public class StampBoardService {
 			.build();
 
 		missionRequestRepository.save(missionRequest);
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(kidEntity.getId(), guardianEntity.getId(), NotificationType.STAMP_REQUEST,
+				String.valueOf(stampBoard.getId())));
 	}
 
 	@Transactional
@@ -238,6 +248,11 @@ public class StampBoardService {
 		}
 
 		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
+		if (stampBoard.isCompleted()) {
+			eventPublisher.publishEvent(
+				new NotificationCreateEvent(kid.getId(), guardian.getId(), NotificationType.STAMP_BOARD_COMPLETE,
+					String.valueOf(stampBoardId)));
+		}
 		eventPublisher.publishEvent(new StampCreatedEvent(List.of(guardian, kid)));
 	}
 

@@ -57,4 +57,11 @@ public class CouponController {
 		couponService.receiveReward(memberId, couponId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+
+	@PostMapping("/{couponId}/request")
+	public ResponseEntity<Void> requestReward(
+		final @LoginId Long memberId, final @PathVariable long couponId) {
+		couponService.requestReward(memberId, couponId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

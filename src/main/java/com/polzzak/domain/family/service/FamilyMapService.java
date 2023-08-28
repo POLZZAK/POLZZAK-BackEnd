@@ -19,6 +19,8 @@ import com.polzzak.domain.family.entity.FamilyMapCreatedEvent;
 import com.polzzak.domain.family.entity.FamilyRequest;
 import com.polzzak.domain.family.repository.FamilyMapRepository;
 import com.polzzak.domain.family.repository.FamilyRequestRepository;
+import com.polzzak.domain.notification.dto.NotificationCreateEvent;
+import com.polzzak.domain.notification.entity.NotificationType;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.global.infra.file.FileClient;
@@ -101,6 +103,8 @@ public class FamilyMapService {
 		Member targetMember = findMemberByMemberId(targetId);
 		familyMapRepository.save(createFamilyMap(requestMember, targetMember));
 		eventPublisher.publishEvent(new FamilyMapCreatedEvent(List.of(requestMember, targetMember)));
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(memberId, targetId, NotificationType.FAMILY_REQUEST_COMPLETE, null));
 	}
 
 	@Transactional
