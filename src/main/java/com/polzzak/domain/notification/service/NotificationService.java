@@ -70,14 +70,15 @@ public class NotificationService {
 		Member sender = notification.getSender();
 		MemberDtoForNotification senderDto = sender == null ? null : MemberDtoForNotification.from(sender,
 			fileClient.getSignedUrl(sender.getProfileKey()));
-		String message = notification.getType().getMessageWithParameter(getParameter(member.getId(), notification));
+		String message = notification.getType()
+			.getMessageWithParameter(getMessageParameter(member.getId(), notification));
 		//TODO jjh 변수로 관리하도록 수정(entity or service layer)
-		String link = notification.getType().getLink();
+		String link = notification.getType().getLinkWithParameter(getLinkParameter(member.getId(), notification));
 
 		return NotificationDto.from(notification, message, link, senderDto);
 	}
 
-	private String getParameter(final Long memberId, final Notification notification) {
+	private String getMessageParameter(final Long memberId, final Notification notification) {
 		String data = notification.getData();
 
 		return switch (notification.getType()) {
@@ -90,6 +91,22 @@ public class NotificationService {
 			case REWARD_REQUEST, REWARDED, REWARD_REQUEST_AGAIN, REWARD_FAIL, REWARDED_REQUEST -> {
 				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
 				yield coupon.reward();
+			}
+		};
+	}
+
+	private String getLinkParameter(final Long memberId, final Notification notification) {
+		String data = notification.getData();
+
+		return switch (notification.getType()) {
+			case FAMILY_REQUEST, FAMILY_REQUEST_COMPLETE, LEVEL_UP, LEVEL_DOWN -> null;
+			case STAMP_REQUEST, STAMP_BOARD_COMPLETE, CREATED_STAMP_BOARD, ISSUED_COUPON -> {
+				StampBoard stampBoard = stampBoardService.getStampBoard(Long.parseLong(data));
+				yield String.valueOf(stampBoard.getId());
+			}
+			case REWARD_REQUEST, REWARDED, REWARD_REQUEST_AGAIN, REWARD_FAIL, REWARDED_REQUEST -> {
+				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
+				yield String.valueOf(coupon.couponId());
 			}
 		};
 	}

@@ -3,9 +3,6 @@ package com.polzzak.domain.notification.dto;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-
-import com.polzzak.domain.notification.entity.Notification;
 
 public record NotificationResponse(Long startId, List<NotificationDto> notificationDtoList) {
 
