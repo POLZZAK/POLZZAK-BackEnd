@@ -69,6 +69,7 @@ class NotificationControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.startId").description("다음 조회 ID (null이면 끝)").optional(),
 					fieldWithPath("data.notificationDtoList[]").description("알림 목록"),
 					fieldWithPath("data.notificationDtoList[].id").description("알림 ID").optional(),
+					fieldWithPath("data.notificationDtoList[].type").description("알림 타입").optional(),
 					fieldWithPath("data.notificationDtoList[].status").description("알림 상태").optional(),
 					fieldWithPath("data.notificationDtoList[].title").description("알림 제목").optional(),
 					fieldWithPath("data.notificationDtoList[].message").description("알림 내용").optional(),
