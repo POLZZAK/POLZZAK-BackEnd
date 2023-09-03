@@ -50,7 +50,19 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
-	public NotificationResponse getNotificationResponse(final Long memberId, final int size,
+	@Transactional
+	public NotificationResponse getNotificationsAndChangeStatus(final Long memberId, final int size, final long startId) {
+		NotificationResponse notificationResponse = getNotificationResponse(memberId, size, startId);
+
+		List<Long> notificationIds = notificationResponse.notificationDtoList().stream()
+			.map(NotificationDto::id)
+			.toList();
+		notificationRepository.updateStatusByIds(notificationIds, Notification.Status.READ);
+
+		return notificationResponse;
+	}
+
+	private NotificationResponse getNotificationResponse(final Long memberId, final int size,
 		final long startId) {
 		Member member = userService.findMemberByMemberId(memberId);
 		PageRequest pageRequest = PageRequest.of(0, size, Sort.by("id").descending());
@@ -72,7 +84,6 @@ public class NotificationService {
 			fileClient.getSignedUrl(sender.getProfileKey()));
 		String message = notification.getType()
 			.getMessageWithParameter(getMessageParameter(member.getId(), notification));
-		//TODO jjh 변수로 관리하도록 수정(entity or service layer)
 		String link = notification.getType().getLinkWithParameter(getLinkParameter(member.getId(), notification));
 
 		return NotificationDto.from(notification, message, link, senderDto);
