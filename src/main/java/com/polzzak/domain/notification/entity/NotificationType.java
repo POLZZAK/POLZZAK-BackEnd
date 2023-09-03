@@ -33,6 +33,9 @@ public enum NotificationType {
 	}
 
 	public String getLinkWithParameter(final String parameter) {
+		if (link == null) {
+			return null;
+		}
 		return String.format(this.link, parameter);
 	}
 }

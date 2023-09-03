@@ -73,6 +73,9 @@ public class FamilyMapService {
 		validateSaveFamilyRequest(requestMember, familyMapRequest.targetId());
 		Member targetMember = findMemberByMemberId(familyMapRequest.targetId());
 		familyRequestRepository.save(createFamilyRequest(requestMember, targetMember));
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(requestMember.getId(), targetMember.getId(), NotificationType.FAMILY_REQUEST,
+				null));
 	}
 
 	public List<FamilyMemberDto> getMyFamilies(final long memberId) {

@@ -47,7 +47,7 @@ public class Notification extends BaseEntity {
 		this.sender = sender;
 		this.receiver = receiver;
 		this.data = data;
-		this.status = Status.UNREAD;
+		this.status = type == NotificationType.FAMILY_REQUEST ? Status.REQUEST_FAMILY : Status.UNREAD;
 	}
 
 	public Long getRequestFamilyId() {

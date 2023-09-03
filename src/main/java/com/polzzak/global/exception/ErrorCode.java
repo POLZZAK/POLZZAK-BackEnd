@@ -13,6 +13,7 @@ public enum ErrorCode {
 	REQUEST_RESOURCE_NOT_VALID(HttpStatus.BAD_REQUEST, 410, "요청 자원이 유효하지 않습니다"),
 	OAUTH_AUTHENTICATION_FAIL(HttpStatus.UNAUTHORIZED, 411, "OAUTH2 인증에 실패했습니다"),
 	REQUIRED_REGISTER(HttpStatus.BAD_REQUEST, 412, "회원가입이 필요합니다"),
+	STAMP_BOARD_NOT_EXIST(HttpStatus.BAD_REQUEST, 413, "도장판이 존재하지 않습니다."),
 	FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 450, "파일 업로드에 실패했습니다"),
 	FIND_FILE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 451, "파일 조회에 실패했습니다"),
 	DELETE_FILE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 452, "파일 삭제에 실패했습니다");

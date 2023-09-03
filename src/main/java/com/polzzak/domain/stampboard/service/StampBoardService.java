@@ -95,7 +95,7 @@ public class StampBoardService {
 	public StampBoard getStampBoard(long stampBoardId) {
 		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeleted(stampBoardId, false);
 		if (stampBoard == null) {
-			throw new IllegalArgumentException("stamp board is deleted.");
+			throw new PolzzakException(ErrorCode.STAMP_BOARD_NOT_EXIST);
 		}
 		return stampBoard;
 	}
