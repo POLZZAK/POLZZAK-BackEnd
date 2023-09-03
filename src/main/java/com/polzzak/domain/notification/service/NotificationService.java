@@ -51,10 +51,12 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public NotificationResponse getNotificationsAndChangeStatus(final Long memberId, final int size, final long startId) {
+	public NotificationResponse getNotificationsAndChangeStatus(final Long memberId, final int size,
+		final long startId) {
 		NotificationResponse notificationResponse = getNotificationResponse(memberId, size, startId);
 
 		List<Long> notificationIds = notificationResponse.notificationDtoList().stream()
+			.filter(notificationDto -> notificationDto.type() != NotificationType.FAMILY_REQUEST)
 			.map(NotificationDto::id)
 			.toList();
 		notificationRepository.updateStatusByIds(notificationIds, Notification.Status.READ);
@@ -63,8 +65,10 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public void changeRequestNotificationStatus(final Long senderId, final Long receiverId, final Notification.Status status) {
-		notificationRepository.updateStatusBySenderAndReceiver(senderId, receiverId, status);
+	public void changeRequestNotificationStatus(final Long senderId, final Long receiverId,
+		final Notification.Status status) {
+		Long notificationId = notificationRepository.selectIdBySenderIdAndReceiverIdAndStatus(senderId, receiverId);
+		notificationRepository.updateStatusByIds(List.of(notificationId), status);
 	}
 
 	private NotificationResponse getNotificationResponse(final Long memberId, final int size,
@@ -116,7 +120,6 @@ public class NotificationService {
 		String data = notification.getData();
 
 		return switch (notification.getType()) {
-			case FAMILY_REQUEST, FAMILY_REQUEST_COMPLETE, LEVEL_UP, LEVEL_DOWN -> null;
 			case STAMP_REQUEST, STAMP_BOARD_COMPLETE, CREATED_STAMP_BOARD, ISSUED_COUPON -> {
 				StampBoard stampBoard = stampBoardService.getStampBoard(Long.parseLong(data));
 				yield String.valueOf(stampBoard.getId());

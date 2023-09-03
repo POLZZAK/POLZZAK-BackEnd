@@ -120,8 +120,7 @@ public class MemberPointTransactionEventHandler {
 		if (diff > 0) {
 			eventPublisher.publishEvent(
 				new NotificationCreateEvent(null, memberId, NotificationType.LEVEL_UP, diff + "계단"));
-		}
-		else if (diff < 0) {
+		} else if (diff < 0) {
 			eventPublisher.publishEvent(
 				new NotificationCreateEvent(null, memberId, NotificationType.LEVEL_DOWN, diff + "계단"));
 		}
