@@ -62,6 +62,11 @@ public class NotificationService {
 		return notificationResponse;
 	}
 
+	@Transactional
+	public void changeRequestNotificationStatus(final Long senderId, final Long receiverId, final Notification.Status status) {
+		notificationRepository.updateStatusBySenderAndReceiver(senderId, receiverId, status);
+	}
+
 	private NotificationResponse getNotificationResponse(final Long memberId, final int size,
 		final long startId) {
 		Member member = userService.findMemberByMemberId(memberId);
@@ -103,6 +108,7 @@ public class NotificationService {
 				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
 				yield coupon.reward();
 			}
+			default -> null;
 		};
 	}
 
@@ -119,6 +125,7 @@ public class NotificationService {
 				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
 				yield String.valueOf(coupon.couponId());
 			}
+			default -> null;
 		};
 	}
 }

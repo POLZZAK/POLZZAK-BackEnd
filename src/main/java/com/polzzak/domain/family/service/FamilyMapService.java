@@ -121,6 +121,8 @@ public class FamilyMapService {
 	@Transactional
 	public void rejectFamilyRequest(final long memberId, final Long targetId) {
 		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, memberId);
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(memberId, targetId, NotificationType.FAMILY_REQUEST_REJECT, null));
 	}
 
 	@Transactional
