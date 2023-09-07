@@ -44,7 +44,7 @@ class NotificationControllerTest extends ControllerTestHelper {
 	@Test
 	@DisplayName("알림 목록 조회 테스트")
 	void getNotificationsTest() throws Exception {
-		when(notificationService.getNotificationResponse(anyLong(), anyInt(), anyLong())).thenReturn(
+		when(notificationService.getNotificationsAndChangeStatus(anyLong(), anyInt(), anyLong())).thenReturn(
 			NotificationFixtures.NOTIFICATION_RESPONSE);
 
 		mockMvc.perform(

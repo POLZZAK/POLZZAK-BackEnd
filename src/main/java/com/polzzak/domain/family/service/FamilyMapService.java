@@ -107,7 +107,7 @@ public class FamilyMapService {
 		familyMapRepository.save(createFamilyMap(requestMember, targetMember));
 		eventPublisher.publishEvent(new FamilyMapCreatedEvent(List.of(requestMember, targetMember)));
 		eventPublisher.publishEvent(
-			new NotificationCreateEvent(memberId, targetId, NotificationType.FAMILY_REQUEST_COMPLETE, null));
+			new NotificationCreateEvent(targetId, memberId, NotificationType.FAMILY_REQUEST_COMPLETE, null));
 	}
 
 	@Transactional
@@ -121,6 +121,8 @@ public class FamilyMapService {
 	@Transactional
 	public void rejectFamilyRequest(final long memberId, final Long targetId) {
 		familyRequestRepository.deleteBySenderIdAndReceiverId(targetId, memberId);
+		eventPublisher.publishEvent(
+			new NotificationCreateEvent(targetId, memberId, NotificationType.FAMILY_REQUEST_REJECT, null));
 	}
 
 	@Transactional

@@ -50,7 +50,28 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
-	public NotificationResponse getNotificationResponse(final Long memberId, final int size,
+	@Transactional
+	public NotificationResponse getNotificationsAndChangeStatus(final Long memberId, final int size,
+		final long startId) {
+		NotificationResponse notificationResponse = getNotificationResponse(memberId, size, startId);
+
+		List<Long> notificationIds = notificationResponse.notificationDtoList().stream()
+			.filter(notificationDto -> notificationDto.type() != NotificationType.FAMILY_REQUEST)
+			.map(NotificationDto::id)
+			.toList();
+		notificationRepository.updateStatusByIds(notificationIds, Notification.Status.READ);
+
+		return notificationResponse;
+	}
+
+	@Transactional
+	public void changeRequestNotificationStatus(final Long senderId, final Long receiverId,
+		final Notification.Status status) {
+		Long notificationId = notificationRepository.selectIdBySenderIdAndReceiverIdAndStatus(senderId, receiverId);
+		notificationRepository.updateStatusByIds(List.of(notificationId), status);
+	}
+
+	private NotificationResponse getNotificationResponse(final Long memberId, final int size,
 		final long startId) {
 		Member member = userService.findMemberByMemberId(memberId);
 		PageRequest pageRequest = PageRequest.of(0, size, Sort.by("id").descending());
@@ -72,7 +93,6 @@ public class NotificationService {
 			fileClient.getSignedUrl(sender.getProfileKey()));
 		String message = notification.getType()
 			.getMessageWithParameter(getMessageParameter(member.getId(), notification));
-		//TODO jjh 변수로 관리하도록 수정(entity or service layer)
 		String link = notification.getType().getLinkWithParameter(getLinkParameter(member.getId(), notification));
 
 		return NotificationDto.from(notification, message, link, senderDto);
@@ -92,6 +112,7 @@ public class NotificationService {
 				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
 				yield coupon.reward();
 			}
+			default -> null;
 		};
 	}
 
@@ -99,7 +120,6 @@ public class NotificationService {
 		String data = notification.getData();
 
 		return switch (notification.getType()) {
-			case FAMILY_REQUEST, FAMILY_REQUEST_COMPLETE, LEVEL_UP, LEVEL_DOWN -> null;
 			case STAMP_REQUEST, STAMP_BOARD_COMPLETE, CREATED_STAMP_BOARD, ISSUED_COUPON -> {
 				StampBoard stampBoard = stampBoardService.getStampBoard(Long.parseLong(data));
 				yield String.valueOf(stampBoard.getId());
@@ -108,6 +128,7 @@ public class NotificationService {
 				CouponDto coupon = couponService.getCoupon(memberId, Long.parseLong(data));
 				yield String.valueOf(coupon.couponId());
 			}
+			default -> null;
 		};
 	}
 }
