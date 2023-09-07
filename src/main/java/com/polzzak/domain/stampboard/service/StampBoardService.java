@@ -38,6 +38,7 @@ import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.exception.PolzzakException;
+import com.polzzak.global.infra.file.FileClient;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +49,7 @@ public class StampBoardService {
 
 	private final UserService userService;
 	private final FamilyMapService familyMapService;
+	private final FileClient fileClient;
 	private final StampBoardRepository stampBoardRepository;
 	private final MissionRepository missionRepository;
 	private final MissionRequestRepository missionRequestRepository;
@@ -74,7 +76,9 @@ public class StampBoardService {
 			throw new PolzzakException(ErrorCode.FORBIDDEN);
 		}
 
-		return StampBoardDto.from(stampBoard);
+		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
+		String profileUrl = fileClient.getSignedUrl(kid.getProfileKey());
+		return StampBoardDto.from(stampBoard, kid, profileUrl);
 	}
 
 	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(final String username, final Long partnerMemberId,
@@ -116,7 +120,7 @@ public class StampBoardService {
 
 		updateMissions(stampBoard, stampBoard.getMissions(), stampBoardUpdateRequest.missions());
 
-		return StampBoardDto.from(stampBoard);
+		return getStampBoardDto(member, stampBoardId);
 	}
 
 	@Transactional
