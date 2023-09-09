@@ -42,8 +42,8 @@
 | `412 REQUIRED_REGISTER`
 | Register is required
 
-| `413 STAMP_BOARD_NOT_EXIST`
-| StampBoard is not Exist.
+| `413 TARGET_NOT_EXIST`
+| Target is not Exist.
 
 | `431 ACCESS_TOKEN_INVALID`
 | AccessToken is invalid

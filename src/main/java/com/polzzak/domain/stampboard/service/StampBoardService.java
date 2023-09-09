@@ -99,7 +99,7 @@ public class StampBoardService {
 	public StampBoard getStampBoard(long stampBoardId) {
 		StampBoard stampBoard = stampBoardRepository.findByIdAndIsDeleted(stampBoardId, false);
 		if (stampBoard == null) {
-			throw new PolzzakException(ErrorCode.STAMP_BOARD_NOT_EXIST);
+			throw new PolzzakException(ErrorCode.TARGET_NOT_EXIST);
 		}
 		return stampBoard;
 	}

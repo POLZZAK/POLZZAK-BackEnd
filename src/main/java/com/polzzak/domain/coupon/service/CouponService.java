@@ -69,6 +69,9 @@ public class CouponService {
 	public CouponDto getCoupon(final Long memberId, final long couponId) {
 		Member member = userService.findMemberByMemberId(memberId);
 		Coupon coupon = couponRepository.getReferenceById(couponId);
+		if (coupon == null) {
+			throw new PolzzakException(ErrorCode.TARGET_NOT_EXIST);
+		}
 		validateCouponOwner(coupon, member);
 
 		MemberResponse guardianResponse = userService.getMemberResponse(coupon.getGuardian().getId());
