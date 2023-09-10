@@ -68,7 +68,7 @@ public class CouponService {
 
 	public CouponDto getCoupon(final Long memberId, final long couponId) {
 		Member member = userService.findMemberByMemberId(memberId);
-		Coupon coupon = couponRepository.getReferenceById(couponId);
+		Coupon coupon = couponRepository.findById(couponId).orElse(null);
 		if (coupon == null) {
 			throw new PolzzakException(ErrorCode.TARGET_NOT_EXIST);
 		}
@@ -125,9 +125,9 @@ public class CouponService {
 	private List<Coupon> getCoupons(final Member member, final long familyMemberId,
 		final Coupon.CouponState couponState) {
 		if (member.isKid()) {
-			return couponRepository.findByGuardianIdAndState(familyMemberId, couponState);
+			return couponRepository.findByGuardianIdAndKidIdAndState(familyMemberId, member.getId(), couponState);
 		}
-		return couponRepository.findByKidIdAndState(familyMemberId, couponState);
+		return couponRepository.findByGuardianIdAndKidIdAndState(member.getId(), familyMemberId, couponState);
 	}
 
 	private void validateCouponOwner(final Coupon coupon, final Member member) {
