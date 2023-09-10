@@ -555,3 +555,9 @@ operation::ranking-controller-test/get-kid-ranking-summaries[snippets='http-requ
 === *1-1* 성공
 
 operation::notification/notifications-get-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+
+== *2. 알림 삭제 API*
+
+=== *1-1* 성공
+
+operation::notification/notifications-delete-success[snippets='http-request,request-headers,query-parameters,http-response']

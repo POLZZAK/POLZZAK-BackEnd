@@ -1,5 +1,6 @@
 package com.polzzak.domain.notification.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -69,6 +70,22 @@ public class NotificationService {
 		final Notification.Status status) {
 		Long notificationId = notificationRepository.selectIdBySenderIdAndReceiverIdAndStatus(senderId, receiverId);
 		notificationRepository.updateStatusByIds(List.of(notificationId), status);
+	}
+
+	@Transactional
+	public void deleteNotifications(List<Long> notificationIds) {
+		List<Notification> notifications = notificationRepository.findByIdIn(notificationIds);
+		List<Long> filteredNotificationIds = notifications.stream()
+			.filter(notification -> notification.getType() != NotificationType.FAMILY_REQUEST
+				|| notification.getStatus() != Notification.Status.REQUEST_FAMILY)
+			.map(Notification::getId)
+			.toList();
+
+		if (filteredNotificationIds.isEmpty()) {
+			return;
+		}
+
+		notificationRepository.deleteByIdIn(filteredNotificationIds);
 	}
 
 	private NotificationResponse getNotificationResponse(final Long memberId, final int size,
