@@ -28,4 +28,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 		LIMIT 1""")
 	Long selectIdBySenderIdAndReceiverIdAndStatus(@Param("senderId") Long senderId,
 		@Param("receiverId") Long receiverId);
+
+	List<Notification> findByIdIn(List<Long> ids);
+
+	void deleteByIdIn(List<Long> ids);
 }

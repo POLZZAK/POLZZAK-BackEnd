@@ -1,6 +1,8 @@
 package com.polzzak.domain.notification.controller;
 
 import static com.polzzak.support.CouponFixtures.*;
+import static com.polzzak.support.StampFixtures.*;
+import static com.polzzak.support.StampFixtures.GUARDIAN;
 import static com.polzzak.support.TokenFixtures.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -83,4 +85,24 @@ class NotificationControllerTest extends ControllerTestHelper {
 				)));
 	}
 
+	@Test
+	@DisplayName("알림 삭제 테스트")
+	void deleteNotificationTest() throws Exception {
+		doNothing().when(notificationService).deleteNotifications(anyList());
+
+		mockMvc.perform(
+				delete(BASE_URL)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON)
+					.param("notificationIds", "1,2,3"))
+			.andDo(print())
+			.andExpect(status().isNoContent())
+			.andDo(document("notification/notifications-delete-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				queryParameters(
+					parameterWithName("notificationIds").description("삭제 요청 알림 ID").optional()
+				)));
+	}
 }
