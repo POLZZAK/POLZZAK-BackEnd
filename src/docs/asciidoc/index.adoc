@@ -210,6 +210,12 @@ operation::auth-rest-controller-test/user-valid-nickname-duplication[snippets='h
 
 operation::user-rest-controller-test/user-get-info-success[snippets='http-request,request-headers,http-response,response-fields']
 
+== *2. 사용자 프로필 변경 API*
+
+=== *2-1* 성공
+
+operation::user-rest-controller-test/user-update-profile-success[snippets='http-request,request-headers,request-parts,http-response']
+
 [[Family-API]]
 = *Family API*
 

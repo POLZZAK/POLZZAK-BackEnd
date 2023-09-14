@@ -1,18 +1,31 @@
 package com.polzzak.domain.user.controller;
 
-import static com.polzzak.support.TokenFixtures.*;
-import static com.polzzak.support.UserFixtures.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.polzzak.support.TokenFixtures.TOKEN_TYPE;
+import static com.polzzak.support.TokenFixtures.USER_ACCESS_TOKEN;
+import static com.polzzak.support.UserFixtures.MEMBER_RESPONSE;
+import static com.polzzak.support.UserFixtures.TEST_MEMBER_ID;
+import static com.polzzak.support.UserFixtures.TEST_PREV_PROFILE_KEY;
+import static com.polzzak.support.UserFixtures.TEST_PROFILE;
+import static com.polzzak.support.UserFixtures.TEST_PROFILE_KEY;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.test.ControllerTestHelper;
@@ -49,6 +62,35 @@ class UserRestControllerTest extends ControllerTestHelper {
 						fieldWithPath("data.memberType.detail").description("타입 세부 내용"),
 						fieldWithPath("data.profileUrl").description("프로필 Url"),
 						fieldWithPath("data.familyCount").description("연동된 가족 수")
+					)
+				)
+			);
+	}
+
+	@Test
+	void 사용자_프로필_변경_성공() throws Exception {
+		when(userService.uploadProfile(any())).thenReturn(TEST_PROFILE_KEY);
+		when(userService.updateMemberProfile(TEST_MEMBER_ID, TEST_PROFILE_KEY)).thenReturn(TEST_PREV_PROFILE_KEY);
+		doNothing().when(userService).deleteProfile(TEST_PREV_PROFILE_KEY);
+		mockMvc.perform(
+				multipart("/api/v1/users/profile")
+					.file(TEST_PROFILE)
+					.contentType(MediaType.MULTIPART_FORM_DATA)
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.with(request -> {
+						request.setMethod("PATCH");
+						return request;
+					})
+			)
+			.andExpect(status().isNoContent())
+			.andDo(
+				document(
+					"{class-name}/user-update-profile-success",
+					requestHeaders(
+						headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+					),
+					requestParts(
+						partWithName("profile").description("수정할 사용자 프로필")
 					)
 				)
 			);
