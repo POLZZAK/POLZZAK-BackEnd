@@ -2,6 +2,7 @@ package com.polzzak.domain.user.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.polzzak.domain.family.repository.FamilyMapRepository;
 import com.polzzak.domain.memberpoint.entity.MemberPoint;
@@ -11,6 +12,7 @@ import com.polzzak.domain.user.dto.MemberResponse;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.domain.user.repository.UserRepository;
+import com.polzzak.global.common.FileType;
 import com.polzzak.global.exception.ErrorCode;
 import com.polzzak.global.exception.PolzzakException;
 import com.polzzak.global.infra.file.FileClient;
@@ -79,6 +81,22 @@ public class UserService {
 	public Member findMemberByMemberIdWithMemberType(final Long memberId) {
 		return memberRepository.findByIdWithMemberTypeDetail(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+	}
+
+	@Transactional
+	public String updateMemberProfile(final Long memberId, final String profileKey) {
+		final Member member = findMemberByMemberId(memberId);
+		final String prevProfileKey = member.getProfileKey();
+		member.changeProfileKey(profileKey);
+		return prevProfileKey;
+	}
+
+	public String uploadProfile(final MultipartFile profile) {
+		return fileClient.uploadFile(profile, FileType.PROFILE_IMAGE);
+	}
+
+	public void deleteProfile(final String prevProfileKey) {
+		fileClient.deleteFile(prevProfileKey);
 	}
 
 	private int getFamilyCount(final Member requestMember) {

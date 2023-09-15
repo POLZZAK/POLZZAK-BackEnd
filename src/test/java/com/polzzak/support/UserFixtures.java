@@ -21,6 +21,8 @@ public class UserFixtures {
 	public static final Long TEST_TARGET_MEMBER_ID = 1L;
 	public static final String TEST_USERNAME = "username";
 	public static final String TEST_NICKNAME = "nickname";
+	public static final String TEST_PROFILE_KEY = "testProfileKey";
+	public static final String TEST_PREV_PROFILE_KEY = "testPrevProfileKey";
 	public static final String TEST_PROFILE_URL = "profileUrl";
 	public static final String TEST_OAUTH_ACCESS_TOKEN = "oAuthAccessToken";
 	public static final String TEST_USER_ROLE = UserRole.ROLE_USER.name();

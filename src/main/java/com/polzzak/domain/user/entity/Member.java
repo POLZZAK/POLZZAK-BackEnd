@@ -42,4 +42,8 @@ public class Member extends BaseModifiableEntity {
 	public boolean isGuardian() {
 		return memberType.isGuardianType();
 	}
+
+	public void changeProfileKey(final String profileKey) {
+		this.profileKey = profileKey;
+	}
 }
