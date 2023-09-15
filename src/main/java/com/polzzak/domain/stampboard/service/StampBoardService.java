@@ -283,7 +283,7 @@ public class StampBoardService {
 			return families;
 		}
 		return families.stream()
-			.filter(family -> family.memberId() == partnerMemberId)
+			.filter(family -> Objects.equals(family.memberId(), partnerMemberId))
 			.toList();
 	}
 
