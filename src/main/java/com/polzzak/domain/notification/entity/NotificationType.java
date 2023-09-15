@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum NotificationType {
 	FAMILY_REQUEST("\uD83D\uDC8C 연동 요청", "연동 요청", "%s님이 회원님께 연동 요청을 보냈어요", null),
-	FAMILY_REQUEST_COMPLETE("\uD83E\uDD1D\uD83C\uDFFB 연동 완료", "연동 완료", "%s님과 연동이 완료되었어요! 도장판을 만들러 가볼까요? :)", null),
+	FAMILY_REQUEST_COMPLETE("\uD83E\uDD1D\uD83C\uDFFB 연동 완료", "연동 완료", "%s님과 연동이 완료되었어요! 도장판을 만들러 가볼까요? :)", "home"),
 	FAMILY_REQUEST_REJECT("연동 실패", null, null, null),
 	LEVEL_UP("레벨 상승", "\uD83E\uDD73 레벨 UP", "폴짝! %s으로 올라갔어요!", "my-page"),
 	LEVEL_DOWN("레벨 하락", "\uD83D\uDEA8 레벨 DOWN", "조심! %s으로 내려왔어요", "my-page"),
