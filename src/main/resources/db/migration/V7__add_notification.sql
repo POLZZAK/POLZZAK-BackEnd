@@ -2,6 +2,8 @@ CREATE TABLE `notification` (
                                 `id` bigint NOT NULL,
                                 `title` varchar(50) NOT NULL,
                                 `content` varchar(200) NOT NULL,
+                                `status` varchar(200) NOT NULL,
+                                `type`   varchar(200) NOT NULL,
                                 `sender_id` bigint DEFAULT NULL,
                                 `receiver_id` bigint NOT NULL,
                                 `data` text,

@@ -10,10 +10,11 @@ public record GuardianRankingSummaryDto(
 	int point,
 	int level,
 	String memberTypeDetail,
-	String profileUrl
+	String profileUrl,
+	boolean isMe
 ) {
 	public static GuardianRankingSummaryDto of(final GuardianRankingSummary guardianRankingSummary,
-		final String profileUrl) {
+		final String profileUrl, final boolean isMe) {
 		return new GuardianRankingSummaryDto(
 			guardianRankingSummary.getRanking(),
 			guardianRankingSummary.getRankingStatus(),
@@ -21,7 +22,8 @@ public record GuardianRankingSummaryDto(
 			guardianRankingSummary.getPoint(),
 			guardianRankingSummary.getLevel(),
 			guardianRankingSummary.getMemberTypeDetail(),
-			profileUrl
+			profileUrl,
+			isMe
 		);
 	}
 }

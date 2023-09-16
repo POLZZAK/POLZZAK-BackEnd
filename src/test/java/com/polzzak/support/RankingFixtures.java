@@ -6,19 +6,31 @@ import com.polzzak.domain.ranking.dto.GuardianRankingSummaryDto;
 import com.polzzak.domain.ranking.dto.KidRankingSummaryDto;
 import com.polzzak.domain.ranking.dto.RakingSummaryListResponse;
 import com.polzzak.domain.ranking.entity.RankingStatus;
+import com.polzzak.domain.user.dto.MemberPointDto;
+import com.polzzak.domain.user.dto.MemberSimpleResponse;
+import com.polzzak.domain.user.dto.MemberTypeDto;
 
 public class RankingFixtures {
 	public static final RakingSummaryListResponse GUARDIAN_RANKING_SUMMARY_LIST_RESPONSE;
 	public static final RakingSummaryListResponse KID_RANKING_SUMMARY_LIST_RESPONSE;
+	public static final MemberSimpleResponse TEST_GUARDIAN_MEMBER_SIMPLE_RESPONSE;
+	public static final MemberSimpleResponse TEST_KID_MEMBER_SIMPLE_RESPONSE;
 
 	static {
-		GUARDIAN_RANKING_SUMMARY_LIST_RESPONSE = new RakingSummaryListResponse(List.of(
-			new GuardianRankingSummaryDto(1, RankingStatus.UP, "guardianNickname1", 300, 3, "삼촌", "profileUrl1"),
-			new GuardianRankingSummaryDto(2, RankingStatus.UP, "guardianNickname2", 200, 2, "엄마", "profileUrl2"))
-		);
-		KID_RANKING_SUMMARY_LIST_RESPONSE = new RakingSummaryListResponse(List.of(
-			new KidRankingSummaryDto(1, RankingStatus.UP, "kidNickname1", 300, 3, "profileUrl1"),
-			new KidRankingSummaryDto(2, RankingStatus.UP, "kidNickname2", 200, 2, "profileUrl2"))
+		TEST_GUARDIAN_MEMBER_SIMPLE_RESPONSE = new MemberSimpleResponse(0L, "guardianNickname1",
+			new MemberPointDto(300, 3),
+			new MemberTypeDto("보호자", "삼촌"), "testProfileUrl");
+		TEST_KID_MEMBER_SIMPLE_RESPONSE = new MemberSimpleResponse(0L, "kidNickname1", new MemberPointDto(300, 3),
+			new MemberTypeDto("아이", "아이"), "testProfileUrl");
+		GUARDIAN_RANKING_SUMMARY_LIST_RESPONSE = new RakingSummaryListResponse(TEST_GUARDIAN_MEMBER_SIMPLE_RESPONSE,
+			List.of(
+				new GuardianRankingSummaryDto(1, RankingStatus.UP, "guardianNickname1", 300, 3, "삼촌", "profileUrl1",
+					true),
+				new GuardianRankingSummaryDto(2, RankingStatus.UP, "guardianNickname2", 200, 2, "엄마", "profileUrl2",
+					false)));
+		KID_RANKING_SUMMARY_LIST_RESPONSE = new RakingSummaryListResponse(TEST_KID_MEMBER_SIMPLE_RESPONSE, List.of(
+			new KidRankingSummaryDto(1, RankingStatus.UP, "kidNickname1", 300, 3, "profileUrl1", true),
+			new KidRankingSummaryDto(2, RankingStatus.UP, "kidNickname2", 200, 2, "profileUrl2", false))
 		);
 	}
 }
