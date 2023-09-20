@@ -12,6 +12,7 @@ import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.dto.MemberResponse;
 import com.polzzak.domain.user.dto.MemberTypeDto;
 import com.polzzak.domain.user.dto.RegisterRequest;
+import com.polzzak.domain.user.dto.UpdateNicknameRequest;
 import com.polzzak.domain.user.dto.UserDto;
 import com.polzzak.domain.user.entity.SocialType;
 import com.polzzak.domain.user.entity.UserRole;
@@ -21,6 +22,7 @@ public class UserFixtures {
 	public static final Long TEST_TARGET_MEMBER_ID = 1L;
 	public static final String TEST_USERNAME = "username";
 	public static final String TEST_NICKNAME = "nickname";
+	public static final String TEST_UPDATE_NICKNAME = "updateNickname";
 	public static final String TEST_PROFILE_KEY = "testProfileKey";
 	public static final String TEST_PREV_PROFILE_KEY = "testPrevProfileKey";
 	public static final String TEST_PROFILE_URL = "profileUrl";
@@ -41,4 +43,5 @@ public class UserFixtures {
 		TEST_MEMBER_POINT_DTO, MEMBER_GUARDIAN_TYPE_DTO, TEST_PROFILE_URL, FAMILY_DEFAULT_COUNT);
 	public static final String TEST_SOCIAL_TYPE = "kakao";
 	public static final UserDto USER_DTO = new UserDto(TEST_MEMBER_ID, TEST_USER_ROLE);
+	public static final UpdateNicknameRequest UPDATE_NICKNAME_REQUEST = new UpdateNicknameRequest(TEST_UPDATE_NICKNAME);
 }

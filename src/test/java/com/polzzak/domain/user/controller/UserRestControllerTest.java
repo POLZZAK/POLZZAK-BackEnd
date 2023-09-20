@@ -7,6 +7,7 @@ import static com.polzzak.support.UserFixtures.TEST_MEMBER_ID;
 import static com.polzzak.support.UserFixtures.TEST_PREV_PROFILE_KEY;
 import static com.polzzak.support.UserFixtures.TEST_PROFILE;
 import static com.polzzak.support.UserFixtures.TEST_PROFILE_KEY;
+import static com.polzzak.support.UserFixtures.UPDATE_NICKNAME_REQUEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -15,7 +16,9 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
@@ -91,6 +94,29 @@ class UserRestControllerTest extends ControllerTestHelper {
 					),
 					requestParts(
 						partWithName("profile").description("수정할 사용자 프로필")
+					)
+				)
+			);
+	}
+
+	@Test
+	void 사용자_닉네임_변경_성공() throws Exception {
+		doNothing().when(userService).updateNickname(any(), any());
+		mockMvc.perform(
+				patch("/api/v1/users/nickname")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectToString(UPDATE_NICKNAME_REQUEST))
+			)
+			.andExpectAll(status().isNoContent())
+			.andDo(
+				document(
+					"{class-name}/user-update-nickname-success",
+					requestHeaders(
+						headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+					),
+					requestFields(
+						fieldWithPath("nickname").description("수정할 닉네임")
 					)
 				)
 			);
