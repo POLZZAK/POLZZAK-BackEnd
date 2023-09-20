@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.polzzak.domain.memberpoint.service.MemberPointService;
 import com.polzzak.domain.membertype.entity.MemberTypeDetail;
 import com.polzzak.domain.membertype.service.MemberTypeDetailService;
+import com.polzzak.domain.notification.service.NotificationService;
 import com.polzzak.domain.user.dto.LoginRequest;
 import com.polzzak.domain.user.dto.OAuthUserInfoResponse;
 import com.polzzak.domain.user.dto.RegisterRequest;
@@ -46,13 +47,15 @@ public class AuthenticationService {
 	private final TokenProvider tokenProvider;
 	private final KakaoOAuthProperties kakaoOAuthProperties;
 	private final GoogleOAuthProperties googleOAuthProperties;
+	private final NotificationService notificationService;
 
 	private final String defaultProfileKey = "profile/default_profile.png";
 
 	public AuthenticationService(final UserRepository userRepository, final WebClient webClient,
 		final FileClient fileClient, final MemberTypeDetailService memberTypeDetailService,
 		final MemberPointService memberPointService, final TokenProvider tokenProvider,
-		final KakaoOAuthProperties kakaoOAuthProperties, final GoogleOAuthProperties googleOAuthProperties) {
+		final KakaoOAuthProperties kakaoOAuthProperties, final GoogleOAuthProperties googleOAuthProperties,
+		final NotificationService notificationService) {
 		this.userRepository = userRepository;
 		this.memberPointService = memberPointService;
 		this.webClient = webClient;
@@ -61,6 +64,7 @@ public class AuthenticationService {
 		this.tokenProvider = tokenProvider;
 		this.kakaoOAuthProperties = kakaoOAuthProperties;
 		this.googleOAuthProperties = googleOAuthProperties;
+		this.notificationService = notificationService;
 	}
 
 	public String getSocialUsername(final LoginRequest loginRequest, final String social) {
@@ -84,6 +88,7 @@ public class AuthenticationService {
 		Member member = createMember(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey));
 		User saveUser = userRepository.save(createUser(registerRequest, member));
 		memberPointService.saveMemberPoint(saveUser.getMember());
+		notificationService.createNotificationSetting(member.getId());
 		return new TokenPayload(saveUser.getId().toString(), saveUser.getUsername(), saveUser.getUserRole().toString());
 	}
 

@@ -1,7 +1,6 @@
 package com.polzzak.domain.notification.controller;
 
 import static com.polzzak.support.CouponFixtures.*;
-import static com.polzzak.support.StampFixtures.*;
 import static com.polzzak.support.StampFixtures.GUARDIAN;
 import static com.polzzak.support.TokenFixtures.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -103,6 +102,67 @@ class NotificationControllerTest extends ControllerTestHelper {
 				),
 				queryParameters(
 					parameterWithName("notificationIds").description("삭제 요청 알림 ID")
+				)));
+	}
+
+	@Test
+	@DisplayName("알림 설정 조회 테스트")
+	void getNotificationSettings() throws Exception {
+		when(notificationService.getNotificationSetting(anyLong())).thenReturn(
+			NotificationFixtures.NOTIFICATION_SETTING_DTO);
+
+		mockMvc.perform(
+				get(BASE_URL + "/settings")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("notification/settings-get-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				responseFields(
+					fieldWithPath("code").description("응답 코드"),
+					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("data").description("응답 데이터"),
+					fieldWithPath("data.familyRequest").description("연동 알림"),
+					fieldWithPath("data.level").description("레벨 알림"),
+					fieldWithPath("data.stampRequest").description("도장 요청 알림"),
+					fieldWithPath("data.stampBoardComplete").description("도장판 완성 알림"),
+					fieldWithPath("data.rewardRequest").description("선물 조르기 알림"),
+					fieldWithPath("data.rewarded").description("선물 전달 확인 알림"),
+					fieldWithPath("data.rewardFail").description("선물 약속 미이행 알림"),
+					fieldWithPath("data.createdStampBoard").description("새로운 도장판 알림"),
+					fieldWithPath("data.issuedCoupon").description("쿠폰 발급 알림")
+				)));
+	}
+
+	@Test
+	@DisplayName("알림 설정 수정 테스트")
+	void updateNotificationSettings() throws Exception {
+		doNothing().when(notificationService).updateNotificationSetting(anyLong(), any());
+
+		mockMvc.perform(
+				patch(BASE_URL + "/settings")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectToString(NotificationFixtures.UPDATE_NOTIFICATION_SETTING)))
+			.andDo(print())
+			.andExpect(status().isNoContent())
+			.andDo(document("notification/settings-update-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				requestFields(
+					fieldWithPath("familyRequest").description("연동 알림"),
+					fieldWithPath("level").description("레벨 알림"),
+					fieldWithPath("stampRequest").description("도장 요청 알림"),
+					fieldWithPath("stampBoardComplete").description("도장판 완성 알림"),
+					fieldWithPath("rewardRequest").description("선물 조르기 알림"),
+					fieldWithPath("rewarded").description("선물 전달 확인 알림"),
+					fieldWithPath("rewardFail").description("선물 약속 미이행 알림"),
+					fieldWithPath("createdStampBoard").description("새로운 도장판 알림"),
+					fieldWithPath("issuedCoupon").description("쿠폰 발급 알림")
 				)));
 	}
 }

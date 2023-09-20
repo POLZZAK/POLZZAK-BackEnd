@@ -576,3 +576,17 @@ operation::notification/notifications-get-success[snippets='http-request,request
 === *1-1* 성공
 
 operation::notification/notifications-delete-success[snippets='http-request,request-headers,query-parameters,http-response']
+
+== *3. 알림 설정 조회 API*
+
+=== *1-1* 성공
+
+operation::notification/settings-get-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+
+== *4. 알림 설정 수정 조회 API*
+
+단건 업데이트는 1개의 property만 보내도 됩니다.
+
+=== *1-1* 성공
+
+operation::notification/settings-update-success[snippets='http-request,request-headers,request-fields,http-response']

@@ -6,17 +6,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.notification.dto.NotificationResponse;
+import com.polzzak.domain.notification.dto.NotificationSettingDto;
+import com.polzzak.domain.notification.dto.UpdateNotificationSetting;
 import com.polzzak.domain.notification.service.NotificationService;
-import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.security.LoginId;
-import com.polzzak.global.security.LoginUsername;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,9 +41,21 @@ public class NotificationController {
 
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<Void>> deleteNotifications(
-		@RequestParam List<Long> notificationIds
+		@RequestParam final List<Long> notificationIds
 	) {
 		notificationService.deleteNotifications(notificationIds);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@GetMapping("/settings")
+	public ResponseEntity<ApiResponse<NotificationSettingDto>> getNotificationSettings(final @LoginId Long memberId) {
+		return ResponseEntity.ok(ApiResponse.ok(notificationService.getNotificationSetting(memberId)));
+	}
+
+	@PatchMapping("/settings")
+	public ResponseEntity<Void> updateNotificationSettings(final @LoginId Long memberId,
+		final @RequestBody UpdateNotificationSetting updateNotificationSetting) {
+		notificationService.updateNotificationSetting(memberId, updateNotificationSetting);
+		return ResponseEntity.noContent().build();
 	}
 }

@@ -1,6 +1,5 @@
 package com.polzzak.domain.notification.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +13,13 @@ import com.polzzak.domain.coupon.service.CouponService;
 import com.polzzak.domain.notification.dto.MemberDtoForNotification;
 import com.polzzak.domain.notification.dto.NotificationDto;
 import com.polzzak.domain.notification.dto.NotificationResponse;
+import com.polzzak.domain.notification.dto.NotificationSettingDto;
+import com.polzzak.domain.notification.dto.UpdateNotificationSetting;
 import com.polzzak.domain.notification.entity.Notification;
+import com.polzzak.domain.notification.entity.NotificationSetting;
 import com.polzzak.domain.notification.entity.NotificationType;
 import com.polzzak.domain.notification.repository.NotificationRepository;
+import com.polzzak.domain.notification.repository.NotificationSettingRepository;
 import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.stampboard.service.StampBoardService;
 import com.polzzak.domain.user.entity.Member;
@@ -35,6 +38,7 @@ public class NotificationService {
 	private final CouponService couponService;
 	private final FileClient fileClient;
 	private final NotificationRepository notificationRepository;
+	private final NotificationSettingRepository notificationSettingRepository;
 
 	@Transactional
 	public void addNotification(final Long senderId, final Long receiverId, final NotificationType type,
@@ -73,7 +77,7 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public void deleteNotifications(List<Long> notificationIds) {
+	public void deleteNotifications(final List<Long> notificationIds) {
 		List<Notification> notifications = notificationRepository.findByIdIn(notificationIds);
 		List<Long> filteredNotificationIds = notifications.stream()
 			.filter(notification -> notification.getType() != NotificationType.FAMILY_REQUEST
@@ -86,6 +90,30 @@ public class NotificationService {
 		}
 
 		notificationRepository.deleteByIdIn(filteredNotificationIds);
+	}
+
+	public NotificationSettingDto getNotificationSetting(final Long memberId) {
+		Member member = userService.findMemberByMemberId(memberId);
+		NotificationSetting notificationSetting = notificationSettingRepository.findByMember(member);
+
+		return NotificationSettingDto.from(notificationSetting);
+	}
+
+	@Transactional
+	public void createNotificationSetting(final Long memberId) {
+		Member member = userService.findMemberByMemberId(memberId);
+		NotificationSetting notificationSetting = NotificationSetting.createNotificationSetting()
+			.member(member)
+			.build();
+
+		notificationSettingRepository.save(notificationSetting);
+	}
+
+	@Transactional
+	public void updateNotificationSetting(final Long memberId,
+		final UpdateNotificationSetting updateNotificationSetting) {
+		Member member = userService.findMemberByMemberId(memberId);
+		notificationSettingRepository.findByMember(member).updateNotificationSetting(updateNotificationSetting);
 	}
 
 	private NotificationResponse getNotificationResponse(final Long memberId, final int size,
