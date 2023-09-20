@@ -75,7 +75,8 @@ public class RankingService {
 			.orElseThrow(() -> new NoSuchElementException(String.format("존재하지 않는 회원(%d)입니다.", memberId)));
 		MemberPoint memberPoint = memberPointRepository.findById(memberId).orElseThrow(() -> new NoSuchElementException(
 			String.format("존재하지 않는 회원(%d)의 포인트 정보입니다.", memberId)));
+		int myRanking = memberPointRepository.getPointRankingByMemberId(memberId);
 		String profileUrl = fileClient.getSignedUrl(member.getProfileKey());
-		return MemberSimpleResponse.from(member, memberPoint, profileUrl);
+		return MemberSimpleResponse.from(member, memberPoint, profileUrl, myRanking);
 	}
 }

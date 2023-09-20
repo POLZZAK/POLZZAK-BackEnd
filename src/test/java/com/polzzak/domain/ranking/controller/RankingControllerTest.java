@@ -48,6 +48,7 @@ class RankingControllerTest extends ControllerTestHelper {
 						fieldWithPath("data.memberSimpleResponse.memberType.detail").description(
 							"본인 타입 상세"),
 						fieldWithPath("data.memberSimpleResponse.profileUrl").description("본인 프로필"),
+						fieldWithPath("data.memberSimpleResponse.myRanking").description("본인 랭킹"),
 						fieldWithPath("data.rankingSummaries[].ranking").description("사용자 랭킹"),
 						fieldWithPath("data.rankingSummaries[].rankingStatus").description("사용자 랭킹 변화"),
 						fieldWithPath("data.rankingSummaries[].nickname").description("사용자 닉네임"),
@@ -83,6 +84,7 @@ class RankingControllerTest extends ControllerTestHelper {
 						fieldWithPath("data.memberSimpleResponse.memberType.detail").description(
 							"본인 타입 상세"),
 						fieldWithPath("data.memberSimpleResponse.profileUrl").description("본인 프로필"),
+						fieldWithPath("data.memberSimpleResponse.myRanking").description("본인 랭킹"),
 						fieldWithPath("data.rankingSummaries[].ranking").description("사용자 랭킹"),
 						fieldWithPath("data.rankingSummaries[].rankingStatus").description("사용자 랭킹 변화"),
 						fieldWithPath("data.rankingSummaries[].nickname").description("사용자 닉네임"),

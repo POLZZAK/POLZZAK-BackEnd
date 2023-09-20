@@ -21,4 +21,9 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long> 
 	@Query("select mp from MemberPoint mp where mp.member.memberType.type = :memberType order by mp.point desc")
 	List<MemberPoint> findMemberPointRankings(final @Param("memberType") MemberType memberType,
 		Pageable pageable);
+
+	@Query(value = "SELECT ranking "
+		+ "FROM (SELECT member_id, RANK() OVER (ORDER BY point DESC) AS ranking FROM member_point) AS rankings "
+		+ "WHERE member_id = :memberId", nativeQuery = true)
+	int getPointRankingByMemberId(Long memberId);
 }
