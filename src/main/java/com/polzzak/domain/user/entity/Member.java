@@ -46,4 +46,8 @@ public class Member extends BaseModifiableEntity {
 	public void changeProfileKey(final String profileKey) {
 		this.profileKey = profileKey;
 	}
+
+	public void changeNickname(final String nickname) {
+		this.nickname = nickname;
+	}
 }

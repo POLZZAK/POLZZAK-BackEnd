@@ -216,6 +216,12 @@ operation::user-rest-controller-test/user-get-info-success[snippets='http-reques
 
 operation::user-rest-controller-test/user-update-profile-success[snippets='http-request,request-headers,request-parts,http-response']
 
+== *3. 사용자 닉네임 변경 API*
+
+=== *3-1* 성공
+
+operation::user-rest-controller-test/user-update-nickname-success[snippets='http-request,request-headers,request-fields,http-response']
+
 [[Family-API]]
 = *Family API*
 

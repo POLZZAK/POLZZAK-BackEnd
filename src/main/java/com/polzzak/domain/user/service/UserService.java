@@ -9,6 +9,7 @@ import com.polzzak.domain.memberpoint.entity.MemberPoint;
 import com.polzzak.domain.memberpoint.repository.MemberPointRepository;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.dto.MemberResponse;
+import com.polzzak.domain.user.dto.UpdateNicknameRequest;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.repository.MemberRepository;
 import com.polzzak.domain.user.repository.UserRepository;
@@ -97,6 +98,12 @@ public class UserService {
 
 	public void deleteProfile(final String prevProfileKey) {
 		fileClient.deleteFile(prevProfileKey);
+	}
+
+	@Transactional
+	public void updateNickname(Long memberId, UpdateNicknameRequest request) {
+		Member member = findMemberByMemberId(memberId);
+		member.changeNickname(request.nickname());
 	}
 
 	private int getFamilyCount(final Member requestMember) {
