@@ -6,6 +6,8 @@ import java.util.List;
 import com.polzzak.domain.notification.dto.MemberDtoForNotification;
 import com.polzzak.domain.notification.dto.NotificationDto;
 import com.polzzak.domain.notification.dto.NotificationResponse;
+import com.polzzak.domain.notification.dto.NotificationSettingDto;
+import com.polzzak.domain.notification.dto.UpdateNotificationSetting;
 import com.polzzak.domain.notification.entity.Notification;
 import com.polzzak.domain.notification.entity.NotificationType;
 
@@ -20,4 +22,10 @@ public class NotificationFixtures {
 	);
 	public static final NotificationResponse NOTIFICATION_RESPONSE = new NotificationResponse(null,
 		NOTIFICATION_DTO_LIST);
+
+	public static final NotificationSettingDto NOTIFICATION_SETTING_DTO = new NotificationSettingDto(true, true, true,
+		false, false, true, true, false, true);
+
+	public static final UpdateNotificationSetting UPDATE_NOTIFICATION_SETTING = new UpdateNotificationSetting(true,
+		true, true, false, false, true, true, false, true);
 }

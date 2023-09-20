@@ -1,0 +1,20 @@
+CREATE TABLE `notification_setting`
+(
+    `id`                   bigint NOT NULL AUTO_INCREMENT,
+    `member_id`            bigint NOT NULL,
+    `family_request`       tinyint DEFAULT NULL,
+    `level`                tinyint DEFAULT NULL,
+    `stamp_request`        tinyint DEFAULT NULL,
+    `stamp_board_complete` tinyint DEFAULT NULL,
+    `reward_request`       tinyint DEFAULT NULL,
+    `rewarded`             tinyint DEFAULT NULL,
+    `reward_fail`          tinyint DEFAULT NULL,
+    `created_stamp_board`  tinyint DEFAULT NULL,
+    `issued_coupon`        tinyint DEFAULT NULL,
+    `created_date`         timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+ALTER TABLE `notification`
+DROP COLUMN `title`,
+DROP COLUMN `content`;
