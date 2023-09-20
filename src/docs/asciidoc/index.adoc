@@ -579,9 +579,11 @@ operation::notification/notifications-delete-success[snippets='http-request,requ
 
 == *3. 알림 설정 조회 API*
 
+보호자/아이에 맞는 타입의 설정만 내려갑니다. 그 외에는 모두 null.
+
 === *1-1* 성공
 
-operation::notification/settings-get-success[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+operation::notification/settings-get-success[snippets='http-request,request-headers,http-response,response-fields']
 
 == *4. 알림 설정 수정 조회 API*
 

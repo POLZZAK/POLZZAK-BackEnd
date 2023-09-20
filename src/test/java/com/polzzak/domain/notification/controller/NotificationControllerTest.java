@@ -125,15 +125,15 @@ class NotificationControllerTest extends ControllerTestHelper {
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
 					fieldWithPath("data").description("응답 데이터"),
-					fieldWithPath("data.familyRequest").description("연동 알림"),
-					fieldWithPath("data.level").description("레벨 알림"),
-					fieldWithPath("data.stampRequest").description("도장 요청 알림"),
-					fieldWithPath("data.stampBoardComplete").description("도장판 완성 알림"),
-					fieldWithPath("data.rewardRequest").description("선물 조르기 알림"),
-					fieldWithPath("data.rewarded").description("선물 전달 확인 알림"),
-					fieldWithPath("data.rewardFail").description("선물 약속 미이행 알림"),
-					fieldWithPath("data.createdStampBoard").description("새로운 도장판 알림"),
-					fieldWithPath("data.issuedCoupon").description("쿠폰 발급 알림")
+					fieldWithPath("data.familyRequest").description("연동 알림").optional(),
+					fieldWithPath("data.level").description("레벨 알림").optional(),
+					fieldWithPath("data.stampRequest").description("도장 요청 알림").optional(),
+					fieldWithPath("data.stampBoardComplete").description("도장판 완성 알림").optional(),
+					fieldWithPath("data.rewardRequest").description("선물 조르기 알림").optional(),
+					fieldWithPath("data.rewarded").description("선물 전달 확인 알림").optional(),
+					fieldWithPath("data.rewardFail").description("선물 약속 미이행 알림").optional(),
+					fieldWithPath("data.createdStampBoard").description("새로운 도장판 알림").optional(),
+					fieldWithPath("data.issuedCoupon").description("쿠폰 발급 알림").optional()
 				)));
 	}
 
