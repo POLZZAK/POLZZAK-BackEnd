@@ -1,6 +1,7 @@
 package com.polzzak.domain.user.controller;
 
-import org.springframework.http.MediaType;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,14 +32,17 @@ public class UserRestController {
 		return ResponseEntity.ok(ApiResponse.ok(userService.getMemberResponse(memberId)));
 	}
 
-	@PatchMapping(path = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PatchMapping(path = "/profile")
 	public ResponseEntity<Void> updateUserProfile(
 		final @LoginId Long memberId,
-		final @RequestPart("profile") MultipartFile profile
+		final @RequestPart(value = "profile", required = false) MultipartFile profile
 	) {
-		final String profileKey = userService.uploadProfile(profile);
-		final String prevProfileKey = userService.updateMemberProfile(memberId, profileKey);
-		userService.deleteProfile(prevProfileKey);
+		String profileKey = null;
+		if (profile != null) {
+			profileKey = userService.uploadProfile(profile);
+		}
+		Optional<String> prevProfileKey = userService.updateMemberProfile(memberId, profileKey);
+		prevProfileKey.ifPresent(userService::deleteProfile);
 		return ResponseEntity.noContent().build();
 	}
 

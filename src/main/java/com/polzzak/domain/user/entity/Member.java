@@ -17,6 +17,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseModifiableEntity {
+	private static final String GUARDIAN_DEFAULT_PROFILE_KEY = "profile/guardian_default_profile.png";
+	private static final String KID_DEFAULT_PROFILE_KEY = "profile/kid_default_profile.png";
+
 
 	@Column(nullable = false, length = 10, unique = true)
 	private String nickname;
@@ -43,11 +46,25 @@ public class Member extends BaseModifiableEntity {
 		return memberType.isGuardianType();
 	}
 
+	public void changeNickname(final String nickname) {
+		this.nickname = nickname;
+	}
+
 	public void changeProfileKey(final String profileKey) {
+		if (profileKey == null && memberType.isGuardianType()) {
+			this.profileKey = GUARDIAN_DEFAULT_PROFILE_KEY;
+			return;
+		}
+
+		if (profileKey == null && memberType.isKidType()) {
+			this.profileKey = KID_DEFAULT_PROFILE_KEY;
+			return;
+		}
+
 		this.profileKey = profileKey;
 	}
 
-	public void changeNickname(final String nickname) {
-		this.nickname = nickname;
+	public boolean isDefaultProfileKey(final String profileKey) {
+		return profileKey.equals(GUARDIAN_DEFAULT_PROFILE_KEY) || profileKey.equals(KID_DEFAULT_PROFILE_KEY);
 	}
 }

@@ -1,5 +1,7 @@
 package com.polzzak.domain.user.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -85,11 +87,11 @@ public class UserService {
 	}
 
 	@Transactional
-	public String updateMemberProfile(final Long memberId, final String profileKey) {
+	public Optional<String> updateMemberProfile(final Long memberId, final String profileKey) {
 		final Member member = findMemberByMemberId(memberId);
 		final String prevProfileKey = member.getProfileKey();
 		member.changeProfileKey(profileKey);
-		return prevProfileKey;
+		return member.isDefaultProfileKey(prevProfileKey) ? Optional.empty() : Optional.of(prevProfileKey);
 	}
 
 	public String uploadProfile(final MultipartFile profile) {

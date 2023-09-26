@@ -1,7 +1,6 @@
 package com.polzzak.domain.user.service;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -49,8 +48,6 @@ public class AuthenticationService {
 	private final GoogleOAuthProperties googleOAuthProperties;
 	private final NotificationService notificationService;
 
-	private final String defaultProfileKey = "profile/default_profile.png";
-
 	public AuthenticationService(final UserRepository userRepository, final WebClient webClient,
 		final FileClient fileClient, final MemberTypeDetailService memberTypeDetailService,
 		final MemberPointService memberPointService, final TokenProvider tokenProvider,
@@ -81,14 +78,18 @@ public class AuthenticationService {
 	@Transactional
 	public TokenPayload register(final RegisterRequest registerRequest, final MultipartFile profile) {
 		validateNickname(registerRequest.nickname());
-		String fileKey = null;
+		MemberTypeDetail findMemberTypeDetail = memberTypeDetailService.findMemberTypeDetailById(
+			registerRequest.memberTypeDetailId());
+		Member member = createMember(registerRequest, findMemberTypeDetail);
+
+		String profileKey = null;
 		if (profile != null) {
-			fileKey = fileClient.uploadFile(profile, FileType.PROFILE_IMAGE);
+			profileKey = fileClient.uploadFile(profile, FileType.PROFILE_IMAGE);
 		}
-		Member member = createMember(registerRequest, fileKey == null ? Optional.empty() : Optional.of(fileKey));
+		member.changeProfileKey(profileKey);
 		User saveUser = userRepository.save(createUser(registerRequest, member));
 		memberPointService.saveMemberPoint(saveUser.getMember());
-		notificationService.createNotificationSetting(member.getId());
+		// notificationService.createNotificationSetting(member.getId());
 		return new TokenPayload(saveUser.getId().toString(), saveUser.getUsername(), saveUser.getUserRole().toString());
 	}
 
@@ -155,15 +156,10 @@ public class AuthenticationService {
 			.build();
 	}
 
-	private Member createMember(final RegisterRequest registerRequest, final Optional<String> profileKey) {
-		MemberTypeDetail findMemberTypeDetail = memberTypeDetailService.findMemberTypeDetailById(
-			registerRequest.memberTypeDetailId());
-
-		Member member = Member.createMember()
+	private Member createMember(final RegisterRequest registerRequest, MemberTypeDetail findMemberTypeDetail) {
+		return Member.createMember()
 			.nickname(registerRequest.nickname())
 			.memberType(findMemberTypeDetail)
-			.profileKey(profileKey.orElse(defaultProfileKey))
 			.build();
-		return member;
 	}
 }
