@@ -24,6 +24,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -73,7 +75,8 @@ class UserRestControllerTest extends ControllerTestHelper {
 	@Test
 	void 사용자_프로필_변경_성공() throws Exception {
 		when(userService.uploadProfile(any())).thenReturn(TEST_PROFILE_KEY);
-		when(userService.updateMemberProfile(TEST_MEMBER_ID, TEST_PROFILE_KEY)).thenReturn(TEST_PREV_PROFILE_KEY);
+		when(userService.updateMemberProfile(TEST_MEMBER_ID, TEST_PROFILE_KEY)).thenReturn(
+			Optional.of(TEST_PREV_PROFILE_KEY));
 		doNothing().when(userService).deleteProfile(TEST_PREV_PROFILE_KEY);
 		mockMvc.perform(
 				multipart("/api/v1/users/profile")
