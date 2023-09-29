@@ -89,7 +89,7 @@ public class AuthenticationService {
 		member.changeProfileKey(profileKey);
 		User saveUser = userRepository.save(createUser(registerRequest, member));
 		memberPointService.saveMemberPoint(saveUser.getMember());
-		// notificationService.createNotificationSetting(member.getId());
+		notificationService.createNotificationSetting(saveUser.getMember().getId());
 		return new TokenPayload(saveUser.getId().toString(), saveUser.getUsername(), saveUser.getUserRole().toString());
 	}
 
