@@ -51,6 +51,9 @@ public class NotificationSetting extends BaseEntity {
 	@Column(nullable = false, columnDefinition = "TINYINT(1)")
 	private boolean issuedCoupon;
 
+	@Column(nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean rewardedRequest;
+
 	@Builder(builderMethodName = "createNotificationSetting")
 	public NotificationSetting(final Member member) {
 		this.member = member;
@@ -63,6 +66,7 @@ public class NotificationSetting extends BaseEntity {
 		this.rewardFail = true;
 		this.createdStampBoard = true;
 		this.issuedCoupon = true;
+		this.rewardedRequest = true;
 	}
 
 	public void updateNotificationSetting(final UpdateNotificationSetting updateNotificationSetting) {
@@ -92,6 +96,9 @@ public class NotificationSetting extends BaseEntity {
 		}
 		if ( updateNotificationSetting.issuedCoupon() != null) {
 			this.issuedCoupon = updateNotificationSetting.issuedCoupon();
+		}
+		if ( updateNotificationSetting.rewardedRequest() != null) {
+			this.rewardedRequest = updateNotificationSetting.rewardedRequest();
 		}
 	}
 }

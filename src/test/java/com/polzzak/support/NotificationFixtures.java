@@ -24,8 +24,8 @@ public class NotificationFixtures {
 		NOTIFICATION_DTO_LIST);
 
 	public static final NotificationSettingDto NOTIFICATION_SETTING_DTO = new NotificationSettingDto(true, true, true,
-		false, false, true, true, false, true);
+		false, false, true, true, false, true, true);
 
 	public static final UpdateNotificationSetting UPDATE_NOTIFICATION_SETTING = new UpdateNotificationSetting(true,
-		true, true, false, false, true, true, false, true);
+		true, true, false, false, true, true, false, true, true);
 }

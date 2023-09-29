@@ -133,7 +133,8 @@ class NotificationControllerTest extends ControllerTestHelper {
 					fieldWithPath("data.rewarded").description("선물 전달 확인 알림").optional(),
 					fieldWithPath("data.rewardFail").description("선물 약속 미이행 알림").optional(),
 					fieldWithPath("data.createdStampBoard").description("새로운 도장판 알림").optional(),
-					fieldWithPath("data.issuedCoupon").description("쿠폰 발급 알림").optional()
+					fieldWithPath("data.issuedCoupon").description("쿠폰 발급 알림").optional(),
+					fieldWithPath("data.rewardedRequest").description("선물 전달 확인 알림").optional()
 				)));
 	}
 
@@ -159,10 +160,11 @@ class NotificationControllerTest extends ControllerTestHelper {
 					fieldWithPath("stampRequest").description("도장 요청 알림"),
 					fieldWithPath("stampBoardComplete").description("도장판 완성 알림"),
 					fieldWithPath("rewardRequest").description("선물 조르기 알림"),
-					fieldWithPath("rewarded").description("선물 전달 확인 알림"),
+					fieldWithPath("rewarded").description("선물 수령 알림"),
 					fieldWithPath("rewardFail").description("선물 약속 미이행 알림"),
 					fieldWithPath("createdStampBoard").description("새로운 도장판 알림"),
-					fieldWithPath("issuedCoupon").description("쿠폰 발급 알림")
+					fieldWithPath("issuedCoupon").description("쿠폰 발급 알림"),
+					fieldWithPath("rewardedRequest").description("선물 전달 확인 알림")
 				)));
 	}
 }
