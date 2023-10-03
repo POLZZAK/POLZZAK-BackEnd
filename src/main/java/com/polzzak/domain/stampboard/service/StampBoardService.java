@@ -104,6 +104,14 @@ public class StampBoardService {
 		return stampBoard;
 	}
 
+	public StampBoard getStampBoardIncludeDeleted(long stampBoardId) {
+		StampBoard stampBoard = stampBoardRepository.getReferenceById(stampBoardId);
+		if (stampBoard == null) {
+			throw new PolzzakException(ErrorCode.TARGET_NOT_EXIST);
+		}
+		return stampBoard;
+	}
+
 	@Transactional
 	public StampBoardDto updateStampBoard(MemberDto member, long stampBoardId,
 		StampBoardUpdateRequest stampBoardUpdateRequest) {
