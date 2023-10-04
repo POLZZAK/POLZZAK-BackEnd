@@ -222,6 +222,12 @@ operation::user-rest-controller-test/user-update-profile-success[snippets='http-
 
 operation::user-rest-controller-test/user-update-nickname-success[snippets='http-request,request-headers,request-fields,http-response']
 
+== *4. 사용자 탈퇴 API*
+
+=== *4-1* 성공
+
+operation::user-rest-controller-test/user-delete-success[snippets='http-request,request-headers,http-response']
+
 [[Family-API]]
 = *Family API*
 
