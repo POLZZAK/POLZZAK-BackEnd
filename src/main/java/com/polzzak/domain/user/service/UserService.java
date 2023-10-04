@@ -11,6 +11,7 @@ import com.polzzak.domain.family.repository.FamilyRequestRepository;
 import com.polzzak.domain.memberpoint.entity.MemberPoint;
 import com.polzzak.domain.memberpoint.repository.MemberPointHistoryRepository;
 import com.polzzak.domain.memberpoint.repository.MemberPointRepository;
+import com.polzzak.domain.notification.repository.NotificationRepository;
 import com.polzzak.domain.stampboard.repository.StampBoardRepository;
 import com.polzzak.domain.stampboard.repository.StampRepository;
 import com.polzzak.domain.user.dto.MemberDto;
@@ -35,14 +36,14 @@ public class UserService {
 	private final MemberPointHistoryRepository memberPointHistoryRepository;
 	private final FamilyMapRepository familyMapRepository;
 	private final FamilyRequestRepository familyRequestRepository;
-	private final StampRepository stampRepository;
 	private final StampBoardRepository stampBoardRepository;
+	private final NotificationRepository notificationRepository;
 
 	public UserService(final UserRepository userRepository, final MemberRepository memberRepository,
 		final FileClient fileClient, final MemberPointRepository memberPointRepository,
 		MemberPointHistoryRepository memberPointHistoryRepository, final FamilyMapRepository familyMapRepository,
-		FamilyRequestRepository familyRequestRepository, StampRepository stampRepository,
-		StampBoardRepository stampBoardRepository) {
+		FamilyRequestRepository familyRequestRepository, StampBoardRepository stampBoardRepository,
+		NotificationRepository notificationRepository) {
 		this.userRepository = userRepository;
 		this.memberRepository = memberRepository;
 		this.fileClient = fileClient;
@@ -50,8 +51,8 @@ public class UserService {
 		this.memberPointHistoryRepository = memberPointHistoryRepository;
 		this.familyMapRepository = familyMapRepository;
 		this.familyRequestRepository = familyRequestRepository;
-		this.stampRepository = stampRepository;
 		this.stampBoardRepository = stampBoardRepository;
+		this.notificationRepository = notificationRepository;
 	}
 
 	public MemberResponse getMemberResponse(final long memberId) {
@@ -135,7 +136,9 @@ public class UserService {
 		familyRequestRepository.deleteBySender(member);
 		deleteFamilyMapByMember(member);
 
-		// TODO: stamp, stmapBoard, mission, coupon... 삭제
+		// notification, stampboard 삭제(status update)
+		notificationRepository.deleteByReceiver(member);
+		stampBoardRepository.deleteByKidIdOrGuardianId(memberId);
 
 		userRepository.deleteByMember(member);
 		memberRepository.delete(member);

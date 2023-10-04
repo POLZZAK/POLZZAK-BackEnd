@@ -23,6 +23,6 @@ public interface FamilyRequestRepository extends JpaRepository<FamilyRequest, Lo
 	boolean existsBySender(final Member sender);
 
 	void deleteByReceiver(final Member receiver);
-	
+
 	void deleteBySender(final Member sender);
 }
