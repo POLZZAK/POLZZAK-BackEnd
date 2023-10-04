@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.polzzak.domain.family.entity.FamilyMap;
+import com.polzzak.domain.user.entity.Member;
 
 public interface FamilyMapRepository extends JpaRepository<FamilyMap, Long> {
 	@Query("select fm from FamilyMap fm where fm.kid.id = :kidId")
@@ -22,4 +23,8 @@ public interface FamilyMapRepository extends JpaRepository<FamilyMap, Long> {
 	int countByKidId(Long kidId);
 
 	int countByGuardianId(Long guardianId);
+
+	void deleteByGuardian(final Member guardian);
+
+	void deleteByKid(final Member kid);
 }

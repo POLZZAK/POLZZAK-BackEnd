@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.polzzak.domain.notification.entity.Notification;
+import com.polzzak.domain.user.entity.Member;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
@@ -32,4 +33,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	List<Notification> findByIdIn(List<Long> ids);
 
 	void deleteByIdIn(List<Long> ids);
+
+	void deleteByReceiver(Member receiver);
 }

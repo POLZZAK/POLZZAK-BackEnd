@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.polzzak.domain.memberpoint.entity.MemberPoint;
 import com.polzzak.domain.membertype.entity.MemberType;
+import com.polzzak.domain.user.entity.Member;
 
 import jakarta.persistence.LockModeType;
 
@@ -26,4 +27,6 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long> 
 		+ "FROM (SELECT member_id, RANK() OVER (ORDER BY point DESC) AS ranking FROM member_point) AS rankings "
 		+ "WHERE member_id = :memberId", nativeQuery = true)
 	int getPointRankingByMemberId(Long memberId);
+
+	void deleteByMember(final Member member);
 }

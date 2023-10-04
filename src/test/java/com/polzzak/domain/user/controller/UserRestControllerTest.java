@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -120,6 +121,24 @@ class UserRestControllerTest extends ControllerTestHelper {
 					),
 					requestFields(
 						fieldWithPath("nickname").description("수정할 닉네임")
+					)
+				)
+			);
+	}
+
+	@Test
+	void 회원_탈퇴_성공() throws Exception {
+		doNothing().when(userService).withdrawMember(any());
+		mockMvc.perform(
+				delete("/api/v1/users")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+			)
+			.andExpectAll(status().isNoContent())
+			.andDo(
+				document(
+					"{class-name}/user-delete-success",
+					requestHeaders(
+						headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
 					)
 				)
 			);
