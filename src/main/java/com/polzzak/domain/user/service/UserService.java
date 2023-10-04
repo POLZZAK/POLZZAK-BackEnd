@@ -7,8 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.polzzak.domain.family.repository.FamilyMapRepository;
+import com.polzzak.domain.family.repository.FamilyRequestRepository;
 import com.polzzak.domain.memberpoint.entity.MemberPoint;
+import com.polzzak.domain.memberpoint.repository.MemberPointHistoryRepository;
 import com.polzzak.domain.memberpoint.repository.MemberPointRepository;
+import com.polzzak.domain.stampboard.repository.StampBoardRepository;
+import com.polzzak.domain.stampboard.repository.StampRepository;
 import com.polzzak.domain.user.dto.MemberDto;
 import com.polzzak.domain.user.dto.MemberResponse;
 import com.polzzak.domain.user.dto.UpdateNicknameRequest;
@@ -28,16 +32,26 @@ public class UserService {
 
 	private final FileClient fileClient;
 	private final MemberPointRepository memberPointRepository;
+	private final MemberPointHistoryRepository memberPointHistoryRepository;
 	private final FamilyMapRepository familyMapRepository;
+	private final FamilyRequestRepository familyRequestRepository;
+	private final StampRepository stampRepository;
+	private final StampBoardRepository stampBoardRepository;
 
 	public UserService(final UserRepository userRepository, final MemberRepository memberRepository,
 		final FileClient fileClient, final MemberPointRepository memberPointRepository,
-		final FamilyMapRepository familyMapRepository) {
+		MemberPointHistoryRepository memberPointHistoryRepository, final FamilyMapRepository familyMapRepository,
+		FamilyRequestRepository familyRequestRepository, StampRepository stampRepository,
+		StampBoardRepository stampBoardRepository) {
 		this.userRepository = userRepository;
 		this.memberRepository = memberRepository;
 		this.fileClient = fileClient;
 		this.memberPointRepository = memberPointRepository;
+		this.memberPointHistoryRepository = memberPointHistoryRepository;
 		this.familyMapRepository = familyMapRepository;
+		this.familyRequestRepository = familyRequestRepository;
+		this.stampRepository = stampRepository;
+		this.stampBoardRepository = stampBoardRepository;
 	}
 
 	public MemberResponse getMemberResponse(final long memberId) {
@@ -106,6 +120,33 @@ public class UserService {
 	public void updateNickname(Long memberId, UpdateNicknameRequest request) {
 		Member member = findMemberByMemberId(memberId);
 		member.changeNickname(request.nickname());
+	}
+
+	@Transactional
+	public void withdrawMember(final Long memberId) {
+		Member member = findMemberByMemberId(memberId);
+
+		// point 삭제
+		memberPointRepository.deleteByMember(member);
+		memberPointHistoryRepository.deleteByMemberId(member.getId());
+
+		// family 삭제
+		familyRequestRepository.deleteByReceiver(member);
+		familyRequestRepository.deleteBySender(member);
+		deleteFamilyMapByMember(member);
+
+		// TODO: stamp, stmapBoard, mission, coupon... 삭제
+
+		userRepository.deleteByMember(member);
+		memberRepository.delete(member);
+	}
+
+	private void deleteFamilyMapByMember(final Member member) {
+		if (member.isKid()) {
+			familyMapRepository.deleteByKid(member);
+			return;
+		}
+		familyMapRepository.deleteByGuardian(member);
 	}
 
 	private int getFamilyCount(final Member requestMember) {

@@ -3,6 +3,7 @@ package com.polzzak.domain.user.controller;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +53,12 @@ public class UserRestController {
 		final @RequestBody UpdateNicknameRequest request
 	) {
 		userService.updateNickname(memberId, request);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping
+	public ResponseEntity<Void> withdrawUser(final @LoginId Long memberId) {
+		userService.withdrawMember(memberId);
 		return ResponseEntity.noContent().build();
 	}
 }
