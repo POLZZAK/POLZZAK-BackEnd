@@ -77,8 +77,9 @@ public class StampBoardService {
 		}
 
 		Member kid = userService.findMemberByMemberId(stampBoard.getKidId());
+		Member guardian = userService.findMemberByMemberId(stampBoard.getGuardianId());
 		String profileUrl = fileClient.getSignedUrl(kid.getProfileKey());
-		return StampBoardDto.from(stampBoard, kid, profileUrl);
+		return StampBoardDto.from(stampBoard, kid, guardian, profileUrl);
 	}
 
 	public List<FamilyStampBoardSummary> getFamilyStampBoardSummaries(final String username, final Long partnerMemberId,
