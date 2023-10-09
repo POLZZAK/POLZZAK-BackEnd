@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.polzzak.domain.family.dto.FamilyMemberDto;
+import com.polzzak.domain.membertype.dto.MemberTypeDetailDto;
 import com.polzzak.domain.notification.dto.MemberDtoForNotification;
 import com.polzzak.domain.stampboard.dto.FamilyStampBoardSummary;
 import com.polzzak.domain.stampboard.dto.MissionDto;
@@ -52,9 +53,10 @@ public class StampFixtures {
 		new MissionRequestDto(21, 3, "미션3", LocalDateTime.now()),
 		new MissionRequestDto(22, 4, "미션4", LocalDateTime.now())
 	);
+	public static final MemberTypeDetailDto MEMBER_TYPE_DETAIL_DTO = new MemberTypeDetailDto(1L, "detail");
 	public static final StampBoardDto STAMP_BOARD_DTO = new StampBoardDto(33L, "도장판 이름", "progress",
 		new MemberDtoForNotification(1, "name", "profile"), 13, 30, "칭찬해주기",
-		MISSION_DTOS, STAMP_DTOS, MISSION_COMPLETE_DTOS, null, null, LocalDateTime.now());
+		MEMBER_TYPE_DETAIL_DTO, MISSION_DTOS, STAMP_DTOS, MISSION_COMPLETE_DTOS, null, null, LocalDateTime.now());
 	public static final List<MissionDto> UPDATE_MISSION_DTOS = List.of(
 		new MissionDto(2L, "지울 미션은"),
 		new MissionDto(3L, "안 보내면 됩니다."),
