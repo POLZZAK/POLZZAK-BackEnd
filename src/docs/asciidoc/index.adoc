@@ -598,3 +598,10 @@ operation::notification/settings-get-success[snippets='http-request,request-head
 === *1-1* 성공
 
 operation::notification/settings-update-success[snippets='http-request,request-headers,request-fields,http-response']
+
+[[푸시-API]]
+== *1. 푸시 토큰 전송 API*
+
+=== *1-1* 성공
+
+operation::push/push_token-create-success[snippets='http-request,request-headers,request-body,http-response,response-fields']
