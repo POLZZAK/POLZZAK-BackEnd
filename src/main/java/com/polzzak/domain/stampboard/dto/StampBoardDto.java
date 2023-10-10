@@ -10,14 +10,15 @@ import com.polzzak.domain.stampboard.entity.StampBoard;
 import com.polzzak.domain.user.entity.Member;
 
 public record StampBoardDto(
-	long stampBoardId, String name, String status, MemberDtoForNotification kid, int currentStampCount,
-	int goalStampCount, String reward, MemberTypeDetailDto guardianMemberType, List<MissionDto> missions,
-	List<StampDto> stamps, List<MissionRequestDto> missionRequestList, LocalDateTime completedDate,
-	LocalDateTime rewardDate, LocalDateTime createdDate
+	long stampBoardId, String name, String status, MemberDtoForNotification kid, MemberDtoForNotification guardian,
+	int currentStampCount, int goalStampCount, String reward, MemberTypeDetailDto guardianMemberType,
+	List<MissionDto> missions, List<StampDto> stamps, List<MissionRequestDto> missionRequestList,
+	LocalDateTime completedDate, LocalDateTime rewardDate, LocalDateTime createdDate
 ) {
 
 	public static StampBoardDto from(StampBoard stampBoard, Member kid, Member guardian, String profileUrl) {
 		MemberDtoForNotification kidDto = MemberDtoForNotification.from(kid, profileUrl);
+		MemberDtoForNotification guardianDto = MemberDtoForNotification.from(guardian, null);
 		MemberTypeDetailDto memberTypeDetailDto = MemberTypeDetailDto.from(guardian.getMemberType());
 		List<MissionDto> missionDtoList = stampBoard.getMissions().stream()
 			.map(MissionDto::from)
@@ -30,9 +31,9 @@ public record StampBoardDto(
 			.toList();
 
 		return new StampBoardDto(stampBoard.getId(), stampBoard.getName(),
-			StampBoard.Status.getLowerCase(stampBoard.getStatus()), kidDto, stampBoard.getCurrentStampCount(),
-			stampBoard.getGoalStampCount(), stampBoard.getReward(), memberTypeDetailDto, missionDtoList, stampDtoList,
-			missionRequestDtoList, stampBoard.getCompletedDate(), stampBoard.getRewardDate(),
-			stampBoard.getCreatedDate());
+			StampBoard.Status.getLowerCase(stampBoard.getStatus()), kidDto, guardianDto,
+			stampBoard.getCurrentStampCount(), stampBoard.getGoalStampCount(), stampBoard.getReward(),
+			memberTypeDetailDto, missionDtoList, stampDtoList, missionRequestDtoList, stampBoard.getCompletedDate(),
+			stampBoard.getRewardDate(), stampBoard.getCreatedDate());
 	}
 }

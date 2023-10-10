@@ -55,8 +55,9 @@ public class StampFixtures {
 	);
 	public static final MemberTypeDetailDto MEMBER_TYPE_DETAIL_DTO = new MemberTypeDetailDto(1L, "detail");
 	public static final StampBoardDto STAMP_BOARD_DTO = new StampBoardDto(33L, "도장판 이름", "progress",
-		new MemberDtoForNotification(1, "name", "profile"), 13, 30, "칭찬해주기",
-		MEMBER_TYPE_DETAIL_DTO, MISSION_DTOS, STAMP_DTOS, MISSION_COMPLETE_DTOS, null, null, LocalDateTime.now());
+		new MemberDtoForNotification(1, "name", "profile"), new MemberDtoForNotification(2, "guardian", null), 13, 30,
+		"칭찬해주기", MEMBER_TYPE_DETAIL_DTO, MISSION_DTOS, STAMP_DTOS, MISSION_COMPLETE_DTOS, null, null,
+		LocalDateTime.now());
 	public static final List<MissionDto> UPDATE_MISSION_DTOS = List.of(
 		new MissionDto(2L, "지울 미션은"),
 		new MissionDto(3L, "안 보내면 됩니다."),
