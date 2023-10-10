@@ -1,5 +1,6 @@
 package com.polzzak.domain.pushtoken.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.polzzak.domain.pushtoken.model.PushToken;
@@ -24,6 +25,10 @@ public class PushTokenService {
 			.token(token)
 			.build();
 
-		pushTokenRepository.save(pushToken);
+		try {
+			pushTokenRepository.save(pushToken);
+		} catch (DataIntegrityViolationException e) {
+
+		}
 	}
 }

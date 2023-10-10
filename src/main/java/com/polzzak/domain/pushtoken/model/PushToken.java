@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "push_token")
+@Table(name = "push_token", uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"member_id", "token"})
+})
 public class PushToken extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
