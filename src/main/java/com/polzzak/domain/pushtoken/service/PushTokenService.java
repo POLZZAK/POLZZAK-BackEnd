@@ -1,5 +1,7 @@
 package com.polzzak.domain.pushtoken.service;
 
+import java.util.List;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +19,7 @@ public class PushTokenService {
 	private final UserService userService;
 	private final PushTokenRepository pushTokenRepository;
 
-	public void addToken(Long memberId, String token) {
+	public void addToken(final Long memberId, final String token) {
 		Member member = userService.findMemberByMemberId(memberId);
 
 		PushToken pushToken = PushToken.createPushToken()
@@ -30,5 +32,9 @@ public class PushTokenService {
 		} catch (DataIntegrityViolationException e) {
 
 		}
+	}
+
+	public List<PushToken> getPushTokens(final Member member) {
+		return pushTokenRepository.getPushTokensByMember(member);
 	}
 }

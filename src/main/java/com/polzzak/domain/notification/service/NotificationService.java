@@ -41,7 +41,7 @@ public class NotificationService {
 	private final NotificationSettingRepository notificationSettingRepository;
 
 	@Transactional
-	public void addNotification(final Long senderId, final Long receiverId, final NotificationType type,
+	public Notification addNotification(final Long senderId, final Long receiverId, final NotificationType type,
 		final String data) {
 		Member sender = userService.findMemberByMemberId(senderId);
 		Member receiver = userService.findMemberByMemberId(receiverId);
@@ -53,6 +53,7 @@ public class NotificationService {
 			.data(data)
 			.build();
 		notificationRepository.save(notification);
+		return notification;
 	}
 
 	@Transactional
@@ -126,18 +127,26 @@ public class NotificationService {
 			pageRequest);
 
 		List<NotificationDto> notificationDtoList = notifications.getContent().stream()
-			.map(notification -> getNotificationDto(member, notification))
+			.map(notification -> getNotificationDto(member, notification, true))
 			.toList();
 
 		return NotificationResponse.from(pageRequest, notificationDtoList, notifications.hasNext());
 	}
 
-	private NotificationDto getNotificationDto(final Member member, final Notification notification) {
+	public NotificationDto getNotificationDto(final Member member, final Notification notification,
+		final boolean isBold) {
 		Member sender = notification.getSender();
 		MemberDtoForNotification senderDto = sender == null ? null : MemberDtoForNotification.from(sender,
 			fileClient.getSignedUrl(sender.getProfileKey()));
-		String message = notification.getType()
-			.getMessageWithParameter(getMessageParameter(member.getId(), notification));
+		String message;
+		if (isBold) {
+			message = notification.getType()
+				.getMessageWithParameter(getMessageParameter(member.getId(), notification));
+		} else {
+			message = notification.getType()
+				.getParameterWithoutBold(getMessageParameter(member.getId(), notification));
+		}
+
 		String link = notification.getType().getLinkWithParameter(getLinkParameter(member.getId(), notification));
 
 		return NotificationDto.from(notification, message, link, senderDto);

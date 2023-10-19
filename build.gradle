@@ -51,6 +51,10 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
 
+    // FCM
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation("com.squareup.okhttp3:okhttp")
+
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation("com.h2database:h2")
