@@ -125,23 +125,23 @@ public class UserService {
 
 	@Transactional
 	public void withdrawMember(final Long memberId) {
-		Member member = findMemberByMemberId(memberId);
-
-		// point 삭제
-		memberPointRepository.deleteByMember(member);
-		memberPointHistoryRepository.deleteByMemberId(member.getId());
-
-		// family 삭제
-		familyRequestRepository.deleteByReceiver(member);
-		familyRequestRepository.deleteBySender(member);
-		deleteFamilyMapByMember(member);
-
-		// notification, stampboard 삭제(status update)
-		notificationRepository.deleteByReceiver(member);
-		stampBoardRepository.deleteByKidIdOrGuardianId(memberId);
-
-		userRepository.deleteByMember(member);
-		memberRepository.delete(member);
+		// Member member = findMemberByMemberId(memberId);
+		//
+		// // point 삭제
+		// memberPointRepository.deleteByMember(member);
+		// memberPointHistoryRepository.deleteByMemberId(member.getId());
+		//
+		// // family 삭제
+		// familyRequestRepository.deleteByReceiver(member);
+		// familyRequestRepository.deleteBySender(member);
+		// deleteFamilyMapByMember(member);
+		//
+		// // notification, stampboard 삭제(status update)
+		// notificationRepository.deleteByReceiver(member);
+		// stampBoardRepository.deleteByKidIdOrGuardianId(memberId);
+		//
+		// userRepository.deleteByMember(member);
+		// memberRepository.delete(member);
 	}
 
 	private void deleteFamilyMapByMember(final Member member) {
