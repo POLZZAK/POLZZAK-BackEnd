@@ -127,6 +127,10 @@ public class StampBoard extends BaseModifiableEntity {
 
 	public void updateStampCount(int goalStampCount) {
 		this.goalStampCount = goalStampCount;
+
+		if (isCompleteStamp()) {
+			complete();
+		}
 	}
 
 	private void complete() {
