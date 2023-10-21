@@ -42,7 +42,7 @@ public enum NotificationType {
 		if (this == STAMP_REQUEST || this == REWARD_REQUEST || this == STAMP_BOARD_COMPLETE || this == REWARDED
 			|| this == REWARD_REQUEST_AGAIN || this == REWARD_FAIL || this == CREATED_STAMP_BOARD
 			|| this == ISSUED_COUPON || this == REWARDED_REQUEST) {
-			return String.format(this.message, "<b>'" + parameter + "'</b>");
+			return String.format(this.message, parameter);
 		}
 		return String.format(this.message, parameter);
 	}

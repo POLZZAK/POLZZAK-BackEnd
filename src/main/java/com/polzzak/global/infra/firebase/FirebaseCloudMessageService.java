@@ -18,8 +18,10 @@ import com.polzzak.domain.pushtoken.service.PushTokenService;
 import com.polzzak.domain.user.entity.Member;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class FirebaseCloudMessageService {
 
@@ -51,15 +53,16 @@ public class FirebaseCloudMessageService {
 				.putData("link", link)
 				.build();
 			BatchResponse response = null;
+			log.info("push. token: {}, title: {}, body: {}, link: {}", registrationTokens, title, body, link);
 			try {
 				response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
 			} catch (FirebaseMessagingException e) {
+				log.warn("fail push.");
 				e.printStackTrace();
 			}
 			// See the BatchResponse reference documentation
 			// for the contents of response.
-			System.out.println(response.getSuccessCount() + " messages were sent successfully");
-			System.out.println(response);
+			log.info(response.getSuccessCount() + " messages were sent successfully");
 
 		} catch (Exception e) {
 
