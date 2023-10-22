@@ -99,7 +99,7 @@ public class NotificationEventHandler {
 
 			Notification notification = notificationService.addNotification(event.senderId(), event.receiverId(),
 				event.type(), event.data());
-			sendPushNotification(event.senderId(), notification);
+			sendPushNotification(event.receiverId(), notification);
 
 			log.info("[NotificationEvent] info. sender_id : {}, receiver_id : {}, type : {}, data : {}",
 				event.senderId(), event.receiverId(), event.type(), event.data());
