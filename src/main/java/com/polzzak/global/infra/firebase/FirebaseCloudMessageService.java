@@ -34,9 +34,9 @@ public class FirebaseCloudMessageService {
 
 	public void sendPushNotification(Member member, String title, String body, String link) {
 		try {
-			FileInputStream serviceAccount = new FileInputStream(
-				"src/main/resources/firebase/firebase_service_key.json");
-
+			// FileInputStream serviceAccount = new FileInputStream(
+			// 	"src/main/resources/firebase/firebase_service_key.json");
+			log.info("[push]send push start.");
 			String serviceKey = "{\n" + "  \"type\": \"service_account\",\n" + "  \"project_id\": \"polzzak-57648\",\n"
 				+ "  \"private_key_id\": \"ead4311d449ac5facc6c507ec152a6d9f54a279d\",\n"
 				+ "  \"private_key\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAo"
@@ -71,15 +71,15 @@ public class FirebaseCloudMessageService {
 			FirebaseOptions options = new FirebaseOptions.Builder()
 				.setCredentials(GoogleCredentials.fromStream(inputStream))
 				.build();
-
+			log.info("[push] ready key.");
 			if (FirebaseApp.getApps().isEmpty()) {
 				FirebaseApp.initializeApp(options);
 			}
-
+			log.info("[push]firebase initialized.");
 			List<String> registrationTokens = pushTokenService.getPushTokens(member).stream()
 				.map(PushToken::getToken)
 				.toList();
-			log.info("push. token: {}, title: {}, body: {}, link: {}", registrationTokens, title, body, link);
+			log.info("[push]push. token: {}, title: {}, body: {}, link: {}", registrationTokens, title, body, link);
 
 			MulticastMessage message = MulticastMessage.builder()
 				.setNotification(Notification.builder()
