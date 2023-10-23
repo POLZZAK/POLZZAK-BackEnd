@@ -87,7 +87,7 @@ public class FirebaseCloudMessageService {
 					.setBody(body)
 					.build())
 				.addAllTokens(registrationTokens)
-				.putData("link", link)
+				.putData("link", link == null ? "" : link)
 				.build();
 			BatchResponse response = null;
 			try {
@@ -99,10 +99,10 @@ public class FirebaseCloudMessageService {
 			}
 			// See the BatchResponse reference documentation
 			// for the contents of response.
-			log.info(response.getSuccessCount() + " messages were sent successfully");
+			log.info("[push] " + response.getSuccessCount() + " messages were sent successfully");
 
 		} catch (Exception e) {
-
+			log.error(e);
 		}
 	}
 }
