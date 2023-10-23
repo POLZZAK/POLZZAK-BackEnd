@@ -92,6 +92,7 @@ public class FirebaseCloudMessageService {
 			BatchResponse response = null;
 			try {
 				response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
+				log.info("[push] log. {}", response);
 			} catch (FirebaseMessagingException e) {
 				log.warn("fail push.");
 				e.printStackTrace();
