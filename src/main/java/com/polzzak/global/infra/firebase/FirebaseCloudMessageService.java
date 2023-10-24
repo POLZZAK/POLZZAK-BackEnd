@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +88,7 @@ public class FirebaseCloudMessageService {
 					.setBody(body)
 					.build())
 				.addAllTokens(registrationTokens)
-				.putData("link", link == null ? "" : link)
+				.putAllData(Map.of("link", link == null ? "" : link, "title", title, "body", body))
 				.build();
 			BatchResponse response = null;
 			try {
