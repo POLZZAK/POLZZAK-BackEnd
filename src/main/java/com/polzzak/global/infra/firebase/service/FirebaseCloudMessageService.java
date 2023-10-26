@@ -31,7 +31,7 @@ public class FirebaseCloudMessageService {
 	private static final String SERVER_KEY = "AAAAXWWv8O0:APA91bEPp9GZzMUjTmhmk9n0J5PuX1LvAf-Kaa-vCffntaV85klO-"
 		+ "gLb4QLf4f9ohrjdIu6L7MOZbaKUReN8CgljU4t1vWWS6BFESQhpZVPQzLhtswju1naFbmHyVNzrHvZWVpHvRNWo";
 
-	public void sendPushNotification(Member member, String title, String body, String link) {
+	public void sendPushNotification(Member member, long id, String title, String body, String link) {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPost httpPost = new HttpPost(FCM_URL);
 			httpPost.setHeader("Content-Type", "application/json");
@@ -43,7 +43,8 @@ public class FirebaseCloudMessageService {
 
 			for (String token : registrationTokens) {
 				Notification notification = new Notification(title, body, "default");
-				Map<String, String> data = Map.of("link", link == null ? "" : link, "title", title, "body", body);
+				Map<String, String> data = Map.of("link", link == null ? "" : link, "title", title, "body", body,
+					"notificationId", String.valueOf(id));
 				Message message = new Message(notification, token, data);
 				ObjectMapper objectMapper = new ObjectMapper();
 

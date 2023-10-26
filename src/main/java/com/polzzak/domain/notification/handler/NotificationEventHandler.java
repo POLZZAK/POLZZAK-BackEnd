@@ -108,11 +108,11 @@ public class NotificationEventHandler {
 		}
 	}
 
-	private void sendPushNotification(long memberId,  Notification notification) {
+	private void sendPushNotification(long memberId, Notification notification) {
 		Member member = userService.findMemberByMemberId(memberId);
 		NotificationDto notificationDto = notificationService.getNotificationDto(member, notification, false);
 
-		firebaseCloudMessageService.sendPushNotification(member, notificationDto.title(), notificationDto.message(),
-			notificationDto.link());
+		firebaseCloudMessageService.sendPushNotification(member, notification.getId(), notificationDto.title(),
+			notificationDto.message(), notificationDto.link());
 	}
 }
