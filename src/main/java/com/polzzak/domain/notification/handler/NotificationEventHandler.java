@@ -12,7 +12,7 @@ import com.polzzak.domain.notification.entity.NotificationType;
 import com.polzzak.domain.notification.service.NotificationService;
 import com.polzzak.domain.user.entity.Member;
 import com.polzzak.domain.user.service.UserService;
-import com.polzzak.global.infra.firebase.FirebaseCloudMessageService;
+import com.polzzak.global.infra.firebase.service.FirebaseCloudMessageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
