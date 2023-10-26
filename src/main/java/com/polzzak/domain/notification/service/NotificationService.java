@@ -71,11 +71,20 @@ public class NotificationService {
 		return NotificationResponseWithCount.from(notificationResponse, count);
 	}
 
+	public int getUnreadNotificationCount(final long memberId) {
+		return notificationRepository.countByStatusIsUnRead(memberId);
+	}
+
 	@Transactional
 	public void changeRequestNotificationStatus(final Long senderId, final Long receiverId,
 		final Notification.Status status) {
 		Long notificationId = notificationRepository.selectIdBySenderIdAndReceiverIdAndStatus(senderId, receiverId);
 		notificationRepository.updateStatusByIds(List.of(notificationId), status);
+	}
+
+	@Transactional
+	public void changeNotificationStatus(final long notificationId, final Notification.Status status) {
+		notificationRepository.updateStatusById(notificationId, status);
 	}
 
 	@Transactional

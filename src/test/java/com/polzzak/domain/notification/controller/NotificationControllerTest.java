@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import com.polzzak.domain.notification.dto.ReadNotificationId;
 import com.polzzak.domain.notification.service.NotificationService;
 import com.polzzak.domain.user.service.UserService;
 import com.polzzak.support.NotificationFixtures;
@@ -107,6 +108,33 @@ class NotificationControllerTest extends ControllerTestHelper {
 				queryParameters(
 					parameterWithName("notificationIds").description("삭제 요청 알림 ID")
 				)));
+	}
+
+	@Test
+	@DisplayName("알림 읽기 테스트")
+	void readNotificationTest() throws Exception {
+		doNothing().when(notificationService).changeNotificationStatus(anyLong(), any());
+		when(notificationService.getUnreadNotificationCount(anyLong())).thenReturn(12);
+
+		mockMvc.perform(
+				post(BASE_URL + "/read")
+					.header(HttpHeaders.AUTHORIZATION, TOKEN_TYPE + USER_ACCESS_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectToString(new ReadNotificationId(45))))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("notification/notification-read-success",
+				requestHeaders(
+					headerWithName(HttpHeaders.AUTHORIZATION).description("엑세스 토큰")
+				),
+				requestFields(
+					fieldWithPath("notificationId").description("읽을 알림 id")
+				),
+				responseFields(
+					fieldWithPath("code").description("응답 코드"),
+					fieldWithPath("messages").description("응답 메시지"),
+					fieldWithPath("data").description("남은 안 읽은 알림 수")
+					)));
 	}
 
 	@Test

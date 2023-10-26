@@ -599,6 +599,12 @@ operation::notification/settings-get-success[snippets='http-request,request-head
 
 operation::notification/settings-update-success[snippets='http-request,request-headers,request-fields,http-response']
 
+== *5. 알림 읽기 API*
+
+=== *1-1* 성공
+
+operation::notification/notification-read-success[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
 [[푸시-API]]
 == *1. 푸시 토큰 전송 API*
 

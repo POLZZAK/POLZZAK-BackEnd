@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.polzzak.domain.notification.dto.NotificationResponseWithCount;
 import com.polzzak.domain.notification.dto.NotificationSettingDto;
+import com.polzzak.domain.notification.dto.ReadNotificationId;
 import com.polzzak.domain.notification.dto.UpdateNotificationSetting;
+import com.polzzak.domain.notification.entity.Notification;
 import com.polzzak.domain.notification.service.NotificationService;
 import com.polzzak.global.common.ApiResponse;
 import com.polzzak.global.security.LoginId;
@@ -45,6 +48,14 @@ public class NotificationController {
 	) {
 		notificationService.deleteNotifications(notificationIds);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PostMapping("/read")
+	public ResponseEntity<ApiResponse<Integer>> readNotification(
+		final @LoginId Long memberId,
+		final @RequestBody ReadNotificationId readNotificationId) {
+		notificationService.changeNotificationStatus(readNotificationId.notificationId(), Notification.Status.READ);
+		return ResponseEntity.ok(ApiResponse.ok(notificationService.getUnreadNotificationCount(memberId)));
 	}
 
 	@GetMapping("/settings")

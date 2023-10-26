@@ -21,6 +21,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	@Query("UPDATE Notification n SET n.status = :status WHERE n.id IN :ids")
 	void updateStatusByIds(@Param("ids") List<Long> ids, @Param("status") Notification.Status status);
 
+	@Modifying
+	@Query("UPDATE Notification n SET n.status = :status WHERE n.id = :id")
+	void updateStatusById(@Param("id") long id, @Param("status") Notification.Status status);
+
 	@Query(nativeQuery = true, value = """
 		SELECT n.id
 		FROM notification n
