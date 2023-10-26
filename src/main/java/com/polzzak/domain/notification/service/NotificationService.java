@@ -13,6 +13,7 @@ import com.polzzak.domain.coupon.service.CouponService;
 import com.polzzak.domain.notification.dto.MemberDtoForNotification;
 import com.polzzak.domain.notification.dto.NotificationDto;
 import com.polzzak.domain.notification.dto.NotificationResponse;
+import com.polzzak.domain.notification.dto.NotificationResponseWithCount;
 import com.polzzak.domain.notification.dto.NotificationSettingDto;
 import com.polzzak.domain.notification.dto.UpdateNotificationSetting;
 import com.polzzak.domain.notification.entity.Notification;
@@ -57,7 +58,7 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public NotificationResponse getNotificationsAndChangeStatus(final Long memberId, final int size,
+	public NotificationResponseWithCount getNotificationsAndChangeStatus(final Long memberId, final int size,
 		final long startId) {
 		NotificationResponse notificationResponse = getNotificationResponse(memberId, size, startId);
 
@@ -66,8 +67,8 @@ public class NotificationService {
 			.map(NotificationDto::id)
 			.toList();
 		notificationRepository.updateStatusByIds(notificationIds, Notification.Status.READ);
-
-		return notificationResponse;
+		int count = notificationRepository.countByStatusIsUnRead(memberId);
+		return NotificationResponseWithCount.from(notificationResponse, count);
 	}
 
 	@Transactional

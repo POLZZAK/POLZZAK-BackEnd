@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.polzzak.domain.notification.dto.NotificationResponse;
+import com.polzzak.domain.notification.dto.NotificationResponseWithCount;
 import com.polzzak.domain.notification.dto.NotificationSettingDto;
 import com.polzzak.domain.notification.dto.UpdateNotificationSetting;
 import com.polzzak.domain.notification.service.NotificationService;
@@ -32,7 +32,7 @@ public class NotificationController {
 	private final String longMaxValue = "9223372036854775807";
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<NotificationResponse>> getNotifications(final @LoginId Long memberId,
+	public ResponseEntity<ApiResponse<NotificationResponseWithCount>> getNotifications(final @LoginId Long memberId,
 		@RequestParam(required = false, defaultValue = longMaxValue) final long startId) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(

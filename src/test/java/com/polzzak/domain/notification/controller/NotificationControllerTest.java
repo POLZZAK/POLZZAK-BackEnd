@@ -46,7 +46,7 @@ class NotificationControllerTest extends ControllerTestHelper {
 	@DisplayName("알림 목록 조회 테스트")
 	void getNotificationsTest() throws Exception {
 		when(notificationService.getNotificationsAndChangeStatus(anyLong(), anyInt(), anyLong())).thenReturn(
-			NotificationFixtures.NOTIFICATION_RESPONSE);
+			NotificationFixtures.NOTIFICATION_RESPONSE_WITH_COUNT);
 
 		mockMvc.perform(
 				get(BASE_URL)
@@ -67,20 +67,24 @@ class NotificationControllerTest extends ControllerTestHelper {
 					fieldWithPath("code").description("응답 코드"),
 					fieldWithPath("messages").description("응답 메시지"),
 					fieldWithPath("data").description("응답 데이터"),
-					fieldWithPath("data.startId").description("다음 조회 ID (null이면 끝)").optional(),
-					fieldWithPath("data.notificationDtoList[]").description("알림 목록"),
-					fieldWithPath("data.notificationDtoList[].id").description("알림 ID").optional(),
-					fieldWithPath("data.notificationDtoList[].type").description("알림 타").optional(),
-					fieldWithPath("data.notificationDtoList[].status").description("알림 상태").optional(),
-					fieldWithPath("data.notificationDtoList[].title").description("알림 제목").optional(),
-					fieldWithPath("data.notificationDtoList[].message").description("알림 내용").optional(),
-					fieldWithPath("data.notificationDtoList[].sender").description("전송자 정보").optional(),
-					fieldWithPath("data.notificationDtoList[].sender.id").description("전송자 ID").optional(),
-					fieldWithPath("data.notificationDtoList[].sender.nickname").description("전송자 닉네임").optional(),
-					fieldWithPath("data.notificationDtoList[].sender.profileUrl").description("전송자 이미지").optional(),
-					fieldWithPath("data.notificationDtoList[].link").description("알림 링크").optional(),
-					fieldWithPath("data.notificationDtoList[].requestFamilyId").description("연동 요청 ID").optional(),
-					fieldWithPath("data.notificationDtoList[].createdDate").description("알림 생성 시간").optional()
+					fieldWithPath("data.response.startId").description("다음 조회 ID (null이면 끝)").optional(),
+					fieldWithPath("data.response.notificationDtoList[]").description("알림 목록"),
+					fieldWithPath("data.response.notificationDtoList[].id").description("알림 ID").optional(),
+					fieldWithPath("data.response.notificationDtoList[].type").description("알림 타").optional(),
+					fieldWithPath("data.response.notificationDtoList[].status").description("알림 상태").optional(),
+					fieldWithPath("data.response.notificationDtoList[].title").description("알림 제목").optional(),
+					fieldWithPath("data.response.notificationDtoList[].message").description("알림 내용").optional(),
+					fieldWithPath("data.response.notificationDtoList[].sender").description("전송자 정보").optional(),
+					fieldWithPath("data.response.notificationDtoList[].sender.id").description("전송자 ID").optional(),
+					fieldWithPath("data.response.notificationDtoList[].sender.nickname").description("전송자 닉네임")
+						.optional(),
+					fieldWithPath("data.response.notificationDtoList[].sender.profileUrl").description("전송자 이미지")
+						.optional(),
+					fieldWithPath("data.response.notificationDtoList[].link").description("알림 링크").optional(),
+					fieldWithPath("data.response.notificationDtoList[].requestFamilyId").description("연동 요청 ID")
+						.optional(),
+					fieldWithPath("data.response.notificationDtoList[].createdDate").description("알림 생성 시간").optional(),
+					fieldWithPath("data.unreadNotificationCount").description("남은 알림 수").optional()
 				)));
 	}
 

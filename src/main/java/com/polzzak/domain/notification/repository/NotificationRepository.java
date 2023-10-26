@@ -35,4 +35,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	void deleteByIdIn(List<Long> ids);
 
 	void deleteByReceiver(Member receiver);
+
+	@Query(nativeQuery = true, value = """
+		SELECT COUNT(1)
+		FROM notification n
+		WHERE n.receiver_id = :receiverId  AND `status` = 'UNREAD'""")
+	int countByStatusIsUnRead(@Param("receiverId") Long receiverId);
 }
